@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS customers (
 -- Create orders table
 CREATE TABLE IF NOT EXISTS orders (
     id BIGSERIAL PRIMARY KEY,
-    customer_id BIGINT REFERENCES customers(id),
+    customer_id BIGINT,
     network TEXT NOT NULL,
     package_name TEXT NOT NULL,
     phone_number TEXT NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS orders (
 -- Create transactions table
 CREATE TABLE IF NOT EXISTS transactions (
     id BIGSERIAL PRIMARY KEY,
-    order_id BIGINT REFERENCES orders(id),
+    order_id BIGINT,
     reference TEXT NOT NULL UNIQUE,
     amount NUMERIC(10,2) NOT NULL,
     status TEXT NOT NULL,
@@ -45,6 +45,13 @@ CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(email);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_transactions_order_id ON transactions(order_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_reference ON transactions(reference);
+
+-- Add foreign key constraints (after tables are created)
+ALTER TABLE orders ADD CONSTRAINT fk_orders_customer 
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL;
+
+ALTER TABLE transactions ADD CONSTRAINT fk_transactions_order 
+    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
