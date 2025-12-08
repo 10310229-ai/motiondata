@@ -265,8 +265,26 @@ async function handleRequest(req, res) {
 
       // GET /api/packages
       if (pathname === '/api/packages' && method === 'GET') {
-        // Packages are now managed through Supabase
-        return sendJSON(res, []);
+        const packagesPath = path.join(__dirname, 'packages.json');
+        if (fs.existsSync(packagesPath)) {
+          const packagesData = JSON.parse(fs.readFileSync(packagesPath, 'utf8'));
+          return sendJSON(res, packagesData);
+        }
+        return sendJSON(res, { packages: {} });
+      }
+
+      // POST /api/packages/update
+      if (pathname === '/api/packages/update' && method === 'POST') {
+        const body = await parseBody(req);
+        const packagesPath = path.join(__dirname, 'packages.json');
+        
+        try {
+          fs.writeFileSync(packagesPath, JSON.stringify({ packages: body }, null, 2));
+          return sendJSON(res, { success: true, message: 'Packages updated successfully' });
+        } catch (error) {
+          console.error('Error saving packages:', error);
+          return sendJSON(res, { error: 'Failed to save packages' }, 500);
+        }
       }
 
       // GET /api/packages/top

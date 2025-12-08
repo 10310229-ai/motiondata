@@ -1,0 +1,82 @@
+{
+  "packages": {
+    "MTN": [
+      {
+        "name": "MTN 1GB Daily",
+        "volume": "1GB",
+        "validity": "24 Hours",
+        "price": 5.00
+      },
+      {
+        "name": "MTN 2GB Weekly",
+        "volume": "2GB",
+        "validity": "7 Days",
+        "price": 10.00
+      },
+      {
+        "name": "MTN 5GB Monthly",
+        "volume": "5GB",
+        "validity": "30 Days",
+        "price": 20.00
+      },
+      {
+        "name": "MTN 10GB Monthly",
+        "volume": "10GB",
+        "validity": "30 Days",
+        "price": 35.00
+      }
+    ],
+    "AirtelTigo": [
+      {
+        "name": "AirtelTigo 1GB Daily",
+        "volume": "1GB",
+        "validity": "24 Hours",
+        "price": 4.50
+      },
+      {
+        "name": "AirtelTigo 3GB Weekly",
+        "volume": "3GB",
+        "validity": "7 Days",
+        "price": 12.00
+      },
+      {
+        "name": "AirtelTigo 6GB Monthly",
+        "volume": "6GB",
+        "validity": "30 Days",
+        "price": 22.00
+      },
+      {
+        "name": "AirtelTigo 12GB Monthly",
+        "volume": "12GB",
+        "validity": "30 Days",
+        "price": 40.00
+      }
+    ],
+    "Telecel": [
+      {
+        "name": "Telecel 1.5GB Daily",
+        "volume": "1.5GB",
+        "validity": "24 Hours",
+        "price": 5.50
+      },
+      {
+        "name": "Telecel 4GB Weekly",
+        "volume": "4GB",
+        "validity": "7 Days",
+        "price": 15.00
+      },
+      {
+        "name": "Telecel 8GB Monthly",
+        "volume": "8GB",
+        "validity": "30 Days",
+        "price": 28.00
+      },
+      {
+        "name": "Telecel 15GB Monthly",
+        "volume": "15GB",
+        "validity": "30 Days",
+        "price": 45.00
+      }
+    ]
+  }
+}

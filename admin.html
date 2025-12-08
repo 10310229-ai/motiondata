@@ -345,11 +345,22 @@
                     </div>
                 </div>
 
-                <!-- Orders Table -->
-                <div class="orders-section">
-                    <h2><i class="fas fa-shopping-cart"></i> All Orders</h2>
-                    
-                    <div class="orders-filters">
+                <!-- Navigation Tabs -->
+                <div class="nav-tabs" style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <button class="nav-tab active" data-tab="orders" style="padding: 1rem 1.5rem; background: none; border: none; border-bottom: 3px solid var(--accent); color: var(--accent); cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-shopping-cart"></i> Orders
+                    </button>
+                    <button class="nav-tab" data-tab="packages" style="padding: 1rem 1.5rem; background: none; border: none; border-bottom: 3px solid transparent; color: var(--muted); cursor: pointer; font-weight: 600;">
+                        <i class="fas fa-box"></i> Packages
+                    </button>
+                </div>
+
+                <!-- Orders Tab -->
+                <div id="ordersTabContent" class="tab-content">
+                    <div class="orders-section">
+                        <h2><i class="fas fa-shopping-cart"></i> All Orders</h2>
+                        
+                        <div class="orders-filters">
                         <div class="search-box">
                             <i class="fas fa-search"></i>
                             <input type="text" id="searchOrders" placeholder="Search orders...">
@@ -389,6 +400,43 @@
                         </table>
                     </div>
                 </div>
+                </div>
+
+                <!-- Packages Tab -->
+                <div id="packagesTabContent" class="tab-content" style="display: none;">
+                    <div class="orders-section">
+                        <h2><i class="fas fa-box"></i> Manage Packages</h2>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <select class="filter-select" id="packageOperator" style="margin-right: 1rem;">
+                                <option value="MTN">MTN</option>
+                                <option value="AirtelTigo">AirtelTigo</option>
+                                <option value="Telecel">Telecel</option>
+                            </select>
+                            <button class="btn btn-primary" id="loadPackagesBtn" style="padding: 0.75rem 1.5rem;">
+                                <i class="fas fa-sync"></i> Load Packages
+                            </button>
+                        </div>
+
+                        <div class="orders-table">
+                            <table id="packagesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Package Name</th>
+                                        <th>Volume</th>
+                                        <th>Validity</th>
+                                        <th>Price (GHS)</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="packagesTableBody">
+                                    <!-- Packages will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </main>
@@ -618,6 +666,112 @@
                 displayOrders(filtered);
             } catch (error) {
                 console.error('Filter error:', error);
+            }
+        }
+
+        // Tab Navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // Update tab styles
+                document.querySelectorAll('.nav-tab').forEach(t => {
+                    t.style.borderBottomColor = 'transparent';
+                    t.style.color = 'var(--muted)';
+                    t.classList.remove('active');
+                });
+                this.style.borderBottomColor = 'var(--accent)';
+                this.style.color = 'var(--accent)';
+                this.classList.add('active');
+                
+                // Show/hide tab content
+                document.getElementById('ordersTabContent').style.display = tabName === 'orders' ? 'block' : 'none';
+                document.getElementById('packagesTabContent').style.display = tabName === 'packages' ? 'block' : 'none';
+                
+                if (tabName === 'packages') {
+                    loadPackages();
+                }
+            });
+        });
+
+        // Load Packages
+        document.getElementById('loadPackagesBtn').addEventListener('click', loadPackages);
+
+        async function loadPackages() {
+            const operator = document.getElementById('packageOperator').value;
+            const tbody = document.getElementById('packagesTableBody');
+            
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading packages...</td></tr>';
+            
+            try {
+                const response = await fetch('/api/packages');
+                const data = await response.json();
+                const packages = data.packages[operator] || [];
+                
+                if (packages.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No packages found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = packages.map((pkg, index) => `
+                    <tr>
+                        <td>${pkg.name}</td>
+                        <td>${pkg.volume}</td>
+                        <td>${pkg.validity}</td>
+                        <td>
+                            <input type="number" 
+                                   id="price-${operator}-${index}" 
+                                   value="${pkg.price}" 
+                                   step="0.01" 
+                                   style="width: 100px; padding: 0.5rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff;">
+                        </td>
+                        <td>
+                            <button class="btn-small btn-view" onclick="savePackagePrice('${operator}', ${index}, '${pkg.name}')">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading packages:', error);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #ef4444;">Error loading packages</td></tr>';
+            }
+        }
+
+        // Save Package Price
+        async function savePackagePrice(operator, index, packageName) {
+            const priceInput = document.getElementById(`price-${operator}-${index}`);
+            const newPrice = parseFloat(priceInput.value);
+            
+            if (isNaN(newPrice) || newPrice <= 0) {
+                alert('Please enter a valid price');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/packages');
+                const data = await response.json();
+                
+                // Update the price
+                data.packages[operator][index].price = newPrice;
+                
+                // Save back to server
+                const saveResponse = await fetch('/api/packages/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data.packages)
+                });
+
+                if (saveResponse.ok) {
+                    alert(`Price for ${packageName} updated successfully to GHS ${newPrice.toFixed(2)}`);
+                } else {
+                    alert('Failed to update price');
+                }
+            } catch (error) {
+                console.error('Error saving price:', error);
+                alert('Error saving price');
             }
         }
     </script>
