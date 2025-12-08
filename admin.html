@@ -395,11 +395,47 @@
 
     <script src="assets/js/script.js"></script>
     <script>
-        // Admin credentials (in production, use secure backend authentication)
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAzNTExMDAsImV4cCI6MTkxMzAyNzcwMH0.P7JWxYxjS6pWhN3S2C5xZZZ3QrEmhbk9eJo2fJYG6W4';
+        
+        // Admin credentials
         const ADMIN_CREDENTIALS = {
             email: 'kwakumotion55@gmail.com',
             password: 'Motion@55'
         };
+
+        // Supabase API Helper
+        async function supabaseQuery(table, options = {}) {
+            const url = new URL(`${SUPABASE_URL}/rest/v1/${table}`);
+            
+            if (options.select) url.searchParams.append('select', options.select);
+            if (options.order) url.searchParams.append('order', options.order);
+            if (options.limit) url.searchParams.append('limit', options.limit);
+
+            try {
+                const response = await fetch(url, {
+                    method: options.method || 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: options.body ? JSON.stringify(options.body) : undefined
+                });
+
+                if (!response.ok) {
+                    console.error(`API error: ${response.status} - ${await response.text()}`);
+                    return [];
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Supabase query error:', error);
+                return [];
+            }
+        }
 
         // Check if already logged in
         document.addEventListener('DOMContentLoaded', function() {
@@ -435,11 +471,18 @@
             loadOrders();
         }
 
-        // Load orders from localStorage
-        function loadOrders() {
-            const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
-            updateStats(orders);
-            displayOrders(orders);
+        // Load orders from Supabase
+        async function loadOrders() {
+            try {
+                const orders = await supabaseQuery('orders', { 
+                    order: 'created_at.desc',
+                    limit: 1000
+                });
+                updateStats(orders);
+                displayOrders(orders);
+            } catch (error) {
+                console.error('Failed to load orders:', error);
+            }
         }
 
         // Update statistics
@@ -476,20 +519,20 @@
 
             tbody.innerHTML = orders.map(order => `
                 <tr>
-                    <td>${order.id || order.reference || 'N/A'}</td>
-                    <td>${formatDate(order.date || order.timestamp)}</td>
+                    <td>${order.id || 'N/A'}</td>
+                    <td>${formatDate(order.created_at)}</td>
                     <td>${order.email || 'N/A'}</td>
-                    <td>${order.phone || order.mobile || 'N/A'}</td>
+                    <td>${order.phone || 'N/A'}</td>
                     <td>${order.operator || 'N/A'}</td>
                     <td>${order.package || 'N/A'}</td>
                     <td>GHS ${(parseFloat(order.amount) || 0).toFixed(2)}</td>
                     <td><span class="status-badge ${order.status || 'pending'}">${(order.status || 'pending').toUpperCase()}</span></td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn-small btn-view" onclick="viewOrder('${order.id || order.reference}')">
+                            <button class="btn-small btn-view" onclick="viewOrder('${order.id}')">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn-small btn-delete" onclick="deleteOrder('${order.id || order.reference}')">
+                            <button class="btn-small btn-delete" onclick="deleteOrder('${order.id}')">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -507,20 +550,32 @@
 
         // View order details
         function viewOrder(orderId) {
-            const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
-            const order = orders.find(o => (o.id || o.reference) === orderId);
-            if (order) {
-                alert('Order Details:\n\n' + JSON.stringify(order, null, 2));
-            }
+            alert(`Order ID: ${orderId}\n\nView full details in Supabase dashboard.`);
         }
 
-        // Delete order
-        function deleteOrder(orderId) {
+        // Delete order from Supabase
+        async function deleteOrder(orderId) {
             if (confirm('Are you sure you want to delete this order?')) {
-                let orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
-                orders = orders.filter(o => (o.id || o.reference) !== orderId);
-                localStorage.setItem('md_orders', JSON.stringify(orders));
-                loadOrders();
+                try {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?id=eq.${orderId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        alert('Order deleted successfully');
+                        loadOrders();
+                    } else {
+                        alert('Failed to delete order');
+                    }
+                } catch (error) {
+                    console.error('Delete error:', error);
+                    alert('Error deleting order');
+                }
             }
         }
 
@@ -537,28 +592,33 @@
             filterOrders();
         });
 
-        function filterOrders() {
-            const searchTerm = document.getElementById('searchOrders').value.toLowerCase();
-            const statusFilter = document.getElementById('filterStatus').value;
-            const operatorFilter = document.getElementById('filterOperator').value;
+        async function filterOrders() {
+            try {
+                const orders = await supabaseQuery('orders', { 
+                    order: 'created_at.desc',
+                    limit: 1000
+                });
+                
+                const searchTerm = document.getElementById('searchOrders').value.toLowerCase();
+                const statusFilter = document.getElementById('filterStatus').value;
+                const operatorFilter = document.getElementById('filterOperator').value;
 
-            let orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
+                const filtered = orders.filter(order => {
+                    const matchesSearch = !searchTerm || 
+                        (order.email && order.email.toLowerCase().includes(searchTerm)) ||
+                        (order.phone && order.phone.includes(searchTerm)) ||
+                        (order.package && order.package.toLowerCase().includes(searchTerm));
 
-            // Apply filters
-            orders = orders.filter(order => {
-                const matchesSearch = !searchTerm || 
-                    (order.email && order.email.toLowerCase().includes(searchTerm)) ||
-                    (order.phone && order.phone.includes(searchTerm)) ||
-                    (order.mobile && order.mobile.includes(searchTerm)) ||
-                    (order.package && order.package.toLowerCase().includes(searchTerm));
+                    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+                    const matchesOperator = operatorFilter === 'all' || order.operator === operatorFilter;
 
-                const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-                const matchesOperator = operatorFilter === 'all' || order.operator === operatorFilter;
+                    return matchesSearch && matchesStatus && matchesOperator;
+                });
 
-                return matchesSearch && matchesStatus && matchesOperator;
-            });
-
-            displayOrders(orders);
+                displayOrders(filtered);
+            } catch (error) {
+                console.error('Filter error:', error);
+            }
         }
     </script>
 </body>
