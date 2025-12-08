@@ -80,8 +80,61 @@ body::after {
 .logo img{display:block;border-radius:6px}
 .brand{font-weight:700;color:var(--accent);text-decoration:none;font-size:1.05rem}
 .actions{display:flex;gap:.5rem;align-items:center}
-.mobile-menu-toggle{display:inline-flex;align-items:center;justify-content:center;background:transparent;border:1px solid rgba(255,255,255,0.12);color:var(--muted);font-size:1.2rem;padding:.55rem .65rem;border-radius:10px;cursor:pointer;transition:all .18s ease}
-.mobile-menu-toggle:hover{color:#fff;background:rgba(255,255,255,0.08)}
+
+/* Animated Hamburger Button */
+.mobile-menu-toggle{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	background:linear-gradient(135deg, rgba(34,197,94,0.1), rgba(16,185,129,0.05));
+	border:1px solid rgba(34,197,94,0.2);
+	color:var(--primary);
+	font-size:1.2rem;
+	padding:.55rem .65rem;
+	border-radius:10px;
+	cursor:pointer;
+	transition:all .3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	position:relative;
+	overflow:hidden;
+}
+
+.mobile-menu-toggle::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	height: 0;
+	border-radius: 50%;
+	background: linear-gradient(135deg, var(--primary), var(--secondary));
+	transform: translate(-50%, -50%);
+	transition: width 0.4s ease, height 0.4s ease;
+	z-index: -1;
+}
+
+.mobile-menu-toggle:hover::before {
+	width: 200%;
+	height: 200%;
+}
+
+.mobile-menu-toggle:hover{
+	color:#fff;
+	border-color:var(--primary);
+	transform:scale(1.1) rotate(90deg);
+	box-shadow: 0 6px 20px rgba(34,197,94,0.4);
+}
+
+.mobile-menu-toggle:active {
+	transform:scale(0.95) rotate(90deg);
+}
+
+.mobile-menu-toggle i {
+	transition: transform 0.3s ease;
+}
+
+.mobile-menu-toggle:hover i {
+	transform: rotate(-90deg);
+}
 
 /* Sidebar navigation (replaces top nav) */
 .site-sidebar{
