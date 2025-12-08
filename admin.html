@@ -497,15 +497,42 @@
         // Login form
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const email = document.getElementById('adminEmail').value;
+            const email = document.getElementById('adminEmail').value.trim();
             const password = document.getElementById('adminPassword').value;
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
-            if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-                localStorage.setItem('adminLoggedIn', 'true');
-                showDashboard();
-            } else {
-                alert('Invalid email or password');
-            }
+            // Simulate slight delay for better UX
+            setTimeout(() => {
+                if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                    submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+                    
+                    setTimeout(() => {
+                        showDashboard();
+                    }, 500);
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+                    
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = 'background: rgba(239,68,68,0.2); color: #ef4444; padding: 1rem; border-radius: 8px; margin-top: 1rem; text-align: center; border: 1px solid rgba(239,68,68,0.3);';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Invalid email or password. Please try again.';
+                    
+                    const existingError = e.target.querySelector('.error-message');
+                    if (existingError) existingError.remove();
+                    
+                    errorDiv.className = 'error-message';
+                    e.target.appendChild(errorDiv);
+                    
+                    setTimeout(() => errorDiv.remove(), 3000);
+                }
+            }, 800);
         });
 
         // Logout
