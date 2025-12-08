@@ -36,47 +36,83 @@ document.addEventListener('DOMContentLoaded', function(){
       currency: 'GHS',
       ref: 'AIR-' + Date.now(),
       metadata: { custom_fields:[{display_name:'Mobile',variable_name:'mobile',value:msisdn},{display_name:'Operator',variable_name:'operator',value:'AirtelTigo'},{display_name:'Package',variable_name:'package',value:pkg}] },
-      callback: function(response){
-        // Save order to database via API
-        const order = {
-          id: response.reference,
-          reference: response.reference,
-          date: new Date().toISOString(),
-          timestamp: Date.now(),
-          email: email,
-          phone: msisdn,
-          mobile: msisdn,
-          operator: 'AirtelTigo',
-          network: 'AirtelTigo',
-          package: pkg,
-          amount: price,
-          status: 'completed'
-        };
-        
-        // Save to database
-        fetch('/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(order)
-        }).catch(err => console.error('Failed to save order:', err));
-        
-        // Also save to localStorage as backup
-        const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
-        orders.push(order);
-        localStorage.setItem('md_orders', JSON.stringify(orders));
-        
-        // Show success message
-        if(typeof showToast === 'function'){
-          showToast('✓ Order placed successfully! Your data bundle will be delivered shortly.', 5000);
-        } else {
-          alert('Order placed successfully! Your data bundle will be delivered shortly.');
+      callback: async function(response){
+        try {
+          // Get current user
+          const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+          
+          // Save customer to Supabase
+          const customerData = {
+            name: currentUser.name || 'Guest',
+            email: email,
+            phone: msisdn
+          };
+          const customer = await saveCustomer(customerData);
+          
+          // Save order to Supabase
+          const orderData = {
+            customer_id: customer.id,
+            network: 'AirtelTigo',
+            package: pkg,
+            phone: msisdn,
+            email: email,
+            amount: price,
+            status: 'completed'
+          };
+          const savedOrder = await saveOrder(orderData);
+          
+          // Save transaction to Supabase
+          const transactionData = {
+            order_id: savedOrder.id,
+            reference: response.reference,
+            amount: price,
+            status: 'success',
+            payment_method: 'paystack',
+            metadata: { response: response }
+          };
+          await saveTransaction(transactionData);
+          
+          // Also save to localStorage as backup
+          const order = {
+            id: response.reference,
+            reference: response.reference,
+            date: new Date().toISOString(),
+            timestamp: Date.now(),
+            email: email,
+            phone: msisdn,
+            mobile: msisdn,
+            operator: 'AirtelTigo',
+            network: 'AirtelTigo',
+            package: pkg,
+            amount: price,
+            status: 'completed'
+          };
+          const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
+          orders.push(order);
+          localStorage.setItem('md_orders', JSON.stringify(orders));
+          
+          // Show success message
+          if(typeof showToast === 'function'){
+            showToast('✓ Order placed successfully! Your data bundle will be delivered shortly.', 5000);
+          } else {
+            alert('Order placed successfully! Your data bundle will be delivered shortly.');
+          }
+          
+          // Redirect after displaying the message
+          setTimeout(function(){
+            try { window.location.href = 'index.html'; }
+            catch(e){ window.location.href = 'index.html'; }
+          }, 5500);
+        } catch (error) {
+          console.error('Error saving order:', error);
+          // Still show success to user even if database save fails
+          if(typeof showToast === 'function'){
+            showToast('✓ Order placed successfully! Your data bundle will be delivered shortly.', 5000);
+          } else {
+            alert('Order placed successfully! Your data bundle will be delivered shortly.');
+          }
+          setTimeout(function(){ window.location.href = 'index.html'; }, 5500);
         }
-        
-        // Redirect after displaying the message
-        setTimeout(function(){
-          try { window.location.href = 'index.html'; }
-          catch(e){ window.location.href = 'index.html'; }
-        }, 5500);
       },
       onClose: function(){ alert('Payment cancelled.'); }
     });
