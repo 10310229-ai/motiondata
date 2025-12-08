@@ -121,13 +121,6 @@ document.addEventListener('DOMContentLoaded', function(){
           setTimeout(function(){ window.location.href = 'index.html'; }, 5500);
         }
       },
-        
-        // Redirect after displaying the message
-        setTimeout(function(){
-          try { window.location.href = 'index.html'; }
-          catch(e){ window.location.href = 'index.html'; }
-        }, 5500);
-      },
       onClose: function(){ alert('Payment cancelled.'); }
     });
 
