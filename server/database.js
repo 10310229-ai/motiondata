@@ -1,251 +1,333 @@
-const fs = require('fs');
-const path = require('path');
+const https = require('https');
 
-const dbPath = path.join(__dirname, 'orders.json');
+// Load Supabase configuration from environment
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
-// Initialize database file
-function initDatabase() {
-  if (!fs.existsSync(dbPath)) {
-    const initialData = {
-      orders: [],
-      customers: {}
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.warn('Warning: SUPABASE_URL and SUPABASE_ANON_KEY must be set in .env file');
+}
+
+// Supabase REST API request helper
+function supabaseRequest(endpoint, options = {}) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(endpoint, SUPABASE_URL);
+    const urlObj = new URL(url.toString());
+    
+    const reqOptions = {
+      hostname: urlObj.hostname,
+      port: urlObj.port || 443,
+      path: urlObj.pathname + urlObj.search,
+      method: options.method || 'GET',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': options.prefer || 'return=representation',
+        ...options.headers
+      }
     };
-    fs.writeFileSync(dbPath, JSON.stringify(initialData, null, 2));
-  }
+
+    const req = https.request(reqOptions, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const parsed = data ? JSON.parse(data) : null;
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(parsed);
+          } else {
+            reject(new Error(`Supabase error: ${res.statusCode} - ${data}`));
+          }
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+
+    req.on('error', reject);
+    if (options.body) {
+      req.write(JSON.stringify(options.body));
+    }
+    req.end();
+  });
 }
 
-// Read database
-function readDB() {
-  try {
-    const data = fs.readFileSync(dbPath, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    return { orders: [], customers: {} };
-  }
-}
-
-// Write database
-function writeDB(data) {
-  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+// Initialize database (create tables if needed)
+function initDatabase() {
+  console.log('Using Supabase database');
+  return true;
 }
 
 // Add a new order
 function addOrder(orderData) {
-  const db = readDB();
-  const {
-    id,
-    reference,
-    date,
-    timestamp,
-    email,
-    phone,
-    network,
-    package: pkg,
-    amount,
-    status = 'completed',
-    customer = email.split('@')[0]
-  } = orderData;
-
-  const order = {
-    id,
-    reference,
-    date,
-    timestamp,
-    customer,
-    email,
-    phone,
-    network,
-    package: pkg,
-    amount,
-    status,
-    created_at: new Date().toISOString()
-  };
-
-  db.orders.unshift(order);
-  
-  // Update customer stats
-  if (!db.customers[email]) {
-    db.customers[email] = {
+  return (async () => {
+    const {
+      id,
+      reference,
+      date,
+      timestamp,
       email,
-      name: customer,
       phone,
-      total_orders: 0,
-      total_spent: 0,
-      first_order_date: date,
-      last_order_date: date
+      network,
+      package: pkg,
+      amount,
+      status = 'completed',
+      customer = email.split('@')[0]
+    } = orderData;
+
+    const order = {
+      id,
+      reference,
+      date,
+      timestamp,
+      customer,
+      email,
+      phone,
+      network,
+      package: pkg,
+      amount,
+      status,
+      created_at: new Date().toISOString()
     };
-  }
-  
-  db.customers[email].total_orders++;
-  db.customers[email].total_spent += amount;
-  db.customers[email].last_order_date = date;
-  db.customers[email].phone = phone;
-  
-  writeDB(db);
-  return order;
+
+    try {
+      const result = await supabaseRequest('/rest/v1/orders', {
+        method: 'POST',
+        body: order
+      });
+
+      // Update or create customer
+      await supabaseRequest('/rest/v1/customers', {
+        method: 'POST',
+        body: {
+          email,
+          name: customer,
+          phone
+        },
+        headers: {
+          'Prefer': 'resolution=merge-duplicates'
+        }
+      });
+
+      console.log('Order saved to Supabase:', id);
+      return Array.isArray(result) ? result[0] : result;
+    } catch (error) {
+      console.error('Error adding order to Supabase:', error);
+      throw error;
+    }
+  })();
 }
 
 // Get all orders with optional filters
 function getOrders(filters = {}) {
-  const db = readDB();
-  let orders = db.orders;
+  return (async () => {
+    try {
+      let endpoint = '/rest/v1/orders?select=*&order=created_at.desc';
 
-  if (filters.status && filters.status !== 'All Status') {
-    orders = orders.filter(o => o.status.toLowerCase() === filters.status.toLowerCase());
-  }
+      if (filters.status && filters.status !== 'All Status') {
+        endpoint += `&status=eq.${filters.status.toLowerCase()}`;
+      }
 
-  if (filters.network && filters.network !== 'All Networks') {
-    orders = orders.filter(o => o.network === filters.network);
-  }
+      if (filters.network && filters.network !== 'All Networks') {
+        endpoint += `&network=eq.${filters.network}`;
+      }
 
-  if (filters.search) {
-    const search = filters.search.toLowerCase();
-    orders = orders.filter(o => 
-      o.id.toLowerCase().includes(search) ||
-      o.customer.toLowerCase().includes(search) ||
-      o.phone.includes(search) ||
-      o.package.toLowerCase().includes(search)
-    );
-  }
+      if (filters.search) {
+        const search = filters.search.toLowerCase();
+        endpoint += `&or=(id.ilike.*${search}*,customer.ilike.*${search}*,phone.ilike.*${search}*,package.ilike.*${search}*)`;
+      }
 
-  // Pagination
-  if (filters.limit) {
-    const offset = ((filters.page || 1) - 1) * filters.limit;
-    orders = orders.slice(offset, offset + filters.limit);
-  }
+      // Pagination
+      if (filters.limit) {
+        const offset = ((filters.page || 1) - 1) * filters.limit;
+        endpoint += `&limit=${filters.limit}&offset=${offset}`;
+      }
 
-  return orders;
+      const orders = await supabaseRequest(endpoint);
+      return orders || [];
+    } catch (error) {
+      console.error('Error getting orders:', error);
+      return [];
+    }
+  })();
 }
 
 // Get total count of orders
 function getOrdersCount(filters = {}) {
-  const db = readDB();
-  let orders = db.orders;
+  return (async () => {
+    try {
+      let endpoint = '/rest/v1/orders?select=*&count=exact';
 
-  if (filters.status && filters.status !== 'All Status') {
-    orders = orders.filter(o => o.status.toLowerCase() === filters.status.toLowerCase());
-  }
+      if (filters.status && filters.status !== 'All Status') {
+        endpoint += `&status=eq.${filters.status.toLowerCase()}`;
+      }
 
-  if (filters.network && filters.network !== 'All Networks') {
-    orders = orders.filter(o => o.network === filters.network);
-  }
+      if (filters.network && filters.network !== 'All Networks') {
+        endpoint += `&network=eq.${filters.network}`;
+      }
 
-  if (filters.search) {
-    const search = filters.search.toLowerCase();
-    orders = orders.filter(o => 
-      o.id.toLowerCase().includes(search) ||
-      o.customer.toLowerCase().includes(search) ||
-      o.phone.includes(search) ||
-      o.package.toLowerCase().includes(search)
-    );
-  }
+      if (filters.search) {
+        const search = filters.search.toLowerCase();
+        endpoint += `&or=(id.ilike.*${search}*,customer.ilike.*${search}*,phone.ilike.*${search}*,package.ilike.*${search}*)`;
+      }
 
-  return orders.length;
+      const result = await supabaseRequest(endpoint, {
+        headers: { 'Prefer': 'count=exact' }
+      });
+      
+      return Array.isArray(result) ? result.length : 0;
+    } catch (error) {
+      console.error('Error getting orders count:', error);
+      return 0;
+    }
+  })();
 }
 
 // Get a single order by ID
 function getOrderById(orderId) {
-  const db = readDB();
-  return db.orders.find(o => o.id === orderId);
+  return (async () => {
+    try {
+      const result = await supabaseRequest(`/rest/v1/orders?id=eq.${orderId}`);
+      return Array.isArray(result) && result.length > 0 ? result[0] : null;
+    } catch (error) {
+      console.error('Error getting order by ID:', error);
+      return null;
+    }
+  })();
 }
 
 // Update an order
 function updateOrder(orderId, updateData) {
-  const db = readDB();
-  const index = db.orders.findIndex(o => o.id === orderId);
-  
-  if (index !== -1) {
-    db.orders[index] = { ...db.orders[index], ...updateData };
-    writeDB(db);
-    return db.orders[index];
-  }
-  
-  return null;
+  return (async () => {
+    try {
+      const result = await supabaseRequest(`/rest/v1/orders?id=eq.${orderId}`, {
+        method: 'PATCH',
+        body: updateData
+      });
+      return Array.isArray(result) && result.length > 0 ? result[0] : null;
+    } catch (error) {
+      console.error('Error updating order:', error);
+      return null;
+    }
+  })();
 }
 
 // Delete an order
 function deleteOrder(orderId) {
-  const db = readDB();
-  const index = db.orders.findIndex(o => o.id === orderId);
-  
-  if (index !== -1) {
-    db.orders.splice(index, 1);
-    writeDB(db);
-    return { deleted: true };
-  }
-  
-  return { deleted: false };
+  return (async () => {
+    try {
+      await supabaseRequest(`/rest/v1/orders?id=eq.${orderId}`, {
+        method: 'DELETE'
+      });
+      return { deleted: true };
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      return { deleted: false };
+    }
+  })();
 }
 
 // Get dashboard statistics
 function getStats() {
-  const db = readDB();
-  const stats = {};
+  return (async () => {
+    try {
+      const stats = {};
 
-  stats.totalOrders = db.orders.length;
-  stats.totalRevenue = db.orders
-    .filter(o => o.status === 'completed')
-    .reduce((sum, o) => sum + o.amount, 0);
-  stats.totalCustomers = Object.keys(db.customers).length;
+      // Total orders
+      const allOrders = await supabaseRequest('/rest/v1/orders?select=*');
+      stats.totalOrders = allOrders.length;
 
-  const completedOrders = db.orders.filter(o => o.status === 'completed').length;
-  stats.successRate = db.orders.length > 0 
-    ? ((completedOrders / db.orders.length) * 100).toFixed(1)
-    : 100;
+      // Total revenue
+      const completedOrders = allOrders.filter(o => o.status === 'completed');
+      stats.totalRevenue = completedOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
 
-  // Calculate growth (last 30 days vs previous 30)
-  const now = Date.now();
-  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-  const recent = db.orders.filter(o => now - o.timestamp < thirtyDays);
-  const previous = db.orders.filter(o => {
-    const age = now - o.timestamp;
-    return age >= thirtyDays && age < thirtyDays * 2;
-  });
+      // Total customers
+      const customers = await supabaseRequest('/rest/v1/customers?select=email');
+      stats.totalCustomers = customers.length;
 
-  stats.ordersGrowth = previous.length > 0
-    ? (((recent.length - previous.length) / previous.length) * 100).toFixed(1)
-    : 0;
+      // Success rate
+      stats.successRate = allOrders.length > 0 
+        ? ((completedOrders.length / allOrders.length) * 100).toFixed(1)
+        : 100;
 
-  const recentRevenue = recent.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.amount, 0);
-  const previousRevenue = previous.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.amount, 0);
-  
-  stats.revenueGrowth = previousRevenue > 0
-    ? (((recentRevenue - previousRevenue) / previousRevenue) * 100).toFixed(1)
-    : 0;
+      // Calculate growth (last 30 days vs previous 30)
+      const now = Date.now();
+      const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+      const recent = allOrders.filter(o => now - o.timestamp < thirtyDays);
+      const previous = allOrders.filter(o => {
+        const age = now - o.timestamp;
+        return age >= thirtyDays && age < thirtyDays * 2;
+      });
 
-  return stats;
+      stats.ordersGrowth = previous.length > 0
+        ? (((recent.length - previous.length) / previous.length) * 100).toFixed(1)
+        : 0;
+
+      const recentRevenue = recent.filter(o => o.status === 'completed').reduce((sum, o) => sum + (o.amount || 0), 0);
+      const previousRevenue = previous.filter(o => o.status === 'completed').reduce((sum, o) => sum + (o.amount || 0), 0);
+      
+      stats.revenueGrowth = previousRevenue > 0
+        ? (((recentRevenue - previousRevenue) / previousRevenue) * 100).toFixed(1)
+        : 0;
+
+      return stats;
+    } catch (error) {
+      console.error('Error getting stats:', error);
+      return {
+        totalOrders: 0,
+        totalRevenue: 0,
+        totalCustomers: 0,
+        successRate: 100,
+        ordersGrowth: 0,
+        revenueGrowth: 0
+      };
+    }
+  })();
 }
 
 // Get all customers
 function getCustomers() {
-  const db = readDB();
-  return Object.values(db.customers).sort((a, b) => b.total_spent - a.total_spent);
+  return (async () => {
+    try {
+      const customers = await supabaseRequest('/rest/v1/customers?select=*&order=total_spent.desc');
+      return customers || [];
+    } catch (error) {
+      console.error('Error getting customers:', error);
+      return [];
+    }
+  })();
 }
 
 // Get top packages
 function getTopPackages() {
-  const db = readDB();
-  const packageSales = {};
+  return (async () => {
+    try {
+      const orders = await supabaseRequest('/rest/v1/orders?select=*&status=eq.completed');
+      const packageSales = {};
 
-  db.orders
-    .filter(o => o.status === 'completed')
-    .forEach(order => {
-      const key = `${order.network}-${order.package}`;
-      if (!packageSales[key]) {
-        packageSales[key] = {
-          name: order.package,
-          network: order.network,
-          sales: 0,
-          revenue: 0
-        };
-      }
-      packageSales[key].sales++;
-      packageSales[key].revenue += order.amount;
-    });
+      orders.forEach(order => {
+        const key = `${order.network}-${order.package}`;
+        if (!packageSales[key]) {
+          packageSales[key] = {
+            name: order.package,
+            network: order.network,
+            sales: 0,
+            revenue: 0
+          };
+        }
+        packageSales[key].sales++;
+        packageSales[key].revenue += order.amount || 0;
+      });
 
-  return Object.values(packageSales)
-    .sort((a, b) => b.sales - a.sales)
-    .slice(0, 10);
+      return Object.values(packageSales)
+        .sort((a, b) => b.sales - a.sales)
+        .slice(0, 10);
+    } catch (error) {
+      console.error('Error getting top packages:', error);
+      return [];
+    }
+  })();
 }
 
 module.exports = {
