@@ -78,18 +78,60 @@
     </main>
 
     <footer class="footer">
-        <div class="container footer-content">
-            <nav><a href="index.html">Home</a><a href="services.html">Services</a><a href="about.html">About</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a></nav>
-            <div class="newsletter">
-                <form id="newsletterForm">
-                    <input type="email" name="email" placeholder="Your email" style="padding:.4rem;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:#fff">
-                    <button class="btn btn-primary" type="submit">Subscribe</button>
-                </form>
+        <div class="footer-content">
+            <div class="footer-section">
+                <div class="brand-block">
+                    <i class="fas fa-database"></i>
+                    <h3>Motion Data</h3>
+                </div>
+                <p>Your trusted partner for seamless data bundle purchases across all major networks in Ghana. Fast, secure, and reliable.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
             </div>
+
+            <div class="footer-section">
+                <h4><i class="fas fa-link"></i> Quick Links</h4>
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-chevron-right"></i> Home</a></li>
+                    <li><a href="services.html"><i class="fas fa-chevron-right"></i> Services</a></li>
+                    <li><a href="about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                    <li><a href="faq.html"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                    <li><a href="contact.html"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4><i class="fas fa-mobile-alt"></i> Our Services</h4>
+                <ul>
+                    <li><a href="order-mtn.html"><i class="fas fa-chevron-right"></i> MTN Data Bundles</a></li>
+                    <li><a href="order-airtel.html"><i class="fas fa-chevron-right"></i> AirtelTigo Bundles</a></li>
+                    <li><a href="order-telecel.html"><i class="fas fa-chevron-right"></i> Telecel Bundles</a></li>
+                    <li><a href="services.html"><i class="fas fa-chevron-right"></i> All Services</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4><i class="fas fa-envelope"></i> Contact Us</h4>
+                <ul>
+                    <li><a href="mailto:info@motionsdata.me"><i class="fas fa-envelope"></i> info@motionsdata.me</a></li>
+                    <li><a href="tel:+233123456789"><i class="fas fa-phone"></i> +233 123 456 789</a></li>
+                    <li><i class="fas fa-map-marker-alt"></i> Accra, Ghana</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© <span id="year"></span> MOTION DATA SOLUTIONS — All rights reserved. | Built with <i class="fas fa-heart" style="color: var(--primary);"></i> in Ghana</p>
         </div>
     </footer>
 
+    <script src="assets/js/sidebar.js"></script>
     <script src="assets/js/toast.js"></script>
     <script src="assets/js/script.js"></script>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
