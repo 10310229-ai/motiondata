@@ -265,13 +265,8 @@ async function handleRequest(req, res) {
 
       // GET /api/packages
       if (pathname === '/api/packages' && method === 'GET') {
-        const dataPath = path.join(__dirname, 'data.json');
-        try {
-          const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-          return sendJSON(res, data.packages || []);
-        } catch (err) {
-          return sendJSON(res, []);
-        }
+        // Packages are now managed through Supabase
+        return sendJSON(res, []);
       }
 
       // GET /api/packages/top
