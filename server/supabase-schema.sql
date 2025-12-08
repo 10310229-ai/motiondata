@@ -1,7 +1,7 @@
 -- Supabase Database Schema for Motion Data Solutions
 -- Run this SQL in your Supabase SQL Editor
 
--- Drop existing tables if you want to recreate them (commented out for safety)
+-- IMPORTANT: If you have existing tables with different structure, uncomment the DROP statements below
 -- DROP TABLE IF EXISTS transactions CASCADE;
 -- DROP TABLE IF EXISTS orders CASCADE;
 -- DROP TABLE IF EXISTS customers CASCADE;
@@ -43,15 +43,14 @@ CREATE TABLE IF NOT EXISTS transactions (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Add foreign key constraints
+-- Add foreign key constraints and indexes in single DO block
 DO $$ 
 BEGIN
-    -- Check if orders table has customer_id column
+    -- Add foreign key constraints only if columns exist
     IF EXISTS (
         SELECT 1 FROM information_schema.columns 
         WHERE table_name = 'orders' AND column_name = 'customer_id'
     ) THEN
-        -- Add foreign key constraint if it doesn't exist
         IF NOT EXISTS (
             SELECT 1 FROM pg_constraint WHERE conname = 'fk_orders_customer'
         ) THEN
@@ -60,12 +59,10 @@ BEGIN
         END IF;
     END IF;
 
-    -- Check if transactions table has order_id column
     IF EXISTS (
         SELECT 1 FROM information_schema.columns 
         WHERE table_name = 'transactions' AND column_name = 'order_id'
     ) THEN
-        -- Add foreign key constraint if it doesn't exist
         IF NOT EXISTS (
             SELECT 1 FROM pg_constraint WHERE conname = 'fk_transactions_order'
         ) THEN
@@ -73,33 +70,42 @@ BEGIN
                 FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
         END IF;
     END IF;
-END $$;
-
--- Create indexes for better query performance
-DO $$
-BEGIN
+    
+    -- Create indexes only if columns exist
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_customers_email') THEN
-        CREATE INDEX idx_customers_email ON customers(email);
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'customers' AND column_name = 'email') THEN
+            CREATE INDEX idx_customers_email ON customers(email);
+        END IF;
     END IF;
     
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_orders_customer_id') THEN
-        CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'customer_id') THEN
+            CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+        END IF;
     END IF;
     
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_orders_email') THEN
-        CREATE INDEX idx_orders_email ON orders(email);
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'email') THEN
+            CREATE INDEX idx_orders_email ON orders(email);
+        END IF;
     END IF;
     
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_orders_status') THEN
-        CREATE INDEX idx_orders_status ON orders(status);
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'orders' AND column_name = 'status') THEN
+            CREATE INDEX idx_orders_status ON orders(status);
+        END IF;
     END IF;
     
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_transactions_order_id') THEN
-        CREATE INDEX idx_transactions_order_id ON transactions(order_id);
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'transactions' AND column_name = 'order_id') THEN
+            CREATE INDEX idx_transactions_order_id ON transactions(order_id);
+        END IF;
     END IF;
     
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_transactions_reference') THEN
-        CREATE INDEX idx_transactions_reference ON transactions(reference);
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'transactions' AND column_name = 'reference') THEN
+            CREATE INDEX idx_transactions_reference ON transactions(reference);
+        END IF;
     END IF;
 END $$;
 
