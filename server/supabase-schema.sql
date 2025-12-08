@@ -1,6 +1,11 @@
 -- Supabase Database Schema for Motion Data Solutions
 -- Run this SQL in your Supabase SQL Editor
 
+-- Drop existing tables if you want to recreate them (commented out for safety)
+-- DROP TABLE IF EXISTS transactions CASCADE;
+-- DROP TABLE IF EXISTS orders CASCADE;
+-- DROP TABLE IF EXISTS customers CASCADE;
+
 -- Create customers table
 CREATE TABLE IF NOT EXISTS customers (
     id BIGSERIAL PRIMARY KEY,
@@ -38,29 +43,63 @@ CREATE TABLE IF NOT EXISTS transactions (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Create indexes for better query performance
-CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email);
-CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id);
-CREATE INDEX IF NOT EXISTS idx_orders_email ON orders(email);
-CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
-CREATE INDEX IF NOT EXISTS idx_transactions_order_id ON transactions(order_id);
-CREATE INDEX IF NOT EXISTS idx_transactions_reference ON transactions(reference);
-
--- Add foreign key constraints (only if they don't exist)
+-- Add foreign key constraints
 DO $$ 
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint WHERE conname = 'fk_orders_customer'
+    -- Check if orders table has customer_id column
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'orders' AND column_name = 'customer_id'
     ) THEN
-        ALTER TABLE orders ADD CONSTRAINT fk_orders_customer 
-            FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL;
+        -- Add foreign key constraint if it doesn't exist
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_constraint WHERE conname = 'fk_orders_customer'
+        ) THEN
+            ALTER TABLE orders ADD CONSTRAINT fk_orders_customer 
+                FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL;
+        END IF;
     END IF;
 
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint WHERE conname = 'fk_transactions_order'
+    -- Check if transactions table has order_id column
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'transactions' AND column_name = 'order_id'
     ) THEN
-        ALTER TABLE transactions ADD CONSTRAINT fk_transactions_order 
-            FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
+        -- Add foreign key constraint if it doesn't exist
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_constraint WHERE conname = 'fk_transactions_order'
+        ) THEN
+            ALTER TABLE transactions ADD CONSTRAINT fk_transactions_order 
+                FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
+        END IF;
+    END IF;
+END $$;
+
+-- Create indexes for better query performance
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_customers_email') THEN
+        CREATE INDEX idx_customers_email ON customers(email);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_orders_customer_id') THEN
+        CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_orders_email') THEN
+        CREATE INDEX idx_orders_email ON orders(email);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_orders_status') THEN
+        CREATE INDEX idx_orders_status ON orders(status);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_transactions_order_id') THEN
+        CREATE INDEX idx_transactions_order_id ON transactions(order_id);
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_transactions_reference') THEN
+        CREATE INDEX idx_transactions_reference ON transactions(reference);
     END IF;
 END $$;
 
