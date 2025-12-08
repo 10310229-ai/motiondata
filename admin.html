@@ -445,7 +445,7 @@
     <script>
         // Supabase Configuration
         const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzAzNTExMDAsImV4cCI6MTkxMzAyNzcwMH0.P7JWxYxjS6pWhN3S2C5xZZZ3QrEmhbk9eJo2fJYG6W4';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
         
         // Admin credentials
         const ADMIN_CREDENTIALS = {
@@ -697,6 +697,35 @@
         // Load Packages
         document.getElementById('loadPackagesBtn').addEventListener('click', loadPackages);
 
+        // Initialize default packages
+        function initializePackages() {
+            if (!localStorage.getItem('md_packages')) {
+                const defaultPackages = {
+                    "MTN": [
+                        { "name": "MTN 1GB Daily", "volume": "1GB", "validity": "24 Hours", "price": 5.00 },
+                        { "name": "MTN 2GB Weekly", "volume": "2GB", "validity": "7 Days", "price": 10.00 },
+                        { "name": "MTN 5GB Monthly", "volume": "5GB", "validity": "30 Days", "price": 20.00 },
+                        { "name": "MTN 10GB Monthly", "volume": "10GB", "validity": "30 Days", "price": 35.00 }
+                    ],
+                    "AirtelTigo": [
+                        { "name": "AirtelTigo 1GB Daily", "volume": "1GB", "validity": "24 Hours", "price": 4.50 },
+                        { "name": "AirtelTigo 3GB Weekly", "volume": "3GB", "validity": "7 Days", "price": 12.00 },
+                        { "name": "AirtelTigo 6GB Monthly", "volume": "6GB", "validity": "30 Days", "price": 22.00 },
+                        { "name": "AirtelTigo 12GB Monthly", "volume": "12GB", "validity": "30 Days", "price": 40.00 }
+                    ],
+                    "Telecel": [
+                        { "name": "Telecel 1.5GB Daily", "volume": "1.5GB", "validity": "24 Hours", "price": 5.50 },
+                        { "name": "Telecel 4GB Weekly", "volume": "4GB", "validity": "7 Days", "price": 15.00 },
+                        { "name": "Telecel 8GB Monthly", "volume": "8GB", "validity": "30 Days", "price": 28.00 },
+                        { "name": "Telecel 15GB Monthly", "volume": "15GB", "validity": "30 Days", "price": 45.00 }
+                    ]
+                };
+                localStorage.setItem('md_packages', JSON.stringify(defaultPackages));
+            }
+        }
+
+        initializePackages();
+
         async function loadPackages() {
             const operator = document.getElementById('packageOperator').value;
             const tbody = document.getElementById('packagesTableBody');
@@ -704,9 +733,8 @@
             tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;"><i class="fas fa-spinner fa-spin"></i> Loading packages...</td></tr>';
             
             try {
-                const response = await fetch('/api/packages');
-                const data = await response.json();
-                const packages = data.packages[operator] || [];
+                const allPackages = JSON.parse(localStorage.getItem('md_packages') || '{}');
+                const packages = allPackages[operator] || [];
                 
                 if (packages.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No packages found</td></tr>';
@@ -749,25 +777,15 @@
             }
 
             try {
-                const response = await fetch('/api/packages');
-                const data = await response.json();
+                const allPackages = JSON.parse(localStorage.getItem('md_packages') || '{}');
                 
                 // Update the price
-                data.packages[operator][index].price = newPrice;
-                
-                // Save back to server
-                const saveResponse = await fetch('/api/packages/update', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data.packages)
-                });
-
-                if (saveResponse.ok) {
+                if (allPackages[operator] && allPackages[operator][index]) {
+                    allPackages[operator][index].price = newPrice;
+                    localStorage.setItem('md_packages', JSON.stringify(allPackages));
                     alert(`Price for ${packageName} updated successfully to GHS ${newPrice.toFixed(2)}`);
                 } else {
-                    alert('Failed to update price');
+                    alert('Package not found');
                 }
             } catch (error) {
                 console.error('Error saving price:', error);
