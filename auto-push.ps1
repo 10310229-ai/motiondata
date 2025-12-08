@@ -6,8 +6,8 @@ Write-Host "This will automatically commit and push any changes you make." -Fore
 Write-Host "Press Ctrl+C to stop." -ForegroundColor Yellow
 Write-Host ""
 
-$projectPath = "c:\Users\AYISI ARKO PRINCE\Desktop\MOTIONDATASOLUTIONS"
-Set-Location $projectPath
+# Navigate to project directory
+Set-Location "c:\Users\AYISI ARKO PRINCE\Desktop\MOTIONDATASOLUTIONS"
 
 # Initial check
 git add .
