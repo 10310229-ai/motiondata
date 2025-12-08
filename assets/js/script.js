@@ -399,6 +399,178 @@ document.addEventListener('DOMContentLoaded', () => {
 
         hObserver.observe(hero);
     })();
+
+    // Auth System
+    const authModal = document.getElementById('authModal');
+    const showAuthBtn = document.getElementById('showAuthBtn');
+    const closeAuthModal = document.getElementById('closeAuthModal');
+    const authTabs = document.querySelectorAll('.auth-tab');
+    const authForms = document.querySelectorAll('.auth-form');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    const authMessage = document.getElementById('authMessage');
+    const authPrompt = document.getElementById('authPrompt');
+    const userProfile = document.getElementById('userProfile');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Check if user is logged in
+    function checkAuth() {
+        const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        if (user) {
+            authPrompt.style.display = 'none';
+            userProfile.style.display = 'block';
+            document.getElementById('userName').textContent = user.name;
+            document.getElementById('userEmail').textContent = user.email;
+        } else {
+            authPrompt.style.display = 'block';
+            userProfile.style.display = 'none';
+        }
+    }
+
+    // Show auth modal
+    if (showAuthBtn) {
+        showAuthBtn.addEventListener('click', () => {
+            authModal.classList.add('active');
+            closeNav(); // Close sidebar
+        });
+    }
+
+    // Close auth modal
+    if (closeAuthModal) {
+        closeAuthModal.addEventListener('click', () => {
+            authModal.classList.remove('active');
+        });
+    }
+
+    // Close modal on backdrop click
+    if (authModal) {
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) {
+                authModal.classList.remove('active');
+            }
+        });
+    }
+
+    // Auth tab switching
+    authTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabName = tab.dataset.tab;
+            authTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            authForms.forEach(form => {
+                if (form.id === tabName + 'Form') {
+                    form.classList.add('active');
+                } else {
+                    form.classList.remove('active');
+                }
+            });
+            authMessage.classList.remove('show');
+        });
+    });
+
+    // Show message
+    function showAuthMessage(msg, type) {
+        authMessage.textContent = msg;
+        authMessage.className = 'auth-message ' + type + ' show';
+        setTimeout(() => authMessage.classList.remove('show'), 5000);
+    }
+
+    // Login handler
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email);
+
+            if (!user) {
+                showAuthMessage('Email not found', 'error');
+                return;
+            }
+
+            if (atob(user.password) !== password) {
+                showAuthMessage('Incorrect password', 'error');
+                return;
+            }
+
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            showAuthMessage('Login successful!', 'success');
+            setTimeout(() => {
+                authModal.classList.remove('active');
+                loginForm.reset();
+                checkAuth();
+            }, 1500);
+        });
+    }
+
+    // Signup handler
+    if (signupForm) {
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const phone = document.getElementById('signupPhone').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showAuthMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAuthMessage('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            if (!/^0\d{9}$/.test(phone)) {
+                showAuthMessage('Please enter a valid Ghana phone number', 'error');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            if (users.find(u => u.email === email)) {
+                showAuthMessage('Email already registered', 'error');
+                return;
+            }
+
+            const newUser = {
+                id: Date.now().toString(),
+                name,
+                email,
+                phone,
+                password: btoa(password),
+                createdAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+
+            showAuthMessage('Account created successfully!', 'success');
+            setTimeout(() => {
+                authModal.classList.remove('active');
+                signupForm.reset();
+                checkAuth();
+            }, 1500);
+        });
+    }
+
+    // Logout handler
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            checkAuth();
+            closeNav();
+            showToast('Logged out successfully');
+        });
+    }
+
+    // Initialize auth state
+    checkAuth();
 });
 
 function selectService(name) {
