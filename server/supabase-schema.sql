@@ -46,12 +46,23 @@ CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_transactions_order_id ON transactions(order_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_reference ON transactions(reference);
 
--- Add foreign key constraints (after tables are created)
-ALTER TABLE orders ADD CONSTRAINT fk_orders_customer 
-    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL;
+-- Add foreign key constraints (only if they don't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'fk_orders_customer'
+    ) THEN
+        ALTER TABLE orders ADD CONSTRAINT fk_orders_customer 
+            FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL;
+    END IF;
 
-ALTER TABLE transactions ADD CONSTRAINT fk_transactions_order 
-    FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'fk_transactions_order'
+    ) THEN
+        ALTER TABLE transactions ADD CONSTRAINT fk_transactions_order 
+            FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
+    END IF;
+END $$;
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
