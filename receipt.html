@@ -81,28 +81,29 @@
   </div>
 
   <script>
-    // Get order data from localStorage or URL params
+    // Get order data from URL params
     function loadReceiptData() {
       const params = new URLSearchParams(window.location.search);
-      const orderRef = params.get('ref');
       
-      let orderData = null;
-      if (orderRef) {
-        const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
-        orderData = orders.find(o => o.reference === orderRef);
-      }
+      // Get all data from URL parameters
+      const network = params.get('network') || '-';
+      const pkg = params.get('package') || '-';
+      const phone = params.get('phone') || '-';
+      const amount = params.get('amount') || '0.00';
+      const email = params.get('email') || '-';
+      const reference = params.get('ref') || '-';
+      const date = params.get('date') || new Date().toISOString();
       
-      if (orderData) {
-        document.getElementById('network').textContent = orderData.network || '-';
-        document.getElementById('package').textContent = orderData.package || '-';
-        document.getElementById('phone').textContent = orderData.phone || '-';
-        document.getElementById('amount').textContent = `GHS ${orderData.amount || '0.00'}`;
-        document.getElementById('email').textContent = orderData.email || '-';
-        document.getElementById('reference').textContent = orderData.reference || '-';
-        
-        const date = new Date(orderData.date);
-        document.getElementById('datetime').textContent = date.toLocaleString();
-      }
+      // Populate receipt fields
+      document.getElementById('network').textContent = network;
+      document.getElementById('package').textContent = pkg;
+      document.getElementById('phone').textContent = phone;
+      document.getElementById('amount').textContent = `GHS ${amount}`;
+      document.getElementById('email').textContent = email;
+      document.getElementById('reference').textContent = reference;
+      
+      const dateObj = new Date(date);
+      document.getElementById('datetime').textContent = dateObj.toLocaleString();
     }
 
     // Auto-redirect countdown

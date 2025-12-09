@@ -125,8 +125,17 @@ document.addEventListener('DOMContentLoaded', function(){
           orders.push(order);
           localStorage.setItem('md_orders', JSON.stringify(orders));
           
-          // Redirect to receipt page
-          window.location.href = `receipt.html?ref=${order.reference}`;
+          // Redirect to receipt page with all details in URL
+          const params = new URLSearchParams({
+            ref: order.reference,
+            network: order.network,
+            package: pkg,
+            phone: msisdn,
+            amount: price,
+            email: email,
+            date: new Date().toISOString()
+          });
+          window.location.href = `receipt.html?${params.toString()}`;
         } catch (error) {
           console.error('Error saving order:', error);
           // Still show success to user even if database save fails
@@ -136,7 +145,16 @@ document.addEventListener('DOMContentLoaded', function(){
             alert('Order placed successfully!');
           }
           // Redirect to receipt anyway with the Paystack reference
-          window.location.href = `receipt.html?ref=${response.reference}`;
+          const params = new URLSearchParams({
+            ref: response.reference,
+            network: 'MTN',
+            package: pkg,
+            phone: msisdn,
+            amount: price,
+            email: email,
+            date: new Date().toISOString()
+          });
+          window.location.href = `receipt.html?${params.toString()}`;
         }
       }
     });
