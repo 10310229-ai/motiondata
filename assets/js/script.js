@@ -494,10 +494,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
 
                 // Determine if input is email or phone
-                const isPhone = /^0\d{9}$/.test(emailOrPhone);
-                const queryParam = isPhone ? `phone=eq.${encodeURIComponent(emailOrPhone)}` : `email=eq.${encodeURIComponent(emailOrPhone)}`;
+                const isEmail = emailOrPhone.includes('@');
+                const searchParam = isEmail ? `email=eq.${encodeURIComponent(emailOrPhone)}` : `phone=eq.${encodeURIComponent(emailOrPhone)}`;
 
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?${queryParam}`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?${searchParam}`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -523,7 +523,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Fallback to localStorage
                 if (!user) {
                     const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
-                    const localUser = localUsers.find(u => u.email === emailOrPhone || u.phone === emailOrPhone);
+                    const localUser = localUsers.find(u => 
+                        (isEmail && u.email === emailOrPhone) || 
+                        (!isEmail && u.phone === emailOrPhone)
+                    );
                     
                     if (localUser && atob(localUser.password) === password) {
                         user = localUser;
