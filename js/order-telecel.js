@@ -43,7 +43,8 @@ document.addEventListener('DOMContentLoaded', function(){
       currency: 'GHS',
       ref: 'TEL-' + Date.now(),
       metadata: { custom_fields:[{display_name:'Mobile',variable_name:'mobile',value:msisdn},{display_name:'Operator',variable_name:'operator',value:'Telecel'},{display_name:'Package',variable_name:'package',value:pkg}] },
-      callback: async function(response){
+      onClose: function(){ alert('Payment cancelled.'); },
+      onSuccess: async function(response){
         try {
           // Get current user
           const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -120,8 +121,7 @@ document.addEventListener('DOMContentLoaded', function(){
           }
           setTimeout(function(){ window.location.href = 'index.html'; }, 5500);
         }
-      },
-      onClose: function(){ alert('Payment cancelled.'); }
+      }
     });
 
     handler.openIframe();
