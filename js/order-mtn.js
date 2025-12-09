@@ -1,20 +1,24 @@
 // Dedicated MTN order logic (separate from other operator pages)
 
 function showSuccessPopup() {
+  console.log('showSuccessPopup called');
   const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
   overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9998;';
   
   const popup = document.createElement('div');
-  popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.85));backdrop-filter:blur(20px);padding:3rem;border-radius:16px;border:2px solid rgba(132,204,22,0.4);width:90%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,0.5);z-index:9999;text-align:center;';
+  popup.className = 'success-popup';
+  popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.85));backdrop-filter:blur(20px);padding:3rem;border-radius:16px;border:2px solid rgba(132,204,22,0.4);width:90%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,0.5);text-align:center;';
   popup.innerHTML = `
-    <span style="font-size:4rem;margin-bottom:1rem;display:block;">✓</span>
+    <span class="popup-icon" style="font-size:4rem;margin-bottom:1rem;display:block;">✓</span>
     <h2 style="margin:0 0 1rem 0;color:#fff;font-size:1.8rem;font-weight:800;">Payment Successful!</h2>
     <p style="margin:0 0 1.5rem 0;color:#e0f2e0;font-size:1.1rem;">Your data bundle order has been placed successfully. Your bundle will be delivered to the recipient shortly.</p>
-    <button style="background:#22c55e;color:#04261a;border:none;padding:0.8rem 2rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem;transition:all 0.3s;" onclick="window.location.href='index.html'">Back to Home</button>
+    <button class="btn-popup" onclick="window.location.href='index.html'" style="background:#22c55e;color:#04261a;border:none;padding:0.8rem 2rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem;">Back to Home</button>
   `;
   
   document.body.appendChild(overlay);
   document.body.appendChild(popup);
+  console.log('popup added to DOM');
 }
 
 document.addEventListener('DOMContentLoaded', function(){
