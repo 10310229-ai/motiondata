@@ -1177,6 +1177,45 @@ img{max-width:100%;height:auto;display:block}
 
 .auth-form .form-group label i{margin-right: 0.5rem; color: var(--accent);}
 
+.password-input-wrapper{
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.password-input-wrapper input{
+	padding-right: 3rem;
+}
+
+.toggle-password{
+	position: absolute;
+	right: 0.75rem;
+	background: transparent;
+	border: none;
+	color: var(--muted);
+	cursor: pointer;
+	padding: 0.5rem;
+	font-size: 1.1rem;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+}
+
+.toggle-password:hover{
+	color: var(--accent);
+	background: rgba(132, 204, 22, 0.1);
+}
+
+.toggle-password:active{
+	transform: scale(0.95);
+}
+
+.toggle-password i{
+	transition: all 0.2s ease;
+}
+
 .auth-form .form-group input{
 	width: 100%;
 	background: rgba(255,255,255,0.05);
