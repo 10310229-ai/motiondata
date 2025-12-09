@@ -132,29 +132,18 @@ document.addEventListener('DOMContentLoaded', function(){
           orders.push(order);
           localStorage.setItem('md_orders', JSON.stringify(orders));
           
-          // Show success message
-          if(typeof showToast === 'function'){
-            showToast('✓ Order placed successfully! Your data bundle will be delivered shortly.', 5000);
-          } else {
-            alert('Order placed successfully! Your data bundle will be delivered shortly.');
-          }
-          
-          // Show success popup and redirect after 8 seconds
-          showSuccessPopup();
-          setTimeout(function(){
-            try { window.location.href = 'index.html'; }
-            catch(e){ window.location.href = 'index.html'; }
-          }, 8000);
+          // Redirect to receipt page
+          window.location.href = `receipt.html?ref=${order.reference}`;
         } catch (error) {
           console.error('Error saving order:', error);
           // Still show success to user even if database save fails
           if(typeof showToast === 'function'){
             showToast('✓ Order placed successfully! Your data bundle will be delivered shortly.', 5000);
           } else {
-            alert('Order placed successfully! Your data bundle will be delivered shortly.');
+            alert('Order placed successfully!');
           }
-          showSuccessPopup();
-          setTimeout(function(){ window.location.href = 'index.html'; }, 8000);
+          // Redirect to receipt anyway with the Paystack reference
+          window.location.href = `receipt.html?ref=${response.reference}`;
         }
       }
     });

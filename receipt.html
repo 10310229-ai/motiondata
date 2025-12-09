@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Payment Receipt | Motion Data</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    :root{--bg:#0a1810;--card:#1a2520;--accent:#84cc16;--green:#22c55e;--primary:#10b981}
+    body{margin:0;font-family:Inter,system-ui,Arial;color:#fff;background:linear-gradient(135deg,rgba(10,24,16,0.68),rgba(20,35,25,0.68)),url('pexels-artempodrez-7233099.jpg');background-size:cover;background-position:center;background-attachment:fixed}
+    .receipt-container{max-width:600px;margin:2rem auto;padding:1rem}
+    .receipt-card{background:linear-gradient(135deg,rgba(34,197,94,0.12),rgba(16,185,129,0.1));backdrop-filter:blur(20px);padding:3rem;border-radius:16px;border:1px solid rgba(132,204,22,0.2);box-shadow:0 8px 32px rgba(0,0,0,0.4);text-align:center}
+    .receipt-icon{font-size:5rem;color:#22c55e;margin-bottom:1rem;animation:slideDown 0.6s ease}
+    h1{font-size:2rem;margin:0 0 0.5rem 0;color:var(--accent);font-weight:800}
+    .receipt-status{font-size:1.1rem;color:#e0f2e0;margin-bottom:2rem}
+    .receipt-details{background:rgba(0,0,0,0.2);padding:1.5rem;border-radius:12px;margin-bottom:2rem;text-align:left;border-left:3px solid var(--green)}
+    .receipt-detail-row{display:flex;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid rgba(255,255,255,0.1)}
+    .receipt-detail-row:last-child{border-bottom:none}
+    .receipt-detail-label{color:var(--accent);font-weight:600}
+    .receipt-detail-value{color:#fff;font-weight:500}
+    .receipt-reference{background:rgba(132,204,22,0.1);padding:1rem;border-radius:8px;margin-bottom:2rem;font-family:monospace;font-size:0.9rem;word-break:break-all}
+    .receipt-timer{font-size:1rem;color:#b8c5bb;margin-bottom:1rem}
+    .timer-value{color:var(--green);font-weight:800;font-size:1.2rem}
+    .redirect-message{font-size:0.9rem;color:var(--accent);margin-top:1rem}
+    .btn-home{background:var(--green);color:#04261a;border:none;padding:0.8rem 2rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem;transition:all 0.3s;margin-top:1rem}
+    .btn-home:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(34,197,94,0.4)}
+    @keyframes slideDown{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}
+    .print-btn{background:transparent;border:1px solid rgba(132,204,22,0.4);color:var(--accent);padding:0.6rem 1.2rem;border-radius:8px;font-weight:600;cursor:pointer;margin-right:0.5rem;transition:all 0.3s}
+    .print-btn:hover{background:rgba(132,204,22,0.1)}
+  </style>
+</head>
+<body>
+  <div class="receipt-container">
+    <div class="receipt-card">
+      <div class="receipt-icon">✓</div>
+      <h1>Payment Successful!</h1>
+      <p class="receipt-status">Your data bundle order has been confirmed.</p>
+
+      <div class="receipt-details">
+        <div class="receipt-detail-row">
+          <span class="receipt-detail-label">Network:</span>
+          <span class="receipt-detail-value" id="network">-</span>
+        </div>
+        <div class="receipt-detail-row">
+          <span class="receipt-detail-label">Package:</span>
+          <span class="receipt-detail-value" id="package">-</span>
+        </div>
+        <div class="receipt-detail-row">
+          <span class="receipt-detail-label">Phone Number:</span>
+          <span class="receipt-detail-value" id="phone">-</span>
+        </div>
+        <div class="receipt-detail-row">
+          <span class="receipt-detail-label">Amount Paid:</span>
+          <span class="receipt-detail-value" id="amount">-</span>
+        </div>
+        <div class="receipt-detail-row">
+          <span class="receipt-detail-label">Email:</span>
+          <span class="receipt-detail-value" id="email">-</span>
+        </div>
+        <div class="receipt-detail-row">
+          <span class="receipt-detail-label">Date & Time:</span>
+          <span class="receipt-detail-value" id="datetime">-</span>
+        </div>
+      </div>
+
+      <div class="receipt-reference">
+        <strong>Reference:</strong> <span id="reference">-</span>
+      </div>
+
+      <p style="color:#b8c5bb;font-size:0.95rem;margin:1rem 0;">Your data bundle will be delivered within 10-30 minutes to your phone number.</p>
+
+      <div class="receipt-timer">
+        Redirecting to home in: <span class="timer-value" id="timer">10</span>s
+      </div>
+
+      <button class="print-btn" onclick="window.print()">🖨 Print Receipt</button>
+      <button class="btn-home" onclick="window.location.href='index.html'">Back to Home</button>
+
+      <p class="redirect-message">You will be automatically redirected to the homepage.</p>
+    </div>
+  </div>
+
+  <script>
+    // Get order data from localStorage or URL params
+    function loadReceiptData() {
+      const params = new URLSearchParams(window.location.search);
+      const orderRef = params.get('ref');
+      
+      let orderData = null;
+      if (orderRef) {
+        const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
+        orderData = orders.find(o => o.reference === orderRef);
+      }
+      
+      if (orderData) {
+        document.getElementById('network').textContent = orderData.network || '-';
+        document.getElementById('package').textContent = orderData.package || '-';
+        document.getElementById('phone').textContent = orderData.phone || '-';
+        document.getElementById('amount').textContent = `GHS ${orderData.amount || '0.00'}`;
+        document.getElementById('email').textContent = orderData.email || '-';
+        document.getElementById('reference').textContent = orderData.reference || '-';
+        
+        const date = new Date(orderData.date);
+        document.getElementById('datetime').textContent = date.toLocaleString();
+      }
+    }
+
+    // Auto-redirect countdown
+    function startCountdown() {
+      let seconds = 10;
+      const timerElement = document.getElementById('timer');
+      
+      const countdown = setInterval(() => {
+        seconds--;
+        timerElement.textContent = seconds;
+        
+        if (seconds <= 0) {
+          clearInterval(countdown);
+          window.location.href = 'index.html';
+        }
+      }, 1000);
+    }
+
+    // Load data and start countdown on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadReceiptData();
+      startCountdown();
+    });
+  </script>
+</body>
+</html>
