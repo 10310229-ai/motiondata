@@ -1,7 +1,6 @@
 // Dedicated AirtelTigo order logic (separate file)
 
 function showSuccessPopup() {
-  console.log('showSuccessPopup called');
   const overlay = document.createElement('div');
   overlay.className = 'popup-overlay';
   overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9998;';
@@ -18,7 +17,6 @@ function showSuccessPopup() {
   
   document.body.appendChild(overlay);
   document.body.appendChild(popup);
-  console.log('popup added to DOM');
 }
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -71,7 +69,6 @@ document.addEventListener('DOMContentLoaded', function(){
       metadata: { custom_fields:[{display_name:'Mobile',variable_name:'mobile',value:msisdn},{display_name:'Operator',variable_name:'operator',value:'AirtelTigo'},{display_name:'Package',variable_name:'package',value:pkg}] },
       onClose: function(){ alert('Payment cancelled.'); },
       onSuccess: function(response){
-        console.log('Payment successful:', response);
         
         // Redirect immediately to receipt page
         const params = new URLSearchParams({
