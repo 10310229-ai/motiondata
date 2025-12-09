@@ -134,6 +134,14 @@ ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies for users
+DO $$ 
+BEGIN
+    -- Drop existing policies if they exist
+    DROP POLICY IF EXISTS "Enable read access for all users" ON users;
+    DROP POLICY IF EXISTS "Enable insert for all users" ON users;
+    DROP POLICY IF EXISTS "Enable update for own user only" ON users;
+END $$;
+
 CREATE POLICY "Enable read access for all users" ON users
     FOR SELECT USING (true);
 

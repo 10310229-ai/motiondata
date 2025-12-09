@@ -586,6 +586,12 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
 
             try {
+                // Check if email already exists in localStorage
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                if (users.find(u => u.email === email)) {
+                    throw new Error('Email already registered');
+                }
+
                 // Save to Supabase
                 const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
                 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
@@ -598,32 +604,40 @@ document.addEventListener('DOMContentLoaded', () => {
                     created_at: new Date().toISOString()
                 };
 
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=representation'
-                    },
-                    body: JSON.stringify(newUser)
-                });
+                let savedUserId = Date.now().toString();
+                
+                // Try to save to Supabase (may fail if RLS policies aren't set)
+                try {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+                        method: 'POST',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(newUser)
+                    });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    if (errorText.includes('duplicate') || errorText.includes('unique')) {
-                        throw new Error('Email already registered');
+                    if (response.ok) {
+                        const savedUser = await response.json();
+                        savedUserId = savedUser[0]?.id || savedUserId;
+                        console.log('User saved to Supabase successfully');
+                    } else {
+                        const errorText = await response.text();
+                        console.warn('Supabase save failed, using localStorage:', errorText);
+                        if (errorText.includes('duplicate') || errorText.includes('unique')) {
+                            throw new Error('Email already registered');
+                        }
                     }
-                    throw new Error('Failed to create account');
+                } catch (supabaseError) {
+                    console.warn('Supabase error, continuing with localStorage:', supabaseError);
                 }
 
-                const savedUser = await response.json();
-                
-                // Also save to localStorage as backup
-                const users = JSON.parse(localStorage.getItem('users') || '[]');
-                users.push({ ...newUser, id: savedUser[0]?.id || Date.now().toString() });
+                // Always save to localStorage as primary/backup
+                users.push({ ...newUser, password: newUser.password_hash, id: savedUserId });
                 localStorage.setItem('users', JSON.stringify(users));
-                localStorage.setItem('currentUser', JSON.stringify({ name, email, phone }));
+                localStorage.setItem('currentUser', JSON.stringify({ id: savedUserId, name, email, phone }));
 
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
