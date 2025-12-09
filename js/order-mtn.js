@@ -1,4 +1,22 @@
 // Dedicated MTN order logic (separate from other operator pages)
+
+function showSuccessPopup() {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+  
+  const popup = document.createElement('div');
+  popup.className = 'success-popup';
+  popup.innerHTML = `
+    <span class="popup-icon">✓</span>
+    <h2>Payment Successful!</h2>
+    <p>Your data bundle order has been placed successfully. Your bundle will be delivered to the recipient shortly.</p>
+    <button class="btn-popup" onclick="window.location.href='index.html'">Back to Home</button>
+  `;
+  
+  document.body.appendChild(overlay);
+  document.body.appendChild(popup);
+}
+
 document.addEventListener('DOMContentLoaded', function(){
   // No auth required - users can order directly
 
@@ -110,11 +128,12 @@ document.addEventListener('DOMContentLoaded', function(){
             alert('Order placed successfully! Your data bundle will be delivered shortly.');
           }
           
-          // Redirect after displaying the message
+          // Show success popup and redirect after 3 seconds
+          showSuccessPopup();
           setTimeout(function(){
             try { window.location.href = 'index.html'; }
             catch(e){ window.location.href = 'index.html'; }
-          }, 5500);
+          }, 3500);
         } catch (error) {
           console.error('Error saving order:', error);
           // Still show success to user even if database save fails
@@ -123,7 +142,8 @@ document.addEventListener('DOMContentLoaded', function(){
           } else {
             alert('Order placed successfully! Your data bundle will be delivered shortly.');
           }
-          setTimeout(function(){ window.location.href = 'index.html'; }, 5500);
+          showSuccessPopup();
+          setTimeout(function(){ window.location.href = 'index.html'; }, 3500);
         }
       }
     });

@@ -110,11 +110,12 @@ document.addEventListener('DOMContentLoaded', function(){
             alert('Order placed successfully! Your data bundle will be delivered shortly.');
           }
           
-          // Redirect after displaying the message
+          // Show success popup and redirect after 3 seconds
+          showSuccessPopup();
           setTimeout(function(){
             try { window.location.href = 'index.html'; }
             catch(e){ window.location.href = 'index.html'; }
-          }, 5500);
+          }, 3500);
         } catch (error) {
           console.error('Error saving order:', error);
           // Still show success to user even if database save fails
@@ -123,7 +124,8 @@ document.addEventListener('DOMContentLoaded', function(){
           } else {
             alert('Order placed successfully! Your data bundle will be delivered shortly.');
           }
-          setTimeout(function(){ window.location.href = 'index.html'; }, 5500);
+          showSuccessPopup();
+          setTimeout(function(){ window.location.href = 'index.html'; }, 3500);
         }
       }
     });
