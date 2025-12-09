@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function(){
             alert('Order placed successfully! Your data bundle will be delivered shortly.');
           }
           
-          // Show success popup and redirect after 8 minutes
+          // Show success popup and redirect after 8 seconds
           showSuccessPopup();
           setTimeout(function(){
             try { window.location.href = 'index.html'; }
