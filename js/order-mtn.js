@@ -70,43 +70,22 @@ document.addEventListener('DOMContentLoaded', function(){
       ref: 'MTN-' + Date.now(),
       metadata: { custom_fields:[{display_name:'Mobile',variable_name:'mobile',value:msisdn},{display_name:'Operator',variable_name:'operator',value:'MTN'},{display_name:'Package',variable_name:'package',value:pkg}] },
       onClose: function(){ alert('Payment cancelled.'); },
-      onSuccess: async function(response){
+      onSuccess: function(response){
+        console.log('Payment successful:', response);
+        
+        // Redirect immediately to receipt page
+        const params = new URLSearchParams({
+          ref: response.reference,
+          network: 'MTN',
+          package: pkg,
+          phone: msisdn,
+          amount: price,
+          email: email,
+          date: new Date().toISOString()
+        });
+        
+        // Save to localStorage in background (non-blocking)
         try {
-          // Get current user
-          const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-          
-          // Save customer to Supabase
-          const customerData = {
-            name: currentUser.name || 'Guest',
-            email: email,
-            phone: msisdn
-          };
-          const customer = await saveCustomer(customerData);
-          
-          // Save order to Supabase
-          const orderData = {
-            customer_id: customer.id,
-            network: 'MTN',
-            package: pkg,
-            phone: msisdn,
-            email: email,
-            amount: price,
-            status: 'completed'
-          };
-          const savedOrder = await saveOrder(orderData);
-          
-          // Save transaction to Supabase
-          const transactionData = {
-            order_id: savedOrder.id,
-            reference: response.reference,
-            amount: price,
-            status: 'success',
-            payment_method: 'paystack',
-            metadata: { response: response }
-          };
-          await saveTransaction(transactionData);
-          
-          // Also save to localStorage as backup
           const order = {
             id: response.reference,
             reference: response.reference,
@@ -125,37 +104,19 @@ document.addEventListener('DOMContentLoaded', function(){
           orders.push(order);
           localStorage.setItem('md_orders', JSON.stringify(orders));
           
-          // Redirect to receipt page with all details in URL
-          const params = new URLSearchParams({
-            ref: order.reference,
-            network: order.network,
-            package: pkg,
-            phone: msisdn,
-            amount: price,
-            email: email,
-            date: new Date().toISOString()
-          });
-          window.location.href = `receipt.html?${params.toString()}`;
-        } catch (error) {
-          console.error('Error saving order:', error);
-          // Still show success to user even if database save fails
-          if(typeof showToast === 'function'){
-            showToast('✓ Order placed successfully! Your data bundle will be delivered shortly.', 5000);
-          } else {
-            alert('Order placed successfully!');
-          }
-          // Redirect to receipt anyway with the Paystack reference
-          const params = new URLSearchParams({
-            ref: response.reference,
-            network: 'MTN',
-            package: pkg,
-            phone: msisdn,
-            amount: price,
-            email: email,
-            date: new Date().toISOString()
-          });
-          window.location.href = `receipt.html?${params.toString()}`;
-        }
+          // Save to Supabase in background
+          (async function(){
+            try {
+              const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+              const customer = await saveCustomer({name: currentUser.name || 'Guest', email: email, phone: msisdn});
+              const savedOrder = await saveOrder({customer_id: customer.id, network: 'MTN', package: pkg, phone: msisdn, email: email, amount: price, status: 'completed'});
+              await saveTransaction({order_id: savedOrder.id, reference: response.reference, amount: price, status: 'success', payment_method: 'paystack', metadata: {response: response}});
+            } catch(e) { console.error('Background save error:', e); }
+          })();
+        } catch(e) { console.error('Storage error:', e); }
+        
+        // Redirect to receipt page
+        window.location.href = `receipt.html?${params.toString()}`;
       }
     });
 
