@@ -69,19 +69,7 @@ document.addEventListener('DOMContentLoaded', function(){
       metadata: { custom_fields:[{display_name:'Mobile',variable_name:'mobile',value:msisdn},{display_name:'Operator',variable_name:'operator',value:'MTN'},{display_name:'Package',variable_name:'package',value:pkg}] },
       onClose: function(){ alert('Payment cancelled.'); },
       onSuccess: function(response){
-        
-        // Redirect immediately to receipt page
-        const params = new URLSearchParams({
-          ref: response.reference,
-          network: 'MTN',
-          package: pkg,
-          phone: msisdn,
-          amount: price,
-          email: email,
-          date: new Date().toISOString()
-        });
-        
-        // Save to localStorage in background (non-blocking)
+        // Save to localStorage
         try {
           const order = {
             id: response.reference,
@@ -112,8 +100,9 @@ document.addEventListener('DOMContentLoaded', function(){
           })();
         } catch(e) { console.error('Storage error:', e); }
         
-        // Redirect to receipt page
-        window.location.href = `receipt.html?${params.toString()}`;
+        // Show success message and redirect to homepage
+        alert(`Payment Successful!\n\nReference: ${response.reference}\nNetwork: MTN\nPackage: ${pkg}\nAmount: GHS ${price}\n\nYour data bundle will be delivered within 10-30 minutes.`);
+        window.location.href = 'index.html';
       }
     });
 
