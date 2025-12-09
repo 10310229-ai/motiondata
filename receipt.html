@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="assets/css/styles.css">
   <style>
     :root{--bg:#0a1810;--card:#1a2520;--accent:#84cc16;--green:#22c55e;--primary:#10b981}
-    body{margin:0;font-family:Inter,system-ui,Arial;color:#fff;background:linear-gradient(135deg,rgba(10,24,16,0.68),rgba(20,35,25,0.68)),url('pexels-artempodrez-7233099.jpg');background-size:cover;background-position:center;background-attachment:fixed}
+    body{margin:0;font-family:Inter,system-ui,Arial;color:#fff;background:linear-gradient(135deg,rgba(10,24,16,0.95),rgba(20,35,25,0.95));background-size:cover;background-position:center;background-attachment:fixed}
     .receipt-container{max-width:600px;margin:2rem auto;padding:1rem}
     .receipt-card{background:linear-gradient(135deg,rgba(34,197,94,0.12),rgba(16,185,129,0.1));backdrop-filter:blur(20px);padding:3rem;border-radius:16px;border:1px solid rgba(132,204,22,0.2);box-shadow:0 8px 32px rgba(0,0,0,0.4);text-align:center}
     .receipt-icon{font-size:5rem;color:#22c55e;margin-bottom:1rem;animation:slideDown 0.6s ease}
@@ -82,6 +82,10 @@
   </div>
 
   <script>
+    // Debug: Log when page loads
+    console.log('Receipt page loaded');
+    console.log('URL params:', window.location.search);
+    
     // Get order data from URL params
     function loadReceiptData() {
       const params = new URLSearchParams(window.location.search);
@@ -95,6 +99,8 @@
       const reference = params.get('ref') || '-';
       const date = params.get('date') || new Date().toISOString();
       
+      console.log('Receipt data:', { network, pkg, phone, amount, email, reference, date });
+      
       // Populate receipt fields
       document.getElementById('network').textContent = network;
       document.getElementById('package').textContent = pkg;
@@ -105,6 +111,8 @@
       
       const dateObj = new Date(date);
       document.getElementById('datetime').textContent = dateObj.toLocaleString();
+      
+      console.log('Receipt fields populated successfully');
     }
 
     // Auto-redirect countdown
