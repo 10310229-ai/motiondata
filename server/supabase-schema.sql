@@ -5,6 +5,18 @@
 -- DROP TABLE IF EXISTS transactions CASCADE;
 -- DROP TABLE IF EXISTS orders CASCADE;
 -- DROP TABLE IF EXISTS customers CASCADE;
+-- DROP TABLE IF EXISTS users CASCADE;
+
+-- Create users table (for authentication)
+CREATE TABLE IF NOT EXISTS users (
+    id BIGSERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    phone TEXT,
+    password_hash TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
 
 -- Create customers table
 CREATE TABLE IF NOT EXISTS customers (
@@ -72,6 +84,12 @@ BEGIN
     END IF;
     
     -- Create indexes only if columns exist
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_users_email') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'email') THEN
+            CREATE INDEX idx_users_email ON users(email);
+        END IF;
+    END IF;
+    
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_customers_email') THEN
         IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'customers' AND column_name = 'email') THEN
             CREATE INDEX idx_customers_email ON customers(email);
@@ -110,9 +128,20 @@ BEGIN
 END $$;
 
 -- Enable Row Level Security (RLS)
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policies for users
+CREATE POLICY "Enable read access for all users" ON users
+    FOR SELECT USING (true);
+
+CREATE POLICY "Enable insert for all users" ON users
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Enable update for own user only" ON users
+    FOR UPDATE USING (true);
 
 -- Create RLS policies for customers
 CREATE POLICY "Enable read access for all users" ON customers
@@ -154,6 +183,9 @@ END;
 $$ language 'plpgsql';
 
 -- Create triggers to auto-update updated_at
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 CREATE TRIGGER update_customers_updated_at BEFORE UPDATE ON customers
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 

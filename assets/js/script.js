@@ -477,37 +477,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Login handler
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
 
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            const user = users.find(u => u.email === email);
+            // Show loading
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
-            if (!user) {
-                showAuthMessage('Email not found', 'error');
-                return;
+            try {
+                // Check Supabase first
+                const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
+                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                let user = null;
+                if (response.ok) {
+                    const users = await response.json();
+                    if (users.length > 0) {
+                        const dbUser = users[0];
+                        if (atob(dbUser.password_hash) === password) {
+                            user = {
+                                id: dbUser.id,
+                                name: dbUser.name,
+                                email: dbUser.email,
+                                phone: dbUser.phone
+                            };
+                        }
+                    }
+                }
+
+                // Fallback to localStorage
+                if (!user) {
+                    const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
+                    const localUser = localUsers.find(u => u.email === email);
+                    
+                    if (localUser && atob(localUser.password) === password) {
+                        user = localUser;
+                    }
+                }
+
+                if (!user) {
+                    throw new Error('Invalid email or password');
+                }
+
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+                
+                showAuthMessage('Login successful!', 'success');
+                setTimeout(() => {
+                    authModal.classList.remove('active');
+                    loginForm.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.style.background = '';
+                    checkAuth();
+                }, 1500);
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showAuthMessage(error.message || 'Login failed. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             }
-
-            if (atob(user.password) !== password) {
-                showAuthMessage('Incorrect password', 'error');
-                return;
-            }
-
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            showAuthMessage('Login successful!', 'success');
-            setTimeout(() => {
-                authModal.classList.remove('active');
-                loginForm.reset();
-                checkAuth();
-            }, 1500);
         });
     }
 
     // Signup handler
     if (signupForm) {
-        signupForm.addEventListener('submit', (e) => {
+        signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('signupName').value.trim();
             const email = document.getElementById('signupEmail').value.trim();
@@ -530,32 +579,71 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            
-            if (users.find(u => u.email === email)) {
-                showAuthMessage('Email already registered', 'error');
-                return;
+            // Show loading
+            const submitBtn = signupForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+
+            try {
+                // Save to Supabase
+                const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
+                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
+
+                const newUser = {
+                    name,
+                    email,
+                    phone,
+                    password_hash: btoa(password), // Simple encoding (use proper hashing in production)
+                    created_at: new Date().toISOString()
+                };
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(newUser)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    if (errorText.includes('duplicate') || errorText.includes('unique')) {
+                        throw new Error('Email already registered');
+                    }
+                    throw new Error('Failed to create account');
+                }
+
+                const savedUser = await response.json();
+                
+                // Also save to localStorage as backup
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                users.push({ ...newUser, id: savedUser[0]?.id || Date.now().toString() });
+                localStorage.setItem('users', JSON.stringify(users));
+                localStorage.setItem('currentUser', JSON.stringify({ name, email, phone }));
+
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+                
+                showAuthMessage('Account created successfully!', 'success');
+                setTimeout(() => {
+                    authModal.classList.remove('active');
+                    signupForm.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.style.background = '';
+                    checkAuth();
+                }, 1500);
+
+            } catch (error) {
+                console.error('Signup error:', error);
+                showAuthMessage(error.message || 'Failed to create account. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
             }
-
-            const newUser = {
-                id: Date.now().toString(),
-                name,
-                email,
-                phone,
-                password: btoa(password),
-                createdAt: new Date().toISOString()
-            };
-
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            localStorage.setItem('currentUser', JSON.stringify(newUser));
-
-            showAuthMessage('Account created successfully!', 'success');
-            setTimeout(() => {
-                authModal.classList.remove('active');
-                signupForm.reset();
-                checkAuth();
-            }, 1500);
         });
     }
 
