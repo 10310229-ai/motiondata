@@ -416,14 +416,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if user is logged in
     function checkAuth() {
         const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
-        if (user) {
-            authPrompt.style.display = 'none';
-            userProfile.style.display = 'block';
-            document.getElementById('userName').textContent = user.name;
-            document.getElementById('userEmail').textContent = user.email;
-        } else {
-            authPrompt.style.display = 'block';
-            userProfile.style.display = 'none';
+        
+        // Only update UI if elements exist on the page
+        if (authPrompt && userProfile) {
+            if (user) {
+                authPrompt.style.display = 'none';
+                userProfile.style.display = 'block';
+                if (document.getElementById('userName')) document.getElementById('userName').textContent = user.name;
+                if (document.getElementById('userEmail')) document.getElementById('userEmail').textContent = user.email;
+            } else {
+                authPrompt.style.display = 'block';
+                userProfile.style.display = 'none';
+            }
         }
     }
 
