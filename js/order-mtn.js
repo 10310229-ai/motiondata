@@ -27,7 +27,18 @@ document.addEventListener('DOMContentLoaded', function(){
 
     const amountInPesewas = Math.round(price * 100);
     const publicKey = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
-    if(!window.PaystackPop){ alert('Payment library failed to load'); return; }
+    
+    // Validate Paystack library is loaded
+    if(!window.PaystackPop){ 
+      alert('Payment library failed to load. Please refresh the page and try again.'); 
+      return; 
+    }
+    
+    // Validate amount
+    if(amountInPesewas < 100 || isNaN(amountInPesewas)){
+      alert('Invalid amount. Please select a valid package.');
+      return;
+    }
 
     const handler = PaystackPop.setup({
       key: publicKey,
@@ -117,6 +128,11 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     });
 
-    handler.openIframe();
+    try {
+      handler.openIframe();
+    } catch(error) {
+      console.error('Paystack error:', error);
+      alert('Unable to open payment window. Please try again or contact support.');
+    }
   });
 });
