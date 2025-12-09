@@ -1,4 +1,22 @@
 // Dedicated Telecel page logic — uses its own package list and Paystack handling
+
+function showSuccessPopup() {
+  const overlay = document.createElement('div');
+  overlay.className = 'popup-overlay';
+  
+  const popup = document.createElement('div');
+  popup.className = 'success-popup';
+  popup.innerHTML = `
+    <span class="popup-icon">✓</span>
+    <h2>Payment Successful!</h2>
+    <p>Your data bundle order has been placed successfully. Your bundle will be delivered to the recipient shortly.</p>
+    <button class="btn-popup" onclick="window.location.href='index.html'">Back to Home</button>
+  `;
+  
+  document.body.appendChild(overlay);
+  document.body.appendChild(popup);
+}
+
 document.addEventListener('DOMContentLoaded', function(){
   // No auth required - users can order directly
 
