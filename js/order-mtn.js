@@ -1,6 +1,7 @@
 // Dedicated MTN order logic (separate from other operator pages)
 
 function showSuccessPopup() {
+  console.log('showSuccessPopup function called!');
   const overlay = document.createElement('div');
   overlay.className = 'popup-overlay';
   overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9998;';
@@ -17,12 +18,18 @@ function showSuccessPopup() {
   
   document.body.appendChild(overlay);
   document.body.appendChild(popup);
+  console.log('Popup and overlay added to page');
 }
 
+// Expose function globally for testing
+window.testPopup = showSuccessPopup;
+
 console.log('MTN order script loaded successfully!');
+console.log('Paystack library available:', typeof window.PaystackPop);
 
 document.addEventListener('DOMContentLoaded', function(){
   console.log('DOM loaded - initializing MTN order form');
+  console.log('Paystack after DOM load:', typeof window.PaystackPop);
   // No auth required - users can order directly
 
   const packages = {
