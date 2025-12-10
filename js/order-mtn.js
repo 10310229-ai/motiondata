@@ -69,6 +69,8 @@ document.addEventListener('DOMContentLoaded', function(){
       metadata: { custom_fields:[{display_name:'Mobile',variable_name:'mobile',value:msisdn},{display_name:'Operator',variable_name:'operator',value:'MTN'},{display_name:'Package',variable_name:'package',value:pkg}] },
       onClose: function(){ alert('Payment cancelled.'); },
       onSuccess: function(response){
+        console.log('Payment success callback triggered', response);
+        
         // Save to localStorage
         try {
           const order = {
@@ -88,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function(){
           const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
           orders.push(order);
           localStorage.setItem('md_orders', JSON.stringify(orders));
+          console.log('Order saved to localStorage');
           
           // Save to Supabase in background
           (async function(){
@@ -101,15 +104,19 @@ document.addEventListener('DOMContentLoaded', function(){
         } catch(e) { console.error('Storage error:', e); }
         
         // Clear form fields
-        document.getElementById('msisdn').value = '';
-        document.getElementById('email').value = '';
-        document.getElementById('packageSelectMTN').value = '';
+        try {
+          document.getElementById('msisdn').value = '';
+          document.getElementById('email').value = '';
+          document.getElementById('packageSelectMTN').value = '';
+          console.log('Form fields cleared');
+        } catch(e) { console.error('Form clear error:', e); }
         
-        // Show success alert (blocks until user clicks OK)
-        alert(`Payment Successful!\n\nReference: ${response.reference}\nNetwork: MTN\nPackage: ${pkg}\nAmount: GHS ${price}\n\nYour data bundle will be delivered within 10-30 minutes.`);
-        
-        // Redirect to homepage after user closes alert
-        window.location.href = 'index.html';
+        // Show success alert and redirect
+        setTimeout(function() {
+          alert('Payment Successful!\n\nReference: ' + response.reference + '\nNetwork: MTN\nPackage: ' + pkg + '\nAmount: GHS ' + price + '\n\nYour data bundle will be delivered within 10-30 minutes.');
+          console.log('Redirecting to homepage...');
+          window.location.href = 'index.html';
+        }, 500);
       }
     });
 
