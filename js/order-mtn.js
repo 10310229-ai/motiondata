@@ -19,7 +19,10 @@ function showSuccessPopup() {
   document.body.appendChild(popup);
 }
 
+console.log('MTN order script loaded successfully!');
+
 document.addEventListener('DOMContentLoaded', function(){
+  console.log('DOM loaded - initializing MTN order form');
   // No auth required - users can order directly
 
   const packages = {
@@ -33,7 +36,16 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
-  document.getElementById('mtnForm').addEventListener('submit', function(evt){
+  const mtnForm = document.getElementById('mtnForm');
+  console.log('MTN Form element found:', !!mtnForm);
+  
+  if (!mtnForm) {
+    console.error('ERROR: mtnForm element not found!');
+    return;
+  }
+
+  mtnForm.addEventListener('submit', function(evt){
+    console.log('Form submitted!');
     evt.preventDefault();
     const msisdn = document.getElementById('msisdn').value.trim();
     const email = document.getElementById('email').value.trim();
