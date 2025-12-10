@@ -136,6 +136,10 @@ document.addEventListener('DOMContentLoaded', function(){
     const amountInPesewas = Math.round(price * 100);
     const publicKey = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
     
+    console.log('Using Paystack LIVE key');
+    console.log('Amount in pesewas:', amountInPesewas);
+    console.log('Amount in GHS:', price);
+    
     // Validate Paystack library is loaded
     console.log('Checking PaystackPop:', typeof window.PaystackPop);
     if(!window.PaystackPop){ 
@@ -146,6 +150,12 @@ document.addEventListener('DOMContentLoaded', function(){
     // Validate amount
     if(amountInPesewas < 100 || isNaN(amountInPesewas)){
       alert('Invalid amount. Please select a valid package.');
+      return;
+    }
+    
+    // Minimum amount check for Paystack (GHS 1.00 = 100 pesewas)
+    if(price < 1.0) {
+      alert('Minimum payment amount is GHS 1.00');
       return;
     }
 
@@ -168,6 +178,11 @@ document.addEventListener('DOMContentLoaded', function(){
         },
         onClose: function(){ 
           console.log('❌ Paystack popup closed by user');
+          console.log('If you saw "unable to process transaction", this means:');
+          console.log('1. Your Paystack account may not be activated for live payments');
+          console.log('2. Mobile money payment channel may not be enabled');
+          console.log('3. Account verification may be incomplete');
+          console.log('Check your Paystack Dashboard: https://dashboard.paystack.com');
         },
         callback: function(response){
           console.log('✓✓✓ PAYMENT CALLBACK TRIGGERED (callback method) ✓✓✓');
