@@ -43,6 +43,57 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
+  // Handle payment success - extracted to avoid duplication
+  function handlePaymentSuccess(response, email, msisdn, pkg, price) {
+    console.log('handlePaymentSuccess called with:', {response, email, msisdn, pkg, price});
+    
+    // Save to localStorage
+    try {
+      const order = {
+        id: response.reference,
+        reference: response.reference,
+        date: new Date().toISOString(),
+        timestamp: Date.now(),
+        email: email,
+        phone: msisdn,
+        mobile: msisdn,
+        operator: 'MTN',
+        network: 'MTN',
+        package: pkg,
+        amount: price,
+        status: 'completed'
+      };
+      const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
+      orders.push(order);
+      localStorage.setItem('md_orders', JSON.stringify(orders));
+      console.log('Order saved to localStorage');
+      
+      // Save to Supabase in background
+      (async function(){
+        try {
+          const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+          const customer = await saveCustomer({name: currentUser.name || 'Guest', email: email, phone: msisdn});
+          const savedOrder = await saveOrder({customer_id: customer.id, network: 'MTN', package: pkg, phone: msisdn, email: email, amount: price, status: 'completed'});
+          await saveTransaction({order_id: savedOrder.id, reference: response.reference, amount: price, status: 'success', payment_method: 'paystack', metadata: {response: response}});
+        } catch(e) { console.error('Background save error:', e); }
+      })();
+    } catch(e) { console.error('Storage error:', e); }
+    
+    // Clear form fields
+    try {
+      document.getElementById('msisdn').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('packageSelectMTN').value = '';
+      console.log('Form fields cleared');
+    } catch(e) { console.error('Form clear error:', e); }
+    
+    // Show success popup
+    setTimeout(function() {
+      console.log('Showing success popup...');
+      showSuccessPopup();
+    }, 500);
+  }
+
   const mtnForm = document.getElementById('mtnForm');
   console.log('MTN Form element found:', !!mtnForm);
   
@@ -94,56 +145,15 @@ document.addEventListener('DOMContentLoaded', function(){
       metadata: { custom_fields:[{display_name:'Mobile',variable_name:'mobile',value:msisdn},{display_name:'Operator',variable_name:'operator',value:'MTN'},{display_name:'Package',variable_name:'package',value:pkg}] },
       onClose: function(){ 
         console.log('Paystack popup closed by user');
-        alert('Payment cancelled.'); 
+        alert('Payment cancelled or window closed.'); 
+      },
+      callback: function(response){
+        console.log('✓✓✓ PAYMENT CALLBACK TRIGGERED (callback method) ✓✓✓', response);
+        handlePaymentSuccess(response, email, msisdn, pkg, price);
       },
       onSuccess: function(response){
-        console.log('✓✓✓ PAYMENT SUCCESS CALLBACK TRIGGERED ✓✓✓', response);
-        
-        // Save to localStorage
-        try {
-          const order = {
-            id: response.reference,
-            reference: response.reference,
-            date: new Date().toISOString(),
-            timestamp: Date.now(),
-            email: email,
-            phone: msisdn,
-            mobile: msisdn,
-            operator: 'MTN',
-            network: 'MTN',
-            package: pkg,
-            amount: price,
-            status: 'completed'
-          };
-          const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
-          orders.push(order);
-          localStorage.setItem('md_orders', JSON.stringify(orders));
-          console.log('Order saved to localStorage');
-          
-          // Save to Supabase in background
-          (async function(){
-            try {
-              const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-              const customer = await saveCustomer({name: currentUser.name || 'Guest', email: email, phone: msisdn});
-              const savedOrder = await saveOrder({customer_id: customer.id, network: 'MTN', package: pkg, phone: msisdn, email: email, amount: price, status: 'completed'});
-              await saveTransaction({order_id: savedOrder.id, reference: response.reference, amount: price, status: 'success', payment_method: 'paystack', metadata: {response: response}});
-            } catch(e) { console.error('Background save error:', e); }
-          })();
-        } catch(e) { console.error('Storage error:', e); }
-        
-        // Clear form fields
-        try {
-          document.getElementById('msisdn').value = '';
-          document.getElementById('email').value = '';
-          document.getElementById('packageSelectMTN').value = '';
-          console.log('Form fields cleared');
-        } catch(e) { console.error('Form clear error:', e); }
-        
-        // Show success popup and redirect
-        setTimeout(function() {
-          console.log('Showing success popup...');
-          showSuccessPopup();
-        }, 500);
+        console.log('✓✓✓ PAYMENT SUCCESS CALLBACK TRIGGERED (onSuccess method) ✓✓✓', response);
+        handlePaymentSuccess(response, email, msisdn, pkg, price);
       }
     });
 
