@@ -118,11 +118,10 @@ document.addEventListener('DOMContentLoaded', function(){
           console.log('Form fields cleared');
         } catch(e) { console.error('Form clear error:', e); }
         
-        // Show success alert and redirect
+        // Show success popup and redirect
         setTimeout(function() {
-          alert('Payment Successful!\n\nReference: ' + response.reference + '\nNetwork: Telecel\nPackage: ' + pkg + '\nAmount: GHS ' + price + '\n\nYour data bundle will be delivered within 10-30 minutes.');
-          console.log('Redirecting to homepage...');
-          window.location.href = 'index.html';
+          console.log('Showing success popup...');
+          showSuccessPopup();
         }, 500);
       }
     });
