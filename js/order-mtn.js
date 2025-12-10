@@ -38,17 +38,22 @@ document.addEventListener('DOMContentLoaded', function(){
     const msisdn = document.getElementById('msisdn').value.trim();
     const email = document.getElementById('email').value.trim();
     const pkg = document.getElementById('packageSelectMTN').value;
+    console.log('=== MTN ORDER STARTED ===');
+    console.log('Phone:', msisdn, 'Email:', email, 'Package:', pkg);
+    
     if(!/^\d{10}$/.test(msisdn)){ alert('Please enter a valid 10 digit number'); return; }
     if(!isValidEmail(email)){ alert('Please enter a valid email'); return; }
     if(!pkg){ alert('Please select an MTN package'); return; }
 
     const price = packages[pkg];
+    console.log('Price for package:', price);
     if(typeof price === 'undefined'){ alert('Price not available for selected package'); return; }
 
     const amountInPesewas = Math.round(price * 100);
     const publicKey = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
     
     // Validate Paystack library is loaded
+    console.log('Checking PaystackPop:', typeof window.PaystackPop);
     if(!window.PaystackPop){ 
       alert('Payment library failed to load. Please refresh the page and try again.'); 
       return; 
@@ -60,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function(){
       return;
     }
 
+    console.log('Setting up Paystack with amount:', amountInPesewas, 'pesewas');
     const handler = PaystackPop.setup({
       key: publicKey,
       email: email,
@@ -67,9 +73,12 @@ document.addEventListener('DOMContentLoaded', function(){
       currency: 'GHS',
       ref: 'MTN-' + Date.now(),
       metadata: { custom_fields:[{display_name:'Mobile',variable_name:'mobile',value:msisdn},{display_name:'Operator',variable_name:'operator',value:'MTN'},{display_name:'Package',variable_name:'package',value:pkg}] },
-      onClose: function(){ alert('Payment cancelled.'); },
+      onClose: function(){ 
+        console.log('Paystack popup closed by user');
+        alert('Payment cancelled.'); 
+      },
       onSuccess: function(response){
-        console.log('Payment success callback triggered', response);
+        console.log('✓✓✓ PAYMENT SUCCESS CALLBACK TRIGGERED ✓✓✓', response);
         
         // Save to localStorage
         try {
@@ -119,8 +128,10 @@ document.addEventListener('DOMContentLoaded', function(){
       }
     });
 
+    console.log('Opening Paystack payment popup...');
     try {
       handler.openIframe();
+      console.log('Paystack popup opened successfully');
     } catch(error) {
       console.error('Paystack error:', error);
       alert('Unable to open payment window. Please try again or contact support.');
