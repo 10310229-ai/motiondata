@@ -27,6 +27,20 @@ window.testPopup = showSuccessPopup;
 console.log('MTN order script loaded successfully!');
 console.log('Paystack library available:', typeof window.PaystackPop);
 
+// Verify Paystack is loaded correctly
+window.addEventListener('load', function() {
+  console.log('Window fully loaded');
+  console.log('PaystackPop available:', typeof window.PaystackPop);
+  console.log('PaystackPop.setup:', typeof window.PaystackPop?.setup);
+  
+  if (!window.PaystackPop) {
+    console.error('❌ CRITICAL: Paystack library failed to load!');
+    console.error('Check if https://js.paystack.co/v1/inline.js is blocked');
+  } else {
+    console.log('✅ Paystack library loaded successfully');
+  }
+});
+
 document.addEventListener('DOMContentLoaded', function(){
   console.log('DOM loaded - initializing MTN order form');
   console.log('Paystack after DOM load:', typeof window.PaystackPop);
@@ -136,34 +150,54 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     console.log('Setting up Paystack with amount:', amountInPesewas, 'pesewas');
-    const handler = PaystackPop.setup({
-      key: publicKey,
-      email: email,
-      amount: amountInPesewas,
-      currency: 'GHS',
-      ref: 'MTN-' + Date.now(),
-      metadata: { custom_fields:[{display_name:'Mobile',variable_name:'mobile',value:msisdn},{display_name:'Operator',variable_name:'operator',value:'MTN'},{display_name:'Package',variable_name:'package',value:pkg}] },
-      onClose: function(){ 
-        console.log('Paystack popup closed by user');
-        alert('Payment cancelled or window closed.'); 
-      },
-      callback: function(response){
-        console.log('✓✓✓ PAYMENT CALLBACK TRIGGERED (callback method) ✓✓✓', response);
-        handlePaymentSuccess(response, email, msisdn, pkg, price);
-      },
-      onSuccess: function(response){
-        console.log('✓✓✓ PAYMENT SUCCESS CALLBACK TRIGGERED (onSuccess method) ✓✓✓', response);
-        handlePaymentSuccess(response, email, msisdn, pkg, price);
-      }
-    });
-
-    console.log('Opening Paystack payment popup...');
+    
+    // Test Paystack API key before proceeding
     try {
+      const handler = PaystackPop.setup({
+        key: publicKey,
+        email: email,
+        amount: amountInPesewas,
+        currency: 'GHS',
+        ref: 'MTN-' + Date.now(),
+        metadata: { 
+          custom_fields:[
+            {display_name:'Mobile',variable_name:'mobile',value:msisdn},
+            {display_name:'Operator',variable_name:'operator',value:'MTN'},
+            {display_name:'Package',variable_name:'package',value:pkg}
+          ] 
+        },
+        onClose: function(){ 
+          console.log('❌ Paystack popup closed by user');
+        },
+        callback: function(response){
+          console.log('✓✓✓ PAYMENT CALLBACK TRIGGERED (callback method) ✓✓✓');
+          console.log('Response:', response);
+          console.log('Reference:', response.reference);
+          console.log('Status:', response.status);
+          handlePaymentSuccess(response, email, msisdn, pkg, price);
+        },
+        onSuccess: function(response){
+          console.log('✓✓✓ PAYMENT SUCCESS CALLBACK TRIGGERED (onSuccess method) ✓✓✓');
+          console.log('Response:', response);
+          console.log('Reference:', response.reference);
+          console.log('Status:', response.status);
+          handlePaymentSuccess(response, email, msisdn, pkg, price);
+        }
+      });
+      
+      console.log('✅ Paystack handler created successfully');
+      console.log('Handler object:', handler);
+      
+      console.log('Opening Paystack payment popup...');
       handler.openIframe();
-      console.log('Paystack popup opened successfully');
+      console.log('✅ Paystack popup opened successfully');
+      
     } catch(error) {
-      console.error('Paystack error:', error);
-      alert('Unable to open payment window. Please try again or contact support.');
+      console.error('❌ PAYSTACK ERROR:', error);
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      alert('Payment initialization failed: ' + error.message + '. Please check console for details or contact support.');
     }
   });
 });
