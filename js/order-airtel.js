@@ -35,10 +35,22 @@ document.addEventListener('DOMContentLoaded', function(){
 
   document.getElementById('airtelForm').addEventListener('submit', function(evt){
     evt.preventDefault();
-    const msisdn = document.getElementById('msisdn').value.trim();
+    let msisdn = document.getElementById('msisdn').value.trim();
     const email = document.getElementById('email').value.trim();
     const pkg = document.getElementById('packageSelectAirtelTigo').value;
-    if(!/^\d{10}$/.test(msisdn)){ alert('Please enter a valid 10 digit number'); return; }
+    
+    // Validate 10-digit format
+    if(!/^\d{10}$/.test(msisdn)){ 
+      alert('Please enter a valid 10 digit number (e.g., 0241234567)'); 
+      return; 
+    }
+    
+    // Convert to international format for Paystack (remove leading 0, add 233)
+    if(msisdn.startsWith('0')) {
+      msisdn = '233' + msisdn.substring(1);
+    }
+    console.log('Phone (international format):', msisdn);
+    
     if(!isValidEmail(email)){ alert('Please enter a valid email'); return; }
     if(!pkg){ alert('Please select an AirtelTigo package'); return; }
 
