@@ -107,6 +107,11 @@ document.addEventListener('DOMContentLoaded', function(){
           })();
         } catch(e) { console.error('Storage error:', e); }
         
+        // Clear form fields
+        document.getElementById('msisdn').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('packageSelectTelecel').value = '';
+        
         // Show success message and redirect to homepage
         alert(`Payment Successful!\n\nReference: ${response.reference}\nNetwork: Telecel\nPackage: ${pkg}\nAmount: GHS ${price}\n\nYour data bundle will be delivered within 10-30 minutes.`);
         window.location.href = 'index.html';
