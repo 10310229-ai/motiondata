@@ -105,8 +105,10 @@ document.addEventListener('DOMContentLoaded', function(){
         document.getElementById('email').value = '';
         document.getElementById('packageSelectAirtelTigo').value = '';
         
-        // Show success message and redirect to homepage
+        // Show success alert (blocks until user clicks OK)
         alert(`Payment Successful!\n\nReference: ${response.reference}\nNetwork: AirtelTigo\nPackage: ${pkg}\nAmount: GHS ${price}\n\nYour data bundle will be delivered within 10-30 minutes.`);
+        
+        // Redirect to homepage after user closes alert
         window.location.href = 'index.html';
       }
     });
