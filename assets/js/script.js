@@ -479,12 +479,22 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => authMessage.classList.remove('show'), 5000);
     }
 
-    // Login handler
+    // Login handler (only for pages with loginEmail/loginPassword elements, not admin)
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const emailOrPhone = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
+            
+            // Check if login elements exist (skip on admin page)
+            const emailInput = document.getElementById('loginEmail');
+            const passwordInput = document.getElementById('loginPassword');
+            
+            if (!emailInput || !passwordInput) {
+                console.log('Login elements not found - skipping (admin page uses different IDs)');
+                return;
+            }
+            
+            const emailOrPhone = emailInput.value.trim();
+            const password = passwordInput.value;
 
             // Show loading
             const submitBtn = loginForm.querySelector('button[type="submit"]');
