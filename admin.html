@@ -490,8 +490,15 @@
 
         // Check if already logged in
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Admin page loaded');
+            console.log('Checking login status...');
+            console.log('Supabase URL:', SUPABASE_URL);
+            
             if (localStorage.getItem('adminLoggedIn') === 'true') {
+                console.log('User already logged in, showing dashboard');
                 showDashboard();
+            } else {
+                console.log('User not logged in, showing login form');
             }
         });
 
@@ -551,15 +558,19 @@
 
         // Load orders from Supabase
         async function loadOrders() {
+            console.log('Loading orders from Supabase...');
             try {
                 const orders = await supabaseQuery('orders', { 
                     order: 'created_at.desc',
                     limit: 1000
                 });
+                console.log('Orders loaded:', orders.length, 'orders');
+                console.log('Sample order:', orders[0]);
                 updateStats(orders);
                 displayOrders(orders);
             } catch (error) {
                 console.error('Failed to load orders:', error);
+                alert('Failed to load orders. Check console for details.');
             }
         }
 
