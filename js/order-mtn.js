@@ -85,11 +85,25 @@ document.addEventListener('DOMContentLoaded', function(){
       // Save to Supabase in background
       (async function(){
         try {
+          console.log('💾 Saving to Supabase...');
           const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+          
+          console.log('Creating/updating customer...');
           const customer = await saveCustomer({name: currentUser.name || 'Guest', email: email, phone: msisdn});
+          console.log('✅ Customer saved:', customer);
+          
+          console.log('Creating order...');
           const savedOrder = await saveOrder({customer_id: customer.id, network: 'MTN', package: pkg, phone: msisdn, email: email, amount: price, status: 'completed'});
-          await saveTransaction({order_id: savedOrder.id, reference: response.reference, amount: price, status: 'success', payment_method: 'paystack', metadata: {response: response}});
-        } catch(e) { console.error('Background save error:', e); }
+          console.log('✅ Order saved:', savedOrder);
+          
+          console.log('Creating transaction...');
+          const transaction = await saveTransaction({order_id: savedOrder.id, reference: response.reference, amount: price, status: 'success', payment_method: 'paystack', metadata: {response: response}});
+          console.log('✅ Transaction saved:', transaction);
+          console.log('🎉 All data saved to Supabase successfully!');
+        } catch(e) { 
+          console.error('❌ Supabase save error:', e);
+          console.error('Error details:', e.message, e.stack);
+        }
       })();
     } catch(e) { console.error('Storage error:', e); }
     
