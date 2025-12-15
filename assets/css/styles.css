@@ -261,20 +261,30 @@ body::after {
 
 /* Hero */
 .hero{padding:3.5rem 0;position:relative;overflow:hidden}
-.hero-background{
+.hero-slideshow{
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-image: url('../../depositphotos_584782738-stock-photo-two-female-africans-happily-looking.jpg');
+	z-index: 0;
+}
+.hero-slide{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
-	filter: none;
-	z-index: 0;
+	opacity: 0;
+	transition: opacity 1.5s ease-in-out;
 }
-.hero-background::before{
+.hero-slide.active{
+	opacity: 1;
+}
+.hero-slide::before{
 	content: '';
 	position: absolute;
 	top: 0;
