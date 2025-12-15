@@ -279,12 +279,12 @@ body::after {
 	background-position: center;
 	background-repeat: no-repeat;
 	opacity: 0;
-	transform: scale(1);
+	transform: scale(1.1);
 	transition: opacity 1.5s ease-in-out, transform 10s ease-out;
 }
 .hero-slide.active{
 	opacity: 1;
-	transform: scale(1.1);
+	transform: scale(1);
 }
 .hero-slide::before{
 	content: '';
