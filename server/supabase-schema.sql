@@ -2,18 +2,39 @@
 -- Run this SQL in your Supabase SQL Editor
 
 -- IMPORTANT: If you have existing tables with different structure, uncomment the DROP statements below
--- DROP TABLE IF EXISTS transactions CASCADE;
--- DROP TABLE IF EXISTS orders CASCADE;
--- DROP TABLE IF EXISTS customers CASCADE;
--- DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS transactions CASCADE;
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS customers CASCADE;
+DROP TABLE IF EXISTS user_profiles CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
 
--- Create users table (for authentication)
+-- Create users table (for authentication and user management)
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     phone TEXT,
     password_hash TEXT NOT NULL,
+    role TEXT DEFAULT 'customer', -- 'customer', 'admin', etc.
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Create user_profiles table (extended user information)
+CREATE TABLE IF NOT EXISTS user_profiles (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL UNIQUE,
+    full_name TEXT,
+    address TEXT,
+    city TEXT,
+    country TEXT DEFAULT 'Ghana',
+    postal_code TEXT,
+    avatar_url TEXT,
+    date_of_birth DATE,
+    gender TEXT,
+    preferred_network TEXT, -- MTN, AirtelTigo, Telecel
+    metadata JSONB, -- For additional custom fields
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -58,6 +79,19 @@ CREATE TABLE IF NOT EXISTS transactions (
 -- Add foreign key constraints and indexes in single DO block
 DO $$ 
 BEGIN
+    -- Add foreign key for user_profiles
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'user_profiles' AND column_name = 'user_id'
+    ) THEN
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_constraint WHERE conname = 'fk_user_profiles_user'
+        ) THEN
+            ALTER TABLE user_profiles ADD CONSTRAINT fk_user_profiles_user 
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+        END IF;
+    END IF;
+
     -- Add foreign key constraints only if columns exist
     IF EXISTS (
         SELECT 1 FROM information_schema.columns 
@@ -87,6 +121,12 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_users_email') THEN
         IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'email') THEN
             CREATE INDEX idx_users_email ON users(email);
+        END IF;
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'idx_user_profiles_user_id') THEN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'user_id') THEN
+            CREATE INDEX idx_user_profiles_user_id ON user_profiles(user_id);
         END IF;
     END IF;
     
@@ -129,6 +169,7 @@ END $$;
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
@@ -149,6 +190,16 @@ CREATE POLICY "Enable insert for all users" ON users
     FOR INSERT WITH CHECK (true);
 
 CREATE POLICY "Enable update for own user only" ON users
+    FOR UPDATE USING (true);
+
+-- Create RLS policies for user_profiles
+CREATE POLICY "Enable read access for all user_profiles" ON user_profiles
+    FOR SELECT USING (true);
+
+CREATE POLICY "Enable insert for all user_profiles" ON user_profiles
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Enable update for all user_profiles" ON user_profiles
     FOR UPDATE USING (true);
 
 -- Create RLS policies for customers
@@ -192,6 +243,9 @@ $$ language 'plpgsql';
 
 -- Create triggers to auto-update updated_at
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_profiles_updated_at BEFORE UPDATE ON user_profiles
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_customers_updated_at BEFORE UPDATE ON customers

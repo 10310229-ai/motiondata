@@ -88,8 +88,24 @@ document.addEventListener('DOMContentLoaded', function(){
           console.log('💾 Saving to Supabase...');
           const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
           
+          // First, check if user exists or create one
+          let user = await getUserByEmail(email);
+          if (!user) {
+            console.log('Creating new user...');
+            user = await saveUser({
+              name: currentUser.name || 'Guest Customer',
+              email: email,
+              phone: msisdn,
+              password_hash: 'temp_' + Date.now(), // Temporary hash for guest users
+              role: 'customer'
+            });
+            console.log('✅ User created:', user);
+          } else {
+            console.log('✅ Existing user found:', user);
+          }
+          
           console.log('Creating/updating customer...');
-          const customer = await saveCustomer({name: currentUser.name || 'Guest', email: email, phone: msisdn});
+          const customer = await saveCustomer({name: user.name, email: email, phone: msisdn});
           console.log('✅ Customer saved:', customer);
           
           console.log('Creating order...');

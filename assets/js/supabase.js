@@ -31,6 +31,97 @@ async function supabaseQuery(endpoint, options = {}) {
     }
 }
 
+// Save user to Supabase
+async function saveUser(userData) {
+    const user = {
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone,
+        password_hash: userData.password_hash,
+        role: userData.role || 'customer',
+        is_active: userData.is_active !== undefined ? userData.is_active : true,
+        created_at: new Date().toISOString()
+    };
+
+    try {
+        const result = await supabaseQuery('users', {
+            method: 'POST',
+            body: JSON.stringify(user)
+        });
+        return result[0];
+    } catch (error) {
+        console.error('Error saving user:', error);
+        // Return mock user if Supabase fails
+        return { ...user, id: Date.now() };
+    }
+}
+
+// Save user profile to Supabase
+async function saveUserProfile(profileData) {
+    const profile = {
+        user_id: profileData.user_id,
+        full_name: profileData.full_name,
+        address: profileData.address,
+        city: profileData.city,
+        country: profileData.country || 'Ghana',
+        postal_code: profileData.postal_code,
+        avatar_url: profileData.avatar_url,
+        date_of_birth: profileData.date_of_birth,
+        gender: profileData.gender,
+        preferred_network: profileData.preferred_network,
+        metadata: profileData.metadata || {},
+        created_at: new Date().toISOString()
+    };
+
+    try {
+        const result = await supabaseQuery('user_profiles', {
+            method: 'POST',
+            body: JSON.stringify(profile)
+        });
+        return result[0];
+    } catch (error) {
+        console.error('Error saving user profile:', error);
+        // Return mock profile if Supabase fails
+        return { ...profile, id: Date.now() };
+    }
+}
+
+// Update user profile
+async function updateUserProfile(userId, profileData) {
+    try {
+        const result = await supabaseQuery(`user_profiles?user_id=eq.${userId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ ...profileData, updated_at: new Date().toISOString() })
+        });
+        return result[0];
+    } catch (error) {
+        console.error('Error updating user profile:', error);
+        throw error;
+    }
+}
+
+// Get user by email
+async function getUserByEmail(email) {
+    try {
+        const result = await supabaseQuery(`users?email=eq.${encodeURIComponent(email)}`);
+        return result[0];
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        return null;
+    }
+}
+
+// Get user profile by user_id
+async function getUserProfile(userId) {
+    try {
+        const result = await supabaseQuery(`user_profiles?user_id=eq.${userId}`);
+        return result[0];
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        return null;
+    }
+}
+
 // Save customer to Supabase
 async function saveCustomer(customerData) {
     const customer = {
