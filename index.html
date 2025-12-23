@@ -3,387 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Get the best data bundle deals in Ghana. MTN and Telecel packages available. Fast delivery, secure payment.">
-    <meta name="keywords" content="data bundles, Ghana data, MTN data, Telecel data, AirtelTigo, mobile data, cheap data Ghana, data deals">
-    <meta name="author" content="Motion Data Solutions">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="MOTION DATA SOLUTIONS - Best Data Bundle Deals in Ghana">
-    <meta property="og:description" content="Get the best data bundle deals in Ghana. Fast delivery, secure payment, 24/7 available.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://www.motiondatasolutions.com">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="MOTION DATA SOLUTIONS">
-    <meta name="twitter:description" content="Get the best data bundle deals in Ghana">
-    <title>MOTION DATA SOLUTIONS - Best Data Bundle Deals in Ghana</title>
+    <meta name="description" content="Motion Data Solutions - Under Maintenance">
+    <title>Maintenance - MOTION DATA SOLUTIONS</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a1810;
+            --card: #1a2520;
+            --muted: #d6e1d2;
+            --accent: #84cc16;
+            --primary: #22c55e;
+            --secondary: #10b981;
+            --glass: rgba(255,255,255,0.05);
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            background: linear-gradient(135deg, rgba(10, 24, 16, 0.95) 0%, rgba(20, 35, 25, 0.95) 100%),
+                        url('pexels-artempodrez-7233099.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: #f4f6f1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(34, 197, 94, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(132, 204, 22, 0.04) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+            animation: forestGlow 12s ease-in-out infinite;
+        }
+
+        @keyframes forestGlow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .maintenance-container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .maintenance-icon {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 2rem;
+            background: linear-gradient(135deg, var(--card), rgba(34, 197, 94, 0.1));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(34, 197, 94, 0.2);
+            box-shadow: 0 20px 60px rgba(34, 197, 94, 0.15);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .maintenance-icon i {
+            font-size: 4rem;
+            color: var(--primary);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 20px 60px rgba(34, 197, 94, 0.15);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 25px 80px rgba(34, 197, 94, 0.25);
+            }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--muted);
+            margin-bottom: 1rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .info-card {
+            background: var(--card);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .contact-info {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .contact-item i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .contact-item a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-item a:hover {
+            color: var(--accent);
+        }
+
+        .btn-whatsapp {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0a1810;
+            padding: 1rem 2rem;
+            border-radius: 999px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 2rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4);
+        }
+
+        .btn-whatsapp i {
+            font-size: 1.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 999px;
+            animation: loading 2s ease-in-out infinite;
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            p {
+                font-size: 1rem;
+            }
+
+            .maintenance-icon {
+                width: 120px;
+                height: 120px;
+            }
+
+            .maintenance-icon i {
+                font-size: 3rem;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container header-content">
-            <div class="logo">
-                <a href="index.html" class="brand">MOTION DATA SOLUTIONS </a>
-            </div>
-            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </header>
+    <div class="maintenance-container">
+        <div class="logo">MOTION DATA SOLUTIONS</div>
 
-    <!-- Sidebar Navigation -->
-    <aside class="site-sidebar" id="mainNav" aria-label="Primary navigation">
-        <div class="sidebar-header-inline">
-            <a href="index.html" class="brand">MOTION DATA SOLUTIONS</a>
-            <button class="sidebar-close" aria-label="Close navigation" type="button">
-                <i class="fas fa-times"></i>
-            </button>
+        <div class="maintenance-icon">
+            <i class="fas fa-cog"></i>
         </div>
 
-        <!-- User Account Section -->
-        <div class="sidebar-user-section" id="userSection">
-            <!-- Logged Out State -->
-            <div class="auth-prompt" id="authPrompt">
-                <i class="fas fa-user-circle" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 0.5rem;"></i>
-                <p style="font-size: 0.9rem; margin: 0.5rem 0; opacity: 0.8;">Sign in to place orders</p>
-                <button class="btn btn-auth" id="showAuthBtn"><i class="fas fa-sign-in-alt"></i> Login / Sign Up</button>
-            </div>
+        <h1>We'll Be Back Soon!</h1>
+        <p class="subtitle">System Maintenance in Progress</p>
 
-            <!-- Logged In State -->
-            <div class="user-profile" id="userProfile" style="display: none;">
-                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                    <i class="fas fa-user-circle" style="font-size: 2rem; color: var(--accent);"></i>
-                    <div>
-                        <p style="font-weight: 600; margin: 0; font-size: 0.95rem;" id="userName"></p>
-                        <p style="font-size: 0.8rem; margin: 0; opacity: 0.7;" id="userEmail"></p>
-                    </div>
-                </div>
-                <button class="btn btn-auth btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <div class="info-card">
+            <p>
+                We're currently performing scheduled maintenance to improve your experience. 
+                Our team is working hard to bring you better services and enhanced features.
+            </p>
+            <p style="margin-top: 1.5rem;">
+                <strong style="color: var(--accent);">Expected Return:</strong> 
+                We'll be back online shortly. Thank you for your patience!
+            </p>
+
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
             </div>
         </div>
 
-        <nav class="sidebar-links">
-            <a href="index.html" class="nav-link active" aria-current="page"><i class="fas fa-home"></i><span>Home</span></a>
-            <a href="services.html" class="nav-link"><i class="fas fa-shopping-cart"></i><span>Services</span></a>
-            <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i><span>About</span></a>
-            <a href="faq.html" class="nav-link"><i class="fas fa-question-circle"></i><span>FAQ</span></a>
-            <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i><span>Contact</span></a>
-            <a href="https://wa.me/233256342577" class="nav-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
-        </nav>
-    </aside>
-
-    <!-- Auth Modal -->
-    <div class="auth-modal" id="authModal">
-        <div class="auth-modal-content">
-            <button class="auth-modal-close" id="closeAuthModal"><i class="fas fa-times"></i></button>
-            
-            <div class="auth-tabs">
-                <button class="auth-tab active" data-tab="login">Login</button>
-                <button class="auth-tab" data-tab="signup">Sign Up</button>
+        <div class="contact-info">
+            <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <a href="tel:+233256342577">+233 256 342 577</a>
             </div>
-
-            <!-- Login Form -->
-            <form class="auth-form active" id="loginForm">
-                <h2>Welcome Back</h2>
-                <div class="form-group">
-                    <label><i class="fas fa-user"></i> Email or Phone</label>
-                    <input type="text" id="loginEmail" placeholder="Enter email or phone number" required>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Password</label>
-                    <div class="password-input-wrapper">
-                        <input type="password" id="loginPassword" required>
-                        <button type="button" class="toggle-password" data-target="loginPassword" aria-label="Toggle password visibility">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
-            </form>
-
-            <!-- Signup Form -->
-            <form class="auth-form" id="signupForm">
-                <h2>Create Account</h2>
-                <div class="form-group">
-                    <label><i class="fas fa-user"></i> Full Name</label>
-                    <input type="text" id="signupName" required>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-envelope"></i> Email</label>
-                    <input type="email" id="signupEmail" required>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-phone"></i> Phone Number</label>
-                    <input type="tel" id="signupPhone" placeholder="0240000000" required>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Password</label>
-                    <div class="password-input-wrapper">
-                        <input type="password" id="signupPassword" minlength="6" required>
-                        <button type="button" class="toggle-password" data-target="signupPassword" aria-label="Toggle password visibility">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> Confirm Password</label>
-                    <div class="password-input-wrapper">
-                        <input type="password" id="signupConfirmPassword" minlength="6" required>
-                        <button type="button" class="toggle-password" data-target="signupConfirmPassword" aria-label="Toggle password visibility">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
-            </form>
-
-            <div class="auth-message" id="authMessage"></div>
+            <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <a href="mailto:kwakumotion55@gmail.com">kwakumotion55@gmail.com</a>
+            </div>
         </div>
+
+        <a href="https://wa.me/233256342577" class="btn-whatsapp" target="_blank" rel="noopener">
+            <i class="fab fa-whatsapp"></i>
+            Contact Us on WhatsApp
+        </a>
     </div>
-
-    <main>
-        <!-- Hero Section (split layout: content + quick actions/visual) -->
-        <section class="hero" id="home">
-            <div class="hero-background"></div>
-            <div class="container hero-content">
-                <div class="hero-left">
-                    <h1 class="hero-title">Get Best Data Deals</h1>
-                    <div class="greeting-badge">
-                        <i class="fas fa-sun"></i>
-                        <span id="greeting">WELCOME</span>
-                    </div>
-                    <p class="hero-subtitle">Fast, reliable, and available 24/7 for all your connectivity needs</p>
-                    <div class="hero-actions">
-                        <a class="btn btn-primary btn-large" href="services.html"><i class="fas fa-shopping-cart"></i> Browse Bundles</a>
-                        <button class="btn btn-secondary btn-large" id="joinWhatsapp"><i class="fab fa-whatsapp"></i> Join WhatsApp Group</button>
-                    </div>
-                </div>
-
-                <div class="hero-right">
-                    <div class="hero-illustration">
-                        <div class="image-card">
-                            <div class="image-card-visual">
-                                <i class="fas fa-mobile-alt"></i>
-                                <i class="fas fa-wifi"></i>
-                                <i class="fas fa-signal"></i>
-                            </div>
-                            <div class="image-card-content">
-                                <h3>Stay Connected</h3>
-                                <p>Premium data bundles for all networks</p>
-                            </div>
-                        </div>
-                        <div class="quick-card">
-                            <h3>Quick Actions</h3>
-                            <p class="muted">Buy bundles or get instant support.</p>
-                            <div class="quick-actions">
-                                <a class="btn btn-primary" href="services.html"><i class="fas fa-shopping-cart"></i> Buy a Bundle</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Important Notice Section -->
-        <section class="important-notice" style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(244, 63, 94, 0.08)); padding: 3rem 1rem; margin: 2rem 0; border-radius: 16px; border-left: 5px solid #ef4444;">
-                <div class="container">
-                        <div style="max-width: 900px; margin: 0 auto;">
-                                <h2 style="color: #ef4444; margin-top: 0; display: flex; align-items: center; gap: 0.75rem;">
-                                        <i class="fas fa-exclamation-circle" style="font-size: 1.8rem;"></i>
-                                        Important Notice
-                                </h2>
-
-                                <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem;">
-                                        <h3 style="margin-top: 0; color: #fca5a5;">⏱️ Data Delivery Time</h3>
-                                        <p style="margin: 0.5rem 0; font-size: 1.1rem; font-weight: 600; color: #fff;">
-                                                Data takes between <strong>10 to 30 minutes</strong> — maximum <strong>60 minutes (1 hour)</strong> — to be credited.
-                                        </p>
-                                </div>
-
-                                <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 12px;">
-                                        <h3 style="margin-top: 0; color: #fca5a5;">❌ Our Data Request Does Not Support:</h3>
-                                        <ul style="margin: 0.5rem 0; padding-left: 1.5rem; column-count: 2; gap: 1rem;">
-                                                <li style="margin: 0.5rem 0;">Turbonet SIM</li>
-                                                <li style="margin: 0.5rem 0;">Merchant SIM</li>
-                                                <li style="margin: 0.5rem 0;">EVD SIM</li>
-                                                <li style="margin: 0.5rem 0;">Broadband SIM</li>
-                                                <li style="margin: 0.5rem 0;">Blacklisted SIM</li>
-                                                <li style="margin: 0.5rem 0;">Roaming SIM</li>
-                                                <li style="margin: 0.5rem 0;">Different Network</li>
-                                                <li style="margin: 0.5rem 0;">Wrong Number</li>
-                                                <li style="margin: 0.5rem 0;">Inactive Number</li>
-                                        </ul>
-                                        <div style="background: rgba(239, 68, 68, 0.2); padding: 1rem; border-radius: 8px; margin-top: 1rem; border-left: 3px solid #ef4444;">
-                                                <p style="margin: 0; color: #fecaca; font-weight: 600;">
-                                                        <i class="fas fa-fire"></i> <strong>Important:</strong> Any data transferred to the above SIM types is burnt and irreversible.
-                                                </p>
-                                        </div>
-                                </div>
-                        </div>
-                </div>
-        </section>
-
-        <!-- How to Buy Section -->
-        <section class="features short">
-            <div class="container">
-                <h2><i class="fas fa-question-circle"></i> How to Buy a Data Bundle</h2>
-                <p class="section-subtitle">Get your data bundle in 4 simple steps</p>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="step-number">1</div>
-                        <i class="fas fa-mouse-pointer"></i>
-                        <h3>Choose Your Network</h3>
-                        <p>Select your mobile network provider - MTN, AirtelTigo, or Telecel Ghana</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="step-number">2</div>
-                        <i class="fas fa-list-ul"></i>
-                        <h3>Select a Bundle</h3>
-                        <p>Pick the data bundle that suits your needs from our wide range of options</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="step-number">3</div>
-                        <i class="fas fa-credit-card"></i>
-                        <h3>Make Payment</h3>
-                        <p>Pay securely using Mobile Money or Card via Paystack payment gateway</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="step-number">4</div>
-                        <i class="fas fa-check-circle"></i>
-                        <h3>Receive Instantly</h3>
-                        <p>Your data bundle is delivered to your phone number within minutes</p>
-                    </div>
-                </div>
-                <div class="cta-center">
-                    <a href="services.html" class="btn btn-primary btn-lg"><i class="fas fa-shopping-cart"></i> Start Buying Now</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Features (short) -->
-        <section class="features short">
-            <div class="container">
-                <h2>Why Choose Motion Data Solutions?</h2>
-                <div class="features-grid">
-                    <div class="feature-card"><i class="fas fa-shipping-fast"></i><h3>Instant Delivery</h3></div>
-                    <div class="feature-card"><i class="fas fa-shield-alt"></i><h3>100% Secure</h3></div>
-                    <div class="feature-card"><i class="fas fa-clock"></i><h3>24/7 Available</h3></div>
-                    <div class="feature-card"><i class="fas fa-tags"></i><h3>Best Prices</h3></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stats (animated count-up) -->
-        <section class="stats-section" aria-labelledby="statsHeading">
-            <div class="container">
-                <h2 id="statsHeading">Trusted by thousands</h2>
-                <div class="stats-grid" role="list">
-                    <div class="stat-card card-hover" role="listitem">
-                        <div class="stat-value" data-target="10" data-suffix="K+">0K+</div>
-                        <div class="stat-label">Happy Customers</div>
-                    </div>
-
-                    <div class="stat-card card-hover" role="listitem">
-                        <div class="stat-value" data-target="50" data-suffix="K+">0K+</div>
-                        <div class="stat-label">Bundles Delivered</div>
-                    </div>
-
-                    <div class="stat-card card-hover" role="listitem">
-                        <div class="stat-value" data-target="99.9" data-decimals="1" data-suffix="%">0%</div>
-                        <div class="stat-label">Success Rate</div>
-                    </div>
-
-                    <div class="stat-card card-hover" role="listitem">
-                        <div class="stat-value" data-target="24" data-suffix="/7">0/7</div>
-                        <div class="stat-label">Available Support</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-                <!-- Testimonials -->
-                <section class="testimonials" id="testimonials">
-                        <div class="container">
-                                <h2>What our customers say</h2>
-                                <div class="testimonial-grid">
-                                        <div class="testimonial">
-                                                <strong>Ana K.</strong>
-                                                <p class="muted">"Fast delivery and excellent support. I got my bundle instantly."</p>
-                                        </div>
-                                        <div class="testimonial">
-                                                <strong>Kwame B.</strong>
-                                                <p class="muted">"Very reliable service — buy bundles anytime. Highly recommended."</p>
-                                        </div>
-                                </div>
-                        </div>
-                </section>
-
-                <!-- Footer and scripts -->
-                <footer class="footer">
-                        <div class="footer-content">
-                                <div class="footer-section">
-                                        <div class="brand-block">
-                                                <i class="fas fa-database"></i>
-                                                <h3>Motion Data</h3>
-                                        </div>
-                                        <p>Your trusted partner for seamless data bundle purchases across all major networks in Ghana. Fast, secure, and reliable.</p>
-                                        <div class="social-links">
-                                                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                                                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                                                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                                                <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                                        </div>
-                                </div>
-
-                                <div class="footer-section">
-                                        <h4><i class="fas fa-link"></i> Quick Links</h4>
-                                        <ul>
-                                                <li><a href="index.html"><i class="fas fa-chevron-right"></i> Home</a></li>
-                                                <li><a href="services.html"><i class="fas fa-chevron-right"></i> Services</a></li>
-                                                <li><a href="about.html"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                                                <li><a href="faq.html"><i class="fas fa-chevron-right"></i> FAQ</a></li>
-                                                <li><a href="contact.html"><i class="fas fa-chevron-right"></i> Contact</a></li>
-                                        </ul>
-                                </div>
-
-                                <div class="footer-section">
-                                        <h4><i class="fas fa-mobile-alt"></i> Our Services</h4>
-                                        <ul>
-                                                <li><a href="order-mtn.html"><i class="fas fa-chevron-right"></i> MTN Data Bundles</a></li>
-                                                <li><a href="order-airtel.html"><i class="fas fa-chevron-right"></i> AirtelTigo Bundles</a></li>
-                                                <li><a href="order-telecel.html"><i class="fas fa-chevron-right"></i> Telecel Bundles</a></li>
-                                                <li><a href="services.html"><i class="fas fa-chevron-right"></i> All Services</a></li>
-                                        </ul>
-                                </div>
-
-                                <div class="footer-section">
-                                        <h4><i class="fas fa-envelope"></i> Contact Us</h4>
-                                        <ul>
-                                                <li><a href="mailto:kwakumotion55@gmail.com"><i class="fas fa-envelope"></i>kwakumotion55@gmail.com</a></li>
-                                                <li><a href="tel:+233256342577"><i class="fas fa-phone"></i> +233 256 342 577</a></li>
-                                                <li><i class="fas fa-map-marker-alt"></i> Accra, Ghana</li>
-                                        </ul>
-                                </div>
-                        </div>
-
-                        <div class="footer-bottom">
-                                <p>© <span id="year"></span> MOTION DATA SOLUTIONS — All rights reserved. | Built with <i class="fas fa-heart" style="color: var(--primary);"></i> in Ghana</p>
-                        </div>
-                </footer>
-
-        </main>
-
-        <script src="assets/js/script.js?v=2.2"></script>
-        <script src="assets/js/sidebar.js"></script>
-        <script src="assets/js/toast.js"></script>
-        <script>
-            // small runtime niceties
-            document.getElementById('year').textContent = new Date().getFullYear();
-        </script>
 </body>
 </html>
