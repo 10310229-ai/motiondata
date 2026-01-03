@@ -883,31 +883,29 @@ body::after {
     position: relative;
 }
 
-.top-header-content {
+.top-header-scroll {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    padding: 0 1rem;
-    animation: slideshow 15s linear infinite;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
-.status-info, .hours-info {
+.scroll-content {
     display: flex;
+    gap: 3rem;
+    animation: scroll-left 20s linear infinite;
+}
+
+.scroll-content span {
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    white-space: nowrap;
+    font-weight: 500;
 }
 
 .status-indicator {
     color: var(--primary);
     font-size: 0.5rem;
     animation: pulse-status 2s infinite;
-}
-
-.status-text {
-    font-weight: 600;
-    color: var(--primary);
 }
 
 @keyframes pulse-status {
@@ -919,39 +917,22 @@ body::after {
     }
 }
 
-@keyframes slideshow {
-    0%, 30% {
+@keyframes scroll-left {
+    0% {
         transform: translateX(0);
     }
-    35%, 65% {
-        transform: translateX(-10%);
-    }
-    70%, 100% {
-        transform: translateX(0);
+    100% {
+        transform: translateX(-33.33%);
     }
 }
 
 @media (max-width: 768px) {
-    .top-header-content {
-        flex-direction: column;
-        text-align: center;
-        gap: 0.3rem;
-        animation: slideshow-mobile 12s linear infinite;
-    }
     .top-header {
         font-size: 0.75rem;
         padding: 8px 0;
     }
-    @keyframes slideshow-mobile {
-        0%, 40% {
-            transform: translateY(0);
-        }
-        50%, 90% {
-            transform: translateY(-10px);
-        }
-        100% {
-            transform: translateY(0);
-        }
+    .scroll-content {
+        gap: 2rem;
     }
 }
 
