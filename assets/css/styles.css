@@ -517,8 +517,17 @@ body::after {
 .section-subtitle{text-align:center;color:var(--muted);font-size:1.05rem;margin-bottom:2.5rem;margin-top:-0.5rem}
 
 /* Service / card icons: keep a fixed frame and ensure images fit nicely */
-.card-icon{display:inline-flex;align-items:center;justify-content:center;width:96px;height:72px;border-radius:8px;overflow:hidden}
+.card-icon{display:inline-flex;align-items:center;justify-content:center;width:120px;height:96px;border-radius:12px;overflow:hidden;margin-bottom:0.75rem}
 .card-icon img{width:100%;height:100%;object-fit:contain;display:block}
+
+/* Service card features list */
+.service-features{list-style:none;padding:0;margin:1rem 0 1.5rem 0;text-align:left}
+.service-features li{display:flex;align-items:center;gap:0.5rem;color:var(--muted);font-size:0.9rem;margin-bottom:0.5rem;padding:0.35rem 0}
+.service-features li i{color:var(--primary);font-size:0.85rem;min-width:16px}
+.service-card{text-align:center;display:flex;flex-direction:column;align-items:center}
+.service-card h3{margin:0.5rem 0;font-size:1.3rem;color:#fff}
+.service-card p{margin:0.3rem 0;color:var(--muted);font-size:0.95rem}
+.service-card:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 12px 40px rgba(34,197,94,0.25)}
 
 /* Stats section */
 .stats-section{padding:2rem 0}
