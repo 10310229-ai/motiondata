@@ -78,7 +78,8 @@ body::after {
 .header-content{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem}
 .logo{display:flex;align-items:center;gap:.75rem}
 .logo img{display:block;border-radius:6px}
-.brand{font-weight:700;color:var(--accent);text-decoration:none;font-size:1.05rem}
+.brand{font-weight:700;color:var(--accent);text-decoration:none;font-size:1.05rem;display:flex;align-items:center}
+.logo-img{height:50px;width:auto;object-fit:contain}
 .actions{display:flex;gap:.5rem;align-items:center}
 
 /* Animated Hamburger Button */
