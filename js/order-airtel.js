@@ -72,100 +72,21 @@ document.addEventListener('DOMContentLoaded', function(){
       return;
     }
 
-    const handler = PaystackPop.setup({
-      key: publicKey,
+    console.log('Redirecting to checkout page...');
+    
+    // Create order data for checkout page
+    const orderData = {
+      network: 'AirtelTigo',
+      package: pkg,
+      phone: msisdn,
       email: email,
-      amount: amountInPesewas,
-      currency: 'GHS',
-      ref: 'AIR-' + Date.now(),
-      metadata: { custom_fields:[{display_name:'Mobile',variable_name:'mobile',value:msisdn},{display_name:'Operator',variable_name:'operator',value:'AirtelTigo'},{display_name:'Package',variable_name:'package',value:pkg}] },
-      onClose: function(){ alert('Payment cancelled.'); },
-      onSuccess: function(response){
-        console.log('Payment success callback triggered', response);
-        
-        // Save to localStorage
-        try {
-          const order = {
-            id: response.reference,
-            reference: response.reference,
-            date: new Date().toISOString(),
-            timestamp: Date.now(),
-            email: email,
-            phone: msisdn,
-            mobile: msisdn,
-            operator: 'AirtelTigo',
-            network: 'AirtelTigo',
-            package: pkg,
-            amount: price,
-            status: 'completed'
-          };
-          const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
-          orders.push(order);
-          localStorage.setItem('md_orders', JSON.stringify(orders));
-          console.log('Order saved to localStorage');
-          
-          // Save to Supabase in background
-          (async function(){
-            try {
-              console.log('💾 Saving to Supabase...');
-              const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-              
-              // First, check if user exists or create one
-              let user = await getUserByEmail(email);
-              if (!user) {
-                console.log('Creating new user...');
-                user = await saveUser({
-                  name: currentUser.name || 'Guest Customer',
-                  email: email,
-                  phone: msisdn,
-                  password_hash: 'temp_' + Date.now(), // Temporary hash for guest users
-                  role: 'customer'
-                });
-                console.log('✅ User created:', user);
-              } else {
-                console.log('✅ Existing user found:', user);
-              }
-              
-              console.log('Creating/updating customer...');
-              const customer = await saveCustomer({name: user.name, email: email, phone: msisdn});
-              console.log('✅ Customer saved:', customer);
-              
-              console.log('Creating order...');
-              const savedOrder = await saveOrder({customer_id: customer.id, network: 'AirtelTigo', package: pkg, phone: msisdn, email: email, amount: price, status: 'completed'});
-              console.log('✅ Order saved:', savedOrder);
-              
-              console.log('Creating transaction...');
-              const transaction = await saveTransaction({order_id: savedOrder.id, reference: response.reference, amount: price, status: 'success', payment_method: 'paystack', metadata: {response: response}});
-              console.log('✅ Transaction saved:', transaction);
-              console.log('🎉 All data saved to Supabase successfully!');
-            } catch(e) { 
-              console.error('❌ Supabase save error:', e);
-              console.error('Error details:', e.message, e.stack);
-            }
-          })();
-        } catch(e) { console.error('Storage error:', e); }
-        
-        // Clear form fields
-        try {
-          document.getElementById('msisdn').value = '';
-          document.getElementById('email').value = '';
-          document.getElementById('packageSelectAirtelTigo').value = '';
-          console.log('Form fields cleared');
-        } catch(e) { console.error('Form clear error:', e); }
-        
-        // Show success popup and redirect
-        setTimeout(function() {
-          console.log('Showing success popup...');
-          showSuccessPopup();
-        }, 500);
-      }
-    });
-
-    try {
-      handler.openIframe();
-    } catch(error) {
-      console.error('Paystack error:', error);
-      alert('Unable to open payment window. Please try again or contact support.');
-    }
+      amount: price
+    };
+    
+    // Encode order data as URL parameters
+    const params = new URLSearchParams(orderData);
+    
+    // Redirect to checkout page
+    window.location.href = `checkout.html?${params.toString()}`;
   });
 });

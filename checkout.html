@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Summary - MOTION DATA SOLUTIONS</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .checkout-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 2rem 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .checkout-header h1 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .checkout-header p {
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(16, 185, 129, 0.1));
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(132, 204, 22, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-section {
+            margin-bottom: 2rem;
+        }
+
+        .summary-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-section h2 {
+            font-size: 1.3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-section h2 i {
+            font-size: 1.5rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .summary-value {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .network-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .network-mtn {
+            background: linear-gradient(135deg, #ffcc00, #ff9900);
+            color: #000;
+        }
+
+        .network-airtel {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: #fff;
+        }
+
+        .network-telecel {
+            background: linear-gradient(135deg, #0066cc, #0033aa);
+            color: #fff;
+        }
+
+        .total-section {
+            background: rgba(34, 197, 94, 0.15);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            border: 2px solid var(--primary);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-label {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .total-amount {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-back {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: rgba(34, 197, 94, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .btn-proceed {
+            flex: 2;
+            padding: 1rem;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0a1810;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-proceed:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.4);
+        }
+
+        .info-alert {
+            background: rgba(132, 204, 22, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .info-alert i {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-top: 0.2rem;
+        }
+
+        .info-alert-content {
+            flex: 1;
+        }
+
+        .info-alert-content p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container {
+                margin: 2rem auto;
+                padding: 1rem;
+            }
+
+            .checkout-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .summary-card {
+                padding: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-back, .btn-proceed {
+                flex: 1;
+                width: 100%;
+            }
+
+            .total-label {
+                font-size: 1.2rem;
+            }
+
+            .total-amount {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="index.html" class="brand">MOTION DATA SOLUTIONS</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="checkout-container">
+        <div class="checkout-header">
+            <h1><i class="fas fa-shopping-cart"></i> Order Summary</h1>
+            <p>Please review your order details before proceeding to payment</p>
+        </div>
+
+        <div class="info-alert">
+            <i class="fas fa-info-circle"></i>
+            <div class="info-alert-content">
+                <p><strong>Important:</strong> Your data bundle will be delivered within 30 minutes to an hour after successful payment. Make sure all details are correct before proceeding.</p>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-section">
+                <h2><i class="fas fa-sim-card"></i> Network & Package</h2>
+                <div class="summary-row">
+                    <span class="summary-label">Network Provider</span>
+                    <span class="summary-value" id="networkDisplay"></span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Package</span>
+                    <span class="summary-value" id="packageDisplay"></span>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h2><i class="fas fa-user"></i> Recipient Details</h2>
+                <div class="summary-row">
+                    <span class="summary-label">Phone Number</span>
+                    <span class="summary-value" id="phoneDisplay"></span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Email Address</span>
+                    <span class="summary-value" id="emailDisplay"></span>
+                </div>
+            </div>
+
+            <div class="total-section">
+                <div class="total-row">
+                    <span class="total-label">Total Amount</span>
+                    <span class="total-amount" id="amountDisplay">GHS 0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn-back" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i> Edit Order
+            </button>
+            <button class="btn-proceed" id="proceedBtn">
+                <i class="fas fa-lock"></i> Proceed to Payment
+            </button>
+        </div>
+    </div>
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="assets/js/supabase.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+        // Get order data from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderData = {
+            network: urlParams.get('network'),
+            package: urlParams.get('package'),
+            phone: urlParams.get('phone'),
+            email: urlParams.get('email'),
+            amount: parseFloat(urlParams.get('amount'))
+        };
+
+        // Display order details
+        function displayOrderSummary() {
+            if (!orderData.network || !orderData.package || !orderData.phone || !orderData.email || !orderData.amount) {
+                alert('Invalid order data. Please go back and fill the form again.');
+                window.location.href = 'services.html';
+                return;
+            }
+
+            // Network badge
+            const networkBadge = document.createElement('span');
+            networkBadge.className = `network-badge network-${orderData.network.toLowerCase()}`;
+            networkBadge.innerHTML = `<i class="fas fa-signal"></i> ${orderData.network}`;
+            document.getElementById('networkDisplay').appendChild(networkBadge);
+
+            // Display other details
+            document.getElementById('packageDisplay').textContent = orderData.package;
+            document.getElementById('phoneDisplay').textContent = orderData.phone;
+            document.getElementById('emailDisplay').textContent = orderData.email;
+            document.getElementById('amountDisplay').textContent = `GHS ${orderData.amount.toFixed(2)}`;
+        }
+
+        // Go back to edit order
+        function goBack() {
+            const networkPages = {
+                'MTN': 'order-mtn.html',
+                'AirtelTigo': 'order-airtel.html',
+                'Telecel': 'order-telecel.html'
+            };
+            window.location.href = networkPages[orderData.network] || 'services.html';
+        }
+
+        // Proceed to payment
+        document.getElementById('proceedBtn').addEventListener('click', function() {
+            const publicKey = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
+            const amountInPesewas = Math.round(orderData.amount * 100);
+            
+            // Convert phone to international format if needed
+            let phone = orderData.phone;
+            if (phone.startsWith('0')) {
+                phone = '233' + phone.substring(1);
+            }
+
+            const handler = PaystackPop.setup({
+                key: publicKey,
+                email: orderData.email,
+                amount: amountInPesewas,
+                currency: 'GHS',
+                ref: `${orderData.network.substring(0,3).toUpperCase()}-` + Date.now(),
+                metadata: {
+                    custom_fields: [
+                        {display_name: 'Mobile', variable_name: 'mobile', value: phone},
+                        {display_name: 'Operator', variable_name: 'operator', value: orderData.network},
+                        {display_name: 'Package', variable_name: 'package', value: orderData.package}
+                    ]
+                },
+                onClose: function() {
+                    console.log('Payment cancelled by user');
+                },
+                onSuccess: function(response) {
+                    console.log('Payment successful:', response);
+                    
+                    // Save to localStorage
+                    const order = {
+                        id: response.reference,
+                        reference: response.reference,
+                        date: new Date().toISOString(),
+                        timestamp: Date.now(),
+                        email: orderData.email,
+                        phone: phone,
+                        mobile: phone,
+                        operator: orderData.network,
+                        network: orderData.network,
+                        package: orderData.package,
+                        amount: orderData.amount,
+                        status: 'completed'
+                    };
+                    
+                    const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
+                    orders.push(order);
+                    localStorage.setItem('md_orders', JSON.stringify(orders));
+
+                    // Save to Supabase
+                    (async function() {
+                        try {
+                            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                            
+                            let user = await getUserByEmail(orderData.email);
+                            if (!user) {
+                                user = await saveUser({
+                                    name: currentUser.name || 'Guest Customer',
+                                    email: orderData.email,
+                                    phone: phone,
+                                    password_hash: 'temp_' + Date.now(),
+                                    role: 'customer'
+                                });
+                            }
+                            
+                            const customer = await saveCustomer({name: user.name, email: orderData.email, phone: phone});
+                            const savedOrder = await saveOrder({
+                                customer_id: customer.id,
+                                network: orderData.network,
+                                package: orderData.package,
+                                phone: phone,
+                                email: orderData.email,
+                                amount: orderData.amount,
+                                status: 'completed'
+                            });
+                            const transaction = await saveTransaction({
+                                order_id: savedOrder.id,
+                                reference: response.reference,
+                                amount: orderData.amount,
+                                status: 'success',
+                                payment_method: 'paystack',
+                                metadata: {response: response}
+                            });
+                            console.log('Data saved to Supabase successfully!');
+                        } catch(e) {
+                            console.error('Supabase save error:', e);
+                        }
+                    })();
+
+                    // Redirect to success page or show success message
+                    alert('Payment successful! Your data bundle will be delivered within 5 minutes.');
+                    window.location.href = 'index.html';
+                }
+            });
+
+            handler.openIframe();
+        });
+
+        // Display order summary on page load
+        displayOrderSummary();
+    </script>
+</body>
+</html>

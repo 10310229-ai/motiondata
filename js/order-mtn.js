@@ -201,60 +201,21 @@ document.addEventListener('DOMContentLoaded', function(){
       return;
     }
 
-    console.log('Setting up Paystack with amount:', amountInPesewas, 'pesewas');
+    console.log('Redirecting to checkout page...');
     
-    // Test Paystack API key before proceeding
-    try {
-      const handler = PaystackPop.setup({
-        key: publicKey,
-        email: email,
-        amount: amountInPesewas,
-        currency: 'GHS',
-        ref: 'MTN-' + Date.now(),
-        metadata: { 
-          custom_fields:[
-            {display_name:'Mobile',variable_name:'mobile',value:msisdn},
-            {display_name:'Operator',variable_name:'operator',value:'MTN'},
-            {display_name:'Package',variable_name:'package',value:pkg}
-          ] 
-        },
-        onClose: function(){ 
-          console.log('❌ Paystack popup closed by user');
-          console.log('If you saw "unable to process transaction", this means:');
-          console.log('1. Your Paystack account may not be activated for live payments');
-          console.log('2. Mobile money payment channel may not be enabled');
-          console.log('3. Account verification may be incomplete');
-          console.log('Check your Paystack Dashboard: https://dashboard.paystack.com');
-        },
-        callback: function(response){
-          console.log('✓✓✓ PAYMENT CALLBACK TRIGGERED (callback method) ✓✓✓');
-          console.log('Response:', response);
-          console.log('Reference:', response.reference);
-          console.log('Status:', response.status);
-          handlePaymentSuccess(response, email, msisdn, pkg, price);
-        },
-        onSuccess: function(response){
-          console.log('✓✓✓ PAYMENT SUCCESS CALLBACK TRIGGERED (onSuccess method) ✓✓✓');
-          console.log('Response:', response);
-          console.log('Reference:', response.reference);
-          console.log('Status:', response.status);
-          handlePaymentSuccess(response, email, msisdn, pkg, price);
-        }
-      });
-      
-      console.log('✅ Paystack handler created successfully');
-      console.log('Handler object:', handler);
-      
-      console.log('Opening Paystack payment popup...');
-      handler.openIframe();
-      console.log('✅ Paystack popup opened successfully');
-      
-    } catch(error) {
-      console.error('❌ PAYSTACK ERROR:', error);
-      console.error('Error name:', error.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-      alert('Payment initialization failed: ' + error.message + '. Please check console for details or contact support.');
-    }
+    // Create order data for checkout page
+    const orderData = {
+      network: 'MTN',
+      package: pkg,
+      phone: msisdn,
+      email: email,
+      amount: price
+    };
+    
+    // Encode order data as URL parameters
+    const params = new URLSearchParams(orderData);
+    
+    // Redirect to checkout page
+    window.location.href = `checkout.html?${params.toString()}`;
   });
 });
