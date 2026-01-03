@@ -892,7 +892,7 @@ body::after {
 .scroll-content {
     display: flex;
     gap: 3rem;
-    animation: scroll-left 20s linear infinite;
+    animation: scroll-left 35s linear infinite;
 }
 
 .scroll-content span {
@@ -919,7 +919,7 @@ body::after {
 
 @keyframes scroll-left {
     0% {
-        transform: translateX(100%);
+        transform: translateX(100vw);
     }
     100% {
         transform: translateX(-100%);
