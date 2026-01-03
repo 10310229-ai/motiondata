@@ -49,7 +49,6 @@
 
                 <div class="service-grid">
                     <div class="service-card" data-category="mtn" data-availability="available">
-                        <div class="card-badge card-badge-available">Available</div>
                         <div class="card-icon" style="background:#FFCC00"><img src="MTN Logo.jpg" alt="MTN logo" width="96" height="96"></div>
                         <h3>MTN Data Bundle</h3>
                         <p>Largest network coverage in Ghana</p>
@@ -59,11 +58,13 @@
                             <li><i class="fas fa-check-circle"></i> From GHS 6.00</li>
                             <li><i class="fas fa-check-circle"></i> Up to 50GB packages</li>
                         </ul>
-                        <a class="btn btn-primary" href="order-mtn.html">Select Package</a>
+                        <div class="btn-with-badge">
+                            <a class="btn btn-primary" href="order-mtn.html">Select Package</a>
+                            <span class="stock-badge stock-in">In Stock</span>
+                        </div>
                     </div>
 
                     <div class="service-card" data-category="telecel" data-availability="out-of-stock">
-                        <div class="card-badge card-badge-unavailable">Out of Stock</div>
                         <div class="card-icon" style="background:#FF0000;opacity:0.5"><img src="download (2).jpg" alt="Telecel logo" width="96" height="96"></div>
                         <h3>Telecel Data Bundle</h3>
                         <p>Temporarily unavailable</p>
@@ -73,10 +74,12 @@
                             <li><i class="fas fa-clock"></i> Reliable service</li>
                             <li><i class="fas fa-clock"></i> Various packages</li>
                         </ul>
-                        <a class="btn btn-disabled" style="pointer-events:none;opacity:0.5" href="#">Out of Stock</a>
+                        <div class="btn-with-badge">
+                            <a class="btn btn-disabled" style="pointer-events:none;opacity:0.5" href="#">Out of Stock</a>
+                            <span class="stock-badge stock-out">Out of Stock</span>
+                        </div>
                     </div>
                     <div class="service-card" data-category="airteltigo" data-availability="available">
-                        <div class="card-badge card-badge-available">Available</div>
                         <div class="card-icon" style="background:#FF0000"><img src="download (1).jpg" alt="AirtelTigo logo" width="96" height="96"></div>
                         <h3>AirtelTigo Data Bundle</h3>
                         <p>Best value for money</p>
@@ -86,7 +89,10 @@
                             <li><i class="fas fa-check-circle"></i> From GHS 6.00</li>
                             <li><i class="fas fa-check-circle"></i> Up to 100GB available</li>
                         </ul>
-                        <a class="btn btn-primary" href="order-airtel.html">Select Package</a>
+                        <div class="btn-with-badge">
+                            <a class="btn btn-primary" href="order-airtel.html">Select Package</a>
+                            <span class="stock-badge stock-in">In Stock</span>
+                        </div>
                     </div>
 
                     
