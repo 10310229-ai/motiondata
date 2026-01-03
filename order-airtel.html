@@ -8,10 +8,12 @@
   <link rel="stylesheet" href="assets/css/styles.css">
   <style>
     :root{--bg:#0a1810;--card:#1a2520;--input-bg:#ffffff;--muted:#b8c5bb;--accent:#84cc16;--green:#22c55e;--primary:#10b981}
-    body{margin:0;font-family:Inter,system-ui,Arial;color:#fff}
+    body{margin:0;font-family:Inter,system-ui,Arial;color:#fff;background:linear-gradient(135deg,#0a1810,#1a2520);min-height:100vh}
     .wrap{max-width:960px;margin:2rem auto;padding:1rem;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1}
     .form-grid{display:flex;flex-direction:column;align-items:center;gap:1rem;min-height:calc(100vh - 200px);justify-content:center;width:100%}
-    .panel{background:linear-gradient(135deg,rgba(34,197,94,0.12),rgba(16,185,129,0.1));backdrop-filter:blur(20px);padding:2.5rem;border-radius:16px;border:1px solid rgba(132,204,22,0.2);width:100%;max-width:820px;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+    .panel{background:linear-gradient(135deg,rgba(34,197,94,0.15),rgba(16,185,129,0.12));backdrop-filter:blur(20px);padding:2.5rem;border-radius:16px;border:1px solid rgba(132,204,22,0.3);width:100%;max-width:820px;box-shadow:0 8px 32px rgba(0,0,0,0.4);position:relative;overflow:hidden}
+    .panel::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#ff0000,#cc0000,#ff6b6b);z-index:1}
+    .network-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;background:linear-gradient(135deg,#ff0000,#cc0000);color:#fff;border-radius:999px;font-weight:800;font-size:0.9rem;margin-bottom:1rem}
     .success-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.85));backdrop-filter:blur(20px);padding:3rem;border-radius:16px;border:2px solid rgba(132,204,22,0.4);width:90%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,0.5);z-index:9999;text-align:center;animation:popupSlideIn 0.4s ease}
     .success-popup h2{margin:0 0 1rem 0;color:#fff;font-size:1.8rem;font-weight:800}
     .success-popup p{margin:0 0 1.5rem 0;color:#e0f2e0;font-size:1.1rem}
@@ -21,13 +23,35 @@
     @keyframes popupSlideIn{from{transform:translate(-50%,-60%);opacity:0}to{transform:translate(-50%,-50%);opacity:1}}
     .popup-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9998;animation:fadeIn 0.3s ease}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    h1{font-size:1.1rem;margin:0 0 .6rem;color:var(--accent);font-weight:800}
-    label{display:block;color:#fff;font-weight:700;margin-bottom:.35rem}
-    input[type="text"], select, textarea{width:100%;padding:.7rem;border-radius:10px;border:1px solid rgba(0,0,0,0.08);background:var(--input-bg);color:#04111a}
-    .center{display:flex;justify-content:center}
-    .btn-order{background:var(--green);color:#04261a;border-radius:10px;padding:.6rem 1rem;border:none;font-weight:800;cursor:pointer;transition:all 0.3s}
-    .btn-order:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(34,197,94,0.4)}
-    .hint{font-size:.9rem;color:var(--muted);margin-top:.35rem}
+    h1{font-size:1.4rem;margin:0 0 .6rem;color:var(--accent);font-weight:800;display:flex;align-items:center;gap:0.5rem}
+    .form-group{margin-top:1.25rem;position:relative}
+    label{display:flex;align-items:center;gap:0.5rem;color:#fff;font-weight:700;margin-bottom:.5rem;font-size:0.95rem}
+    label i{color:var(--accent);font-size:1rem}
+    input[type="text"],input[type="email"],select{width:100%;padding:0.9rem 1rem;border-radius:12px;border:2px solid rgba(132,204,22,0.2);background:var(--input-bg);color:#04111a;font-size:1rem;transition:all 0.3s;font-weight:500}
+    input[type="text"]:focus,input[type="email"]:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(132,204,22,0.1)}
+    input[type="text"].error,input[type="email"].error{border-color:#ff3b30;background:#fff5f5}
+    input[type="text"].valid,input[type="email"].valid{border-color:var(--primary);background:#f0fdf4}
+    .input-icon{position:absolute;right:1rem;top:2.8rem;color:var(--muted);transition:all 0.3s}
+    .input-icon.valid{color:var(--primary)}
+    .input-icon.error{color:#ff3b30}
+    .center{display:flex;justify-content:center;gap:1rem}
+    .btn-order{background:linear-gradient(135deg,var(--primary),var(--accent));color:#04261a;border-radius:12px;padding:1rem 2.5rem;border:none;font-weight:800;cursor:pointer;transition:all 0.3s;font-size:1.1rem;box-shadow:0 4px 20px rgba(34,197,94,0.3);display:inline-flex;align-items:center;gap:0.5rem}
+    .btn-order:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(34,197,94,0.5)}
+    .btn-order:active{transform:translateY(0)}
+    .btn-order:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+    .hint{font-size:.9rem;color:var(--muted);margin-top:.5rem;display:flex;align-items:center;gap:0.4rem}
+    .hint i{font-size:0.85rem}
+    .price-preview{background:rgba(132,204,22,0.1);border:1px solid rgba(132,204,22,0.3);border-radius:12px;padding:1.25rem;margin-top:1.5rem;display:none}
+    .price-preview.show{display:block;animation:slideDown 0.3s ease}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    .price-preview h3{margin:0 0 0.75rem 0;color:var(--accent);font-size:1.1rem;display:flex;align-items:center;gap:0.5rem}
+    .price-row{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0}
+    .price-label{color:var(--muted);font-weight:600}
+    .price-value{color:#fff;font-weight:800;font-size:1.2rem}
+    .features-list{list-style:none;padding:0;margin:1rem 0;background:rgba(255,255,255,0.03);border-radius:10px;padding:1rem}
+    .features-list li{display:flex;align-items:center;gap:0.5rem;color:var(--muted);padding:0.4rem 0;font-size:0.9rem}
+    .features-list li i{color:var(--primary);font-size:0.85rem}
+    @media(max-width:768px){.panel{padding:1.75rem 1.25rem}.btn-order{width:100%;justify-content:center}}
   </style>
 </head>
 <body>
@@ -57,31 +81,53 @@
     <div class="form-grid">
       <section class="panel" aria-labelledby="airtel-order">
         <div>
-          <h1 id="airtel-order">SEND SINGLE ORDER — AirtelTigo</h1>
+          <span class="network-badge"><i class="fas fa-signal"></i> AirtelTigo Network</span>
+          <h1 id="airtel-order"><i class="fas fa-shopping-cart"></i> Order AirtelTigo Data Bundle</h1>
         </div>
 
+        <ul class="features-list">
+          <li><i class="fas fa-check-circle"></i> Fast activation within minutes</li>
+          <li><i class="fas fa-check-circle"></i> Secure payment via Paystack</li>
+          <li><i class="fas fa-check-circle"></i> Affordable prices guaranteed</li>
+        </ul>
+
         <form id="airtelForm">
-          <div style="margin-top:1rem">
-            <label for="msisdn">Type Number</label>
-            <input id="msisdn" name="msisdn" type="text" placeholder="must be 10 digits!" pattern="\d{10}" inputmode="numeric" maxlength="10" required>
-            <div class="hint">Enter recipient mobile number (10 digits). Example: 0261234567</div>
+          <div class="form-group">
+            <label for="msisdn"><i class="fas fa-mobile-alt"></i> Phone Number</label>
+            <input id="msisdn" name="msisdn" type="text" placeholder="0261234567" pattern="\d{10}" inputmode="numeric" maxlength="10" required>
+            <i class="fas fa-phone input-icon"></i>
+            <div class="hint"><i class="fas fa-info-circle"></i> Enter 10-digit mobile number (e.g., 0261234567)</div>
           </div>
 
-          <div style="margin-top:1rem">
-            <label for="email">Your Email</label>
+          <div class="form-group">
+            <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
             <input id="email" name="email" type="email" placeholder="you@example.com" required>
-            <div class="hint">We will use this email to process the payment receipt.</div>
+            <i class="fas fa-at input-icon"></i>
+            <div class="hint"><i class="fas fa-info-circle"></i> Receipt will be sent to this email</div>
           </div>
 
-          <div style="margin-top:1rem">
-            <label for="packageSelectAirtelTigo">AirtelTigo PACKAGES</label>
-            <select id="packageSelectAirtelTigo" name="package_airteltigo">
-              <option value="">-- choose a package --</option>
+          <div class="form-group">
+            <label for="packageSelectAirtelTigo"><i class="fas fa-box"></i> Select Data Package</label>
+            <select id="packageSelectAirtelTigo" name="package_airteltigo" required>
+              <option value="">-- Choose your package --</option>
             </select>
+            <div class="hint"><i class="fas fa-info-circle"></i> Select the data bundle that suits your needs</div>
           </div>
 
-          <div style="margin-top:1.25rem" class="center">
-            <button type="submit" class="btn-order">ORDER AIRTELTIGO</button>
+          <div class="price-preview" id="pricePreview">
+            <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+            <div class="price-row">
+              <span class="price-label">Selected Package:</span>
+              <span class="price-value" id="selectedPackage">-</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Total Amount:</span>
+              <span class="price-value" id="totalAmount">GHS 0.00</span>
+            </div>
+          </div>
+
+          <div style="margin-top:1.5rem" class="center">
+            <button type="submit" class="btn-order"><i class="fas fa-lock"></i> Proceed to Checkout</button>
           </div>
         </form>
       </section>
@@ -93,5 +139,73 @@
   <script src="assets/js/supabase.js"></script>
   <script src="https://js.paystack.co/v1/inline.js"></script>
   <script src="js/order-airtel.js"></script>
+  <script>
+    // Price preview and form validation enhancements
+    document.addEventListener('DOMContentLoaded', function() {
+      const packageSelect = document.getElementById('packageSelectAirtelTigo');
+      const pricePreview = document.getElementById('pricePreview');
+      const selectedPackageEl = document.getElementById('selectedPackage');
+      const totalAmountEl = document.getElementById('totalAmount');
+      const msisdnInput = document.getElementById('msisdn');
+      const emailInput = document.getElementById('email');
+
+      // Package selection handler
+      packageSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (this.value) {
+          const packageName = this.value;
+          const priceText = selectedOption.textContent.match(/GHS([\d.]+)/);
+          const price = priceText ? parseFloat(priceText[1]) : 0;
+          
+          selectedPackageEl.textContent = packageName;
+          totalAmountEl.textContent = `GHS ${price.toFixed(2)}`;
+          pricePreview.classList.add('show');
+        } else {
+          pricePreview.classList.remove('show');
+        }
+      });
+
+      // Phone number validation
+      msisdnInput.addEventListener('input', function() {
+        const icon = this.nextElementSibling;
+        if (this.value.length === 10 && /^\d{10}$/.test(this.value)) {
+          this.classList.remove('error');
+          this.classList.add('valid');
+          icon.classList.remove('fa-phone', 'error');
+          icon.classList.add('fa-check-circle', 'valid');
+        } else if (this.value.length > 0) {
+          this.classList.remove('valid');
+          this.classList.add('error');
+          icon.classList.remove('fa-check-circle', 'valid');
+          icon.classList.add('fa-times-circle', 'error');
+        } else {
+          this.classList.remove('error', 'valid');
+          icon.classList.remove('fa-check-circle', 'fa-times-circle', 'valid', 'error');
+          icon.classList.add('fa-phone');
+        }
+      });
+
+      // Email validation
+      emailInput.addEventListener('input', function() {
+        const icon = this.nextElementSibling;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(this.value)) {
+          this.classList.remove('error');
+          this.classList.add('valid');
+          icon.classList.remove('fa-at', 'error');
+          icon.classList.add('fa-check-circle', 'valid');
+        } else if (this.value.length > 0) {
+          this.classList.remove('valid');
+          this.classList.add('error');
+          icon.classList.remove('fa-check-circle', 'valid');
+          icon.classList.add('fa-times-circle', 'error');
+        } else {
+          this.classList.remove('error', 'valid');
+          icon.classList.remove('fa-check-circle', 'fa-times-circle', 'valid', 'error');
+          icon.classList.add('fa-at');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
