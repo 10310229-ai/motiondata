@@ -870,6 +870,60 @@ body::after {
     }
 }
 
+/* Top Header Bar */
+.top-header {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.95) 0%, rgba(16, 185, 129, 0.95) 100%);
+    color: white;
+    padding: 8px 0;
+    font-size: 0.875rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.top-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.status-info, .hours-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-indicator {
+    color: #fff;
+    font-size: 0.5rem;
+    animation: pulse-status 2s infinite;
+}
+
+.status-text {
+    font-weight: 600;
+}
+
+@keyframes pulse-status {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+@media (max-width: 768px) {
+    .top-header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.3rem;
+    }
+    .top-header {
+        font-size: 0.75rem;
+        padding: 6px 0;
+    }
+}
+
 @media (max-width: 768px) {
     .whatsapp-float {
         bottom: 15px;
