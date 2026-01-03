@@ -114,18 +114,6 @@
             <div class="hint"><i class="fas fa-info-circle"></i> Select the data bundle that suits your needs</div>
           </div>
 
-          <div class="price-preview" id="pricePreview">
-            <h3><i class="fas fa-receipt"></i> Order Summary</h3>
-            <div class="price-row">
-              <span class="price-label">Selected Package:</span>
-              <span class="price-value" id="selectedPackage">-</span>
-            </div>
-            <div class="price-row">
-              <span class="price-label">Total Amount:</span>
-              <span class="price-value" id="totalAmount">GHS 0.00</span>
-            </div>
-          </div>
-
           <div style="margin-top:1.5rem" class="center">
             <button type="submit" class="btn-order"><i class="fas fa-lock"></i> Proceed to Checkout</button>
           </div>
@@ -140,30 +128,10 @@
   <script src="https://js.paystack.co/v1/inline.js"></script>
   <script src="js/order-airtel.js"></script>
   <script>
-    // Price preview and form validation enhancements
+    // Form validation enhancements
     document.addEventListener('DOMContentLoaded', function() {
-      const packageSelect = document.getElementById('packageSelectAirtelTigo');
-      const pricePreview = document.getElementById('pricePreview');
-      const selectedPackageEl = document.getElementById('selectedPackage');
-      const totalAmountEl = document.getElementById('totalAmount');
       const msisdnInput = document.getElementById('msisdn');
       const emailInput = document.getElementById('email');
-
-      // Package selection handler
-      packageSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        if (this.value) {
-          const packageName = this.value;
-          const priceText = selectedOption.textContent.match(/GHS([\d.]+)/);
-          const price = priceText ? parseFloat(priceText[1]) : 0;
-          
-          selectedPackageEl.textContent = packageName;
-          totalAmountEl.textContent = `GHS ${price.toFixed(2)}`;
-          pricePreview.classList.add('show');
-        } else {
-          pricePreview.classList.remove('show');
-        }
-      });
 
       // Phone number validation
       msisdnInput.addEventListener('input', function() {
