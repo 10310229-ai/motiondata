@@ -872,48 +872,88 @@ body::after {
 
 /* Top Header Bar */
 .top-header {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(16, 185, 129, 0.12) 100%);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(132, 204, 22, 0.3);
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(16, 185, 129, 0.18) 50%, rgba(132, 204, 22, 0.15) 100%);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border-bottom: 2px solid rgba(132, 204, 22, 0.4);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--muted);
-    padding: 10px 0;
-    font-size: 0.875rem;
+    padding: 12px 0;
+    font-size: 0.9rem;
     overflow: hidden;
     position: relative;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.15), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.top-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
 }
 
 .top-header-scroll {
     display: flex;
     overflow: hidden;
     white-space: nowrap;
+    position: relative;
+    z-index: 1;
 }
 
 .scroll-content {
     display: flex;
     gap: 3rem;
     animation: scroll-left 35s linear infinite;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .scroll-content span {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
+    gap: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1));
+    transition: all 0.3s ease;
+}
+
+.scroll-content span:hover {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2));
+    transform: scale(1.05);
 }
 
 .status-indicator {
     color: var(--primary);
-    font-size: 0.5rem;
+    font-size: 0.6rem;
     animation: pulse-status 2s infinite;
+    filter: drop-shadow(0 0 3px var(--primary));
 }
 
 @keyframes pulse-status {
     0%, 100% {
         opacity: 1;
+        transform: scale(1);
     }
     50% {
-        opacity: 0.6;
+        opacity: 0.7;
+        transform: scale(1.2);
     }
 }
 
@@ -928,11 +968,15 @@ body::after {
 
 @media (max-width: 768px) {
     .top-header {
-        font-size: 0.75rem;
-        padding: 8px 0;
+        font-size: 0.8rem;
+        padding: 10px 0;
     }
     .scroll-content {
         gap: 2rem;
+    }
+    .scroll-content span {
+        gap: 0.4rem;
+        padding: 2px 6px;
     }
 }
 
