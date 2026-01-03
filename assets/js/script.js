@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const joinWhatsapp = document.getElementById('joinWhatsapp');
     if (joinWhatsapp) {
         joinWhatsapp.addEventListener('click', () => {
-            window.open('https://wa.me/233256342577', '_blank');
+            window.open('https://chat.whatsapp.com/IsndSkTdg4a25K8YJycLi5', '_blank');
         });
     }
 
