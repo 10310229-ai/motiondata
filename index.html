@@ -19,8 +19,107 @@
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Popup Modal Styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .popup-overlay.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: linear-gradient(135deg, #10b981 0%, #22c55e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: slideIn 0.4s ease-out;
+            position: relative;
+        }
+
+        .popup-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .popup-title {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .popup-message {
+            color: #f0f0f0;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .popup-close-btn {
+            background: #fff;
+            color: #10b981;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .popup-close-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Notice Popup -->
+    <div class="popup-overlay" id="noticePopup">
+        <div class="popup-content">
+            <div class="popup-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <h2 class="popup-title">Service Notice</h2>
+            <p class="popup-message">
+                MTN server is slow. Don't expect fast delivery, we're not in normal times. Slow but sure delivery 😊
+            </p>
+            <button class="popup-close-btn" onclick="closePopup()">Got it!</button>
+        </div>
+    </div>
+
     <!-- Header -->
     <header class="header">
         <div class="container header-content">
@@ -29,30 +128,33 @@
                     <img src="Logo Template - Made with PosterMyWall.jpg" alt="Motion Data Solutions" class="logo-img">
                 </a>
             </div>
-            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false">
-                <i class="fas fa-bars"></i>
+            <div class="header-welcome">
+                <div class="welcome-text">Welcome, <span id="userName">Guest</span></div>
+                <div class="header-datetime" id="headerDateTime"></div>
+            </div>
+            <button class="mobile-menu-toggle header-hamburger" id="headerMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false">
+                <div class="hamburger-box">
+                    <div class="hamburger-bar"></div>
+                    <div class="hamburger-bar"></div>
+                    <div class="hamburger-bar"></div>
+                </div>
             </button>
         </div>
     </header>
 
-    <!-- Top Header Bar -->
-    <div class="top-header">
-        <div class="top-header-scroll">
-            <div class="scroll-content">
-                <span><i class="fas fa-circle status-indicator"></i> We are currently open - Hours: Monday to Sunday, 7am - 9pm</span>
-            </div>
-        </div>
-    </div>
-
     <!-- Sidebar Navigation -->
     <aside class="site-sidebar" id="mainNav" aria-label="Primary navigation">
         <div class="sidebar-header-inline">
+            <button class="mobile-menu-toggle sidebar-hamburger" id="sidebarMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false" style="display: none;">
+                <div class="hamburger-box">
+                    <div class="hamburger-bar"></div>
+                    <div class="hamburger-bar"></div>
+                    <div class="hamburger-bar"></div>
+                </div>
+            </button>
             <a href="index.html" class="brand">
                 <img src="Logo Template - Made with PosterMyWall.jpg" alt="Motion Data Solutions" class="logo-img">
             </a>
-            <button class="sidebar-close" aria-label="Close navigation" type="button">
-                <i class="fas fa-times"></i>
-            </button>
         </div>
 
         <!-- User Account Section -->
@@ -403,6 +505,72 @@
         <script>
             // small runtime niceties
             document.getElementById('year').textContent = new Date().getFullYear();
+
+            // Show popup on page load
+            function showPopup() {
+                document.getElementById('noticePopup').classList.add('active');
+            }
+
+            function closePopup() {
+                document.getElementById('noticePopup').classList.remove('active');
+            }
+
+            // Show popup when page loads
+            window.addEventListener('load', function() {
+                setTimeout(showPopup, 500);
+            });
+
+            // Close popup when clicking outside the content
+            document.getElementById('noticePopup').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePopup();
+                }
+            });
+
+            // Update date and time in header
+            function updateDateTime() {
+                const now = new Date();
+                const options = { 
+                    weekday: 'short', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                };
+                const dateTimeString = now.toLocaleDateString('en-US', options);
+                document.getElementById('headerDateTime').textContent = dateTimeString;
+            }
+
+            // Get user's first name (you can modify this to get from login/profile)
+            function getUserName() {
+                // Check if user is logged in with Supabase
+                if (window.supabaseClient) {
+                    window.supabaseClient.auth.getUser().then(({ data }) => {
+                        if (data.user) {
+                            const firstName = data.user.user_metadata?.first_name || 
+                                            data.user.user_metadata?.name?.split(' ')[0] || 
+                                            data.user.email?.split('@')[0] || 
+                                            'Guest';
+                            document.getElementById('userName').textContent = firstName;
+                        }
+                    });
+                } else {
+                    // Fallback: prompt user for name or use localStorage
+                    let userName = localStorage.getItem('userName');
+                    if (!userName) {
+                        userName = prompt('Please enter your first name:') || 'Guest';
+                        localStorage.setItem('userName', userName);
+                    }
+                    document.getElementById('userName').textContent = userName;
+                }
+            }
+
+            // Initialize header features
+            updateDateTime();
+            getUserName();
+            setInterval(updateDateTime, 1000); // Update every second
         </script>
 </body>
 </html>
