@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Get the best data bundle deals in Ghana. MTN and Telecel packages available. Fast delivery, secure payment.">
     <meta name="keywords" content="data bundles, Ghana data, MTN data, Telecel data, AirtelTigo, mobile data, cheap data Ghana, data deals">
     <meta name="author" content="Motion Data Solutions">
@@ -15,10 +16,16 @@
     <meta name="twitter:title" content="MOTION DATA SOLUTIONS">
     <meta name="twitter:description" content="Get the best data bundle deals in Ghana">
     <title>MOTION DATA SOLUTIONS - Best Data Bundle Deals in Ghana</title>
+    
+    <!-- Preconnect to external domains for faster loading -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">&display=swap
     <style>
         /* Popup Modal Styles */
         .popup-overlay {
@@ -125,7 +132,7 @@
         <div class="container header-content">
             <div class="logo">
                 <a href="index.html" class="brand">
-                    <img src="Logo Template - Made with PosterMyWall.jpg" alt="Motion Data Solutions" class="logo-img">
+                    <img src="Logo Template - Made with PosterMyWall.jpg" alt="Motion Data Solutions" class="logo-img" loading="lazy">
                 </a>
             </div>
             <div class="header-welcome">
@@ -153,7 +160,7 @@
                 </div>
             </button>
             <a href="index.html" class="brand">
-                <img src="Logo Template - Made with PosterMyWall.jpg" alt="Motion Data Solutions" class="logo-img">
+                <img src="Logo Template - Made with PosterMyWall.jpg" alt="Motion Data Solutions" class="logo-img" loading="lazy">
             </a>
         </div>
 
@@ -499,9 +506,9 @@
             <span class="whatsapp-text">Join for Updates</span>
         </a>
 
-        <script src="assets/js/script.js?v=2.2"></script>
-        <script src="assets/js/sidebar.js"></script>
-        <script src="assets/js/toast.js"></script>
+        <script src="assets/js/script.js?v=2.2" defer></script>
+        <script src="assets/js/sidebar.js" defer></script>
+        <script src="assets/js/toast.js" defer></script>
         <script>
             // small runtime niceties
             document.getElementById('year').textContent = new Date().getFullYear();
