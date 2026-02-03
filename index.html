@@ -48,20 +48,37 @@
 
         .popup-content {
             background: linear-gradient(135deg, #10b981 0%, #22c55e 100%);
-            padding: 30px;
+            padding: 25px 20px;
             border-radius: 15px;
             max-width: 450px;
             width: 90%;
+            margin: 0 10px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             text-align: center;
             animation: slideIn 0.4s ease-out;
             position: relative;
         }
 
+        @media (max-width: 480px) {
+            .popup-content {
+                padding: 20px 15px;
+                width: 95%;
+                margin: 0 5px;
+                border-radius: 12px;
+            }
+        }
+
         .popup-icon {
             font-size: 48px;
             margin-bottom: 15px;
             color: #fff;
+        }
+
+        @media (max-width: 480px) {
+            .popup-icon {
+                font-size: 36px;
+                margin-bottom: 10px;
+            }
         }
 
         .popup-title {
@@ -71,11 +88,26 @@
             margin-bottom: 15px;
         }
 
+        @media (max-width: 480px) {
+            .popup-title {
+                font-size: 20px;
+                margin-bottom: 12px;
+            }
+        }
+
         .popup-message {
             color: #f0f0f0;
             font-size: 16px;
             line-height: 1.6;
             margin-bottom: 25px;
+        }
+
+        @media (max-width: 480px) {
+            .popup-message {
+                font-size: 14px;
+                line-height: 1.5;
+                margin-bottom: 20px;
+            }
         }
 
         .popup-close-btn {
@@ -88,6 +120,14 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+        }
+
+        @media (max-width: 480px) {
+            .popup-close-btn {
+                padding: 10px 25px;
+                font-size: 14px;
+                width: 100%;
+            }
         }
 
         .popup-close-btn:hover {
@@ -550,7 +590,7 @@
                 document.getElementById('headerDateTime').textContent = dateTimeString;
             }
 
-            // Get user's first name (you can modify this to get from login/profile)
+            // Get user's first name from Supabase auth
             function getUserName() {
                 // Check if user is logged in with Supabase
                 if (window.supabaseClient) {
@@ -561,16 +601,15 @@
                                             data.user.email?.split('@')[0] || 
                                             'Guest';
                             document.getElementById('userName').textContent = firstName;
+                        } else {
+                            document.getElementById('userName').textContent = 'Guest';
                         }
+                    }).catch(() => {
+                        document.getElementById('userName').textContent = 'Guest';
                     });
                 } else {
-                    // Fallback: prompt user for name or use localStorage
-                    let userName = localStorage.getItem('userName');
-                    if (!userName) {
-                        userName = prompt('Please enter your first name:') || 'Guest';
-                        localStorage.setItem('userName', userName);
-                    }
-                    document.getElementById('userName').textContent = userName;
+                    // Default to Guest if Supabase is not loaded
+                    document.getElementById('userName').textContent = 'Guest';
                 }
             }
 
