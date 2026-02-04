@@ -559,6 +559,45 @@
     border: 1px solid rgba(255,59,48,0.3);
 }
 
+.status-badge.completed {
+    background: rgba(52,199,89,0.15);
+    color: #34c759;
+    border: 1px solid rgba(52,199,89,0.3);
+}
+
+.status-badge.failed {
+    background: rgba(255,59,48,0.15);
+    color: #ff3b30;
+    border: 1px solid rgba(255,59,48,0.3);
+}
+
+/* Network Badges */
+.network-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.network-badge.mtn {
+    background: rgba(255,204,0,0.15);
+    color: #ffcc00;
+    border: 1px solid rgba(255,204,0,0.3);
+}
+
+.network-badge.telecel {
+    background: rgba(14,165,255,0.15);
+    color: #0ea5ff;
+    border: 1px solid rgba(14,165,255,0.3);
+}
+
+.network-badge.airteltigo {
+    background: rgba(255,59,48,0.15);
+    color: #ff3b30;
+    border: 1px solid rgba(255,59,48,0.3);
+}
+
 /* Action Buttons */
 .action-btn {
     background: rgba(255,255,255,0.04);

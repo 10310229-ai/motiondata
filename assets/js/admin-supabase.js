@@ -147,18 +147,16 @@ async function loadAllOrders(filters = {}) {
             
             return `
                 <tr>
-                    <td><input type="checkbox" data-order-id="${order.id}"></td>
-                    <td>${order.reference || order.id}</td>
+                    <td>${order.reference || order.id || 'N/A'}</td>
                     <td>${date}</td>
                     <td>${order.email || 'N/A'}</td>
                     <td>${order.phone_number || order.phone || 'N/A'}</td>
-                    <td>${order.package_name || order.package}</td>
+                    <td><span class="network-badge ${order.network?.toLowerCase() || ''}">${order.network || 'N/A'}</span></td>
+                    <td>${order.package_name || order.package || 'N/A'}</td>
                     <td>GHS ${parseFloat(order.amount || 0).toFixed(2)}</td>
-                    <td><span class="status-badge ${order.status}">${(order.status || 'pending').charAt(0).toUpperCase() + order.status.slice(1)}</span></td>
+                    <td><span class="status-badge ${order.status}">${(order.status || 'pending').charAt(0).toUpperCase() + (order.status || 'pending').slice(1)}</span></td>
                     <td>
-                        <button class="action-btn" onclick="viewOrder(${order.id})"><i class="fas fa-eye"></i></button>
-                        <button class="action-btn" onclick="editOrder(${order.id})"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn danger" onclick="deleteOrder(${order.id})"><i class="fas fa-trash"></i></button>
+                        <button class="action-btn" onclick="viewOrder(${order.id})" title="View Order"><i class="fas fa-eye"></i></button>
                     </td>
                 </tr>
             `;
