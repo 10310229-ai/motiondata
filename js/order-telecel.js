@@ -1,6 +1,17 @@
 // Dedicated Telecel page logic — uses its own package list and Paystack handling
 
-function showSuccessPopup() {
+function showSuccessPopup(orderData = {}) {
+  // Add notification automatically
+  if (window.addOrderNotification) {
+    window.addOrderNotification({
+      title: 'Telecel Order Placed Successfully',
+      message: `Your ${orderData.package || 'data bundle'} order has been placed successfully. Delivery in progress.`,
+      orderId: orderData.orderId || `TELECEL-${Date.now()}`,
+      network: 'Telecel',
+      amount: orderData.amount || 'N/A'
+    });
+  }
+  
   const overlay = document.createElement('div');
   overlay.className = 'popup-overlay';
   overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9998;';

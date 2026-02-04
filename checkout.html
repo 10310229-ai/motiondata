@@ -453,6 +453,17 @@
                         }
                     })();
 
+                    // Add notification automatically
+                    if (window.addOrderNotification) {
+                        window.addOrderNotification({
+                            title: `${orderData.network} Order Placed Successfully`,
+                            message: `Your ${orderData.package} order has been placed successfully. Delivery in progress.`,
+                            orderId: savedOrder?.id || `${orderData.network}-${Date.now()}`,
+                            network: orderData.network,
+                            amount: `GH₵ ${orderData.amount.toFixed(2)}`
+                        });
+                    }
+
                     // Redirect to success page or show success message
                     alert('Payment successful! Your data bundle will be delivered within 5 minutes.');
                     window.location.href = 'index.html';
