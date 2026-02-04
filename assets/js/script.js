@@ -717,8 +717,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let savedUserId = Date.now().toString();
                 
-                // Try to save to Supabase (may fail if RLS policies aren't set)
+                // Save to Supabase first
                 try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
                     const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
                         method: 'POST',
                         headers: {
@@ -727,22 +730,32 @@ document.addEventListener('DOMContentLoaded', () => {
                             'Content-Type': 'application/json',
                             'Prefer': 'return=representation'
                         },
-                        body: JSON.stringify(newUser)
+                        body: JSON.stringify(newUser),
+                        signal: controller.signal
                     });
+
+                    clearTimeout(timeoutId);
 
                     if (response.ok) {
                         const savedUser = await response.json();
                         savedUserId = savedUser[0]?.id || savedUserId;
-                        console.log('User saved to Supabase successfully');
+                        console.log('✓ User saved to Supabase successfully with ID:', savedUserId);
                     } else {
                         const errorText = await response.text();
-                        console.warn('Supabase save failed, using localStorage:', errorText);
+                        console.error('Supabase save failed:', errorText);
                         if (errorText.includes('duplicate') || errorText.includes('unique')) {
                             throw new Error('Email already registered');
                         }
+                        throw new Error('Failed to create account in database');
                     }
                 } catch (supabaseError) {
-                    console.warn('Supabase error, continuing with localStorage:', supabaseError);
+                    console.error('Supabase error:', supabaseError);
+                    if (supabaseError.message.includes('Email already registered') || 
+                        supabaseError.message.includes('Failed to create account')) {
+                        throw supabaseError;
+                    }
+                    // Only continue with localStorage if Supabase is unreachable
+                    console.warn('Supabase unavailable, saving to localStorage only');
                 }
 
                 // Always save to localStorage as primary/backup
