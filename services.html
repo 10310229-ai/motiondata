@@ -19,37 +19,48 @@
             </div>
             
             <!-- Navigation (shows in header on desktop, sidebar on mobile) -->
-            <aside class="site-sidebar" id="mainNav" aria-label="Primary navigation">
-                <div class="sidebar-header-inline">
-                    <button class="mobile-menu-toggle sidebar-hamburger" id="sidebarMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false" style="display: none;">
-                        <div class="hamburger-box">
-                            <div class="hamburger-bar"></div>
-                            <div class="hamburger-bar"></div>
-                            <div class="hamburger-bar"></div>
-                        </div>
-                    </button>
-                </div>
-                <nav class="sidebar-links">
-                    <a href="index.html" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a>
-                    <a href="services.html" class="nav-link active" aria-current="page"><i class="fas fa-shopping-cart"></i><span>Services</span></a>
-                    <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i><span>About</span></a>
-                    <a href="faq.html" class="nav-link"><i class="fas fa-question-circle"></i><span>FAQ</span></a>
-                    <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i><span>Contact</span></a>
-                    <a href="https://wa.me/233256342577" class="nav-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
-                </nav>
-            </aside>
+            <nav class="main-navigation">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a>
+                <a href="services.html" class="nav-link active"><i class="fas fa-shopping-cart"></i><span>Services</span></a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i><span>About</span></a>
+                <a href="faq.html" class="nav-link"><i class="fas fa-question-circle"></i><span>FAQ</span></a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i><span>Contact</span></a>
+                <a href="https://wa.me/233256342577" class="nav-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
+            </nav>
             
             <div class="header-actions">
-                <button class="mobile-menu-toggle header-hamburger" id="headerMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false">
-                    <div class="hamburger-box">
-                        <div class="hamburger-bar"></div>
-                        <div class="hamburger-bar"></div>
-                        <div class="hamburger-bar"></div>
-                    </div>
+                <button class="hamburger-menu" id="hamburgerBtn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    
+    <!-- Mobile Navigation Sidebar -->
+    <aside class="mobile-nav-sidebar" id="mobileNavSidebar">
+        <div class="mobile-nav-header">
+            <h3>Menu</h3>
+            <button class="close-nav" id="closeNavBtn" aria-label="Close menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="mobile-nav-links">
+            <a href="index.html" class="mobile-nav-link"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="services.html" class="mobile-nav-link active"><i class="fas fa-shopping-cart"></i><span>Services</span></a>
+            <a href="about.html" class="mobile-nav-link"><i class="fas fa-info-circle"></i><span>About</span></a>
+            <a href="faq.html" class="mobile-nav-link"><i class="fas fa-question-circle"></i><span>FAQ</span></a>
+            <a href="contact.html" class="mobile-nav-link"><i class="fas fa-envelope"></i><span>Contact</span></a>
+            <a href="https://wa.me/233256342577" class="mobile-nav-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
+            <hr style="border: none; border-top: 1px solid rgba(34, 197, 94, 0.2); margin: 1rem 0;">
+            <a href="#" class="mobile-nav-link" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i><span>Login</span></a>
+            <a href="#" class="mobile-nav-link" id="mobileSignupBtn"><i class="fas fa-user-plus"></i><span>Sign Up</span></a>
+        </nav>
+    </aside>
 
     <!-- Top Header Bar -->
     <div class="top-header">
@@ -175,7 +186,7 @@
         </div>
     </footer>
 
-    <script src="assets/js/sidebar.js"></script>
+    <script src="assets/js/sidebar-new.js"></script>
     <script src="assets/js/toast.js"></script>
     <script src="assets/js/script.js"></script>
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
