@@ -625,7 +625,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 showAuthMessage('Login successful! Redirecting...', 'success');
                 setTimeout(() => {
-                    window.location.href = 'profile.html';
+                    authModal.classList.remove('active');
+                    loginForm.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.style.background = '';
+                    checkAuth();
+                    window.location.reload();
                 }, 1500);
 
             } catch (error) {
@@ -748,7 +754,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 showAuthMessage('Account created successfully! Redirecting...', 'success');
                 setTimeout(() => {
-                    window.location.href = 'profile.html';
+                    authModal.classList.remove('active');
+                    signupForm.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.style.background = '';
+                    checkAuth();
+                    window.location.reload();
                 }, 1500);
 
             } catch (error) {
