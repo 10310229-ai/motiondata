@@ -65,6 +65,33 @@ body::after {
 	50% { opacity: 1; }
 }
 
+/* Hero Welcome Section */
+.hero-welcome-section {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin: 0.75rem 0;
+}
+
+.hero-welcome-text {
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: var(--primary);
+	text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-welcome-text span {
+	color: var(--accent);
+	font-weight: 700;
+}
+
+.hero-datetime {
+	font-size: 0.95rem;
+	color: var(--muted);
+	font-weight: 500;
+	opacity: 0.9;
+}
+
 .container{max-width:var(--max-w);margin:0 auto;padding:1rem;position:relative;z-index:1}
 
 /* Header */
@@ -516,9 +543,9 @@ body::after {
 	.site-sidebar{
 		position: static;
 		transform: translateX(0);
-		flex-direction: row;
+		flex-direction: column;
 		width: auto;
-		max-width: none;
+		max-width: 200px;
 		max-height: none;
 		height: auto;
 		background: transparent;
@@ -527,10 +554,7 @@ body::after {
 		box-shadow: none;
 		padding: 0;
 		order: 2;
-		flex: 1;
-		justify-content: center;
-		align-items: center;
-		gap: 1rem;
+		gap: 0.35rem;
 		overflow: visible;
 		border-radius: 0;
 	}
@@ -544,19 +568,20 @@ body::after {
 	}
 	
 	.sidebar-links{
-		flex-direction: row;
-		gap: 0.5rem;
-		align-items: center;
+		flex-direction: column;
+		gap: 0.35rem;
+		align-items: stretch;
 	}
 	
 	.sidebar-links .nav-link{
-		padding: 0.5rem 1rem;
-		font-size: 0.9rem;
+		padding: 0.5rem 0.85rem;
+		font-size: 0.85rem;
 		white-space: nowrap;
 	}
 	
 	.sidebar-links .nav-link i{
-		display: none;
+		width: 18px;
+		text-align: center;
 	}
 	
 	.sidebar-overlay{
@@ -565,10 +590,6 @@ body::after {
 	
 	.logo{
 		order: 1;
-	}
-	
-	.header-welcome{
-		display: none !important;
 	}
 	
 	.header-actions{

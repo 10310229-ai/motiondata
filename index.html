@@ -36,10 +36,6 @@
                     <img src="Logo Template - Made with PosterMyWall.jpg" alt="Motion Data Solutions" class="logo-img" loading="lazy">
                 </a>
             </div>
-            <div class="header-welcome">
-                <div class="welcome-text">Welcome, <span id="userName">Guest</span></div>
-                <div class="header-datetime" id="headerDateTime"></div>
-            </div>
             <div class="header-actions">
                 <div class="notification-wrapper">
                     <button class="notification-bell" id="notificationBell" aria-label="Notifications">
@@ -192,6 +188,10 @@
             <div class="container hero-content">
                 <div class="hero-left">
                     <h1 class="hero-title">Get Best Data Deals</h1>
+                    <div class="hero-welcome-section">
+                        <div class="hero-welcome-text">Welcome, <span id="heroUserName">Guest</span></div>
+                        <div class="hero-datetime" id="heroDateTime"></div>
+                    </div>
                     <div class="greeting-badge">
                         <i class="fas fa-sun"></i>
                         <span id="greeting">WELCOME</span>
@@ -433,7 +433,7 @@
             // small runtime niceties
             document.getElementById('year').textContent = new Date().getFullYear();
 
-            // Update date and time in header
+            // Update date and time in hero section
             function updateDateTime() {
                 const now = new Date();
                 const options = { 
@@ -446,7 +446,10 @@
                     second: '2-digit'
                 };
                 const dateTimeString = now.toLocaleDateString('en-US', options);
-                document.getElementById('headerDateTime').textContent = dateTimeString;
+                const heroDateTimeEl = document.getElementById('heroDateTime');
+                if (heroDateTimeEl) {
+                    heroDateTimeEl.textContent = dateTimeString;
+                }
             }
 
             // Get user's first name from Supabase auth
@@ -459,16 +462,28 @@
                                             data.user.user_metadata?.name?.split(' ')[0] || 
                                             data.user.email?.split('@')[0] || 
                                             'Guest';
-                            document.getElementById('userName').textContent = firstName;
+                            const heroUserNameEl = document.getElementById('heroUserName');
+                            if (heroUserNameEl) {
+                                heroUserNameEl.textContent = firstName;
+                            }
                         } else {
-                            document.getElementById('userName').textContent = 'Guest';
+                            const heroUserNameEl = document.getElementById('heroUserName');
+                            if (heroUserNameEl) {
+                                heroUserNameEl.textContent = 'Guest';
+                            }
                         }
                     }).catch(() => {
-                        document.getElementById('userName').textContent = 'Guest';
+                        const heroUserNameEl = document.getElementById('heroUserName');
+                        if (heroUserNameEl) {
+                            heroUserNameEl.textContent = 'Guest';
+                        }
                     });
                 } else {
                     // Default to Guest if Supabase is not loaded
-                    document.getElementById('userName').textContent = 'Guest';
+                    const heroUserNameEl = document.getElementById('heroUserName');
+                    if (heroUserNameEl) {
+                        heroUserNameEl.textContent = 'Guest';
+                    }
                 }
             }
 
