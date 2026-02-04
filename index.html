@@ -40,6 +40,24 @@
                 <div class="welcome-text">Welcome, <span id="userName">Guest</span></div>
                 <div class="header-datetime" id="headerDateTime"></div>
             </div>
+            <div class="notification-wrapper">
+                <button class="notification-bell" id="notificationBell" aria-label="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                </button>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <div class="notification-header">
+                        <h3>Order Notifications</h3>
+                        <button class="clear-all-btn" id="clearAllNotifications">Clear All</button>
+                    </div>
+                    <div class="notification-list" id="notificationList">
+                        <div class="no-notifications">
+                            <i class="fas fa-inbox"></i>
+                            <p>No notifications yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <button class="mobile-menu-toggle header-hamburger" id="headerMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false">
                 <div class="hamburger-box">
                     <div class="hamburger-bar"></div>
@@ -457,6 +475,141 @@
             updateDateTime();
             getUserName();
             setInterval(updateDateTime, 1000); // Update every second
+
+            // Notification System
+            const notificationBell = document.getElementById('notificationBell');
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            const notificationBadge = document.getElementById('notificationBadge');
+            const notificationList = document.getElementById('notificationList');
+            const clearAllBtn = document.getElementById('clearAllNotifications');
+
+            // Toggle notification dropdown
+            notificationBell.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notificationDropdown.classList.toggle('active');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!notificationDropdown.contains(e.target) && e.target !== notificationBell) {
+                    notificationDropdown.classList.remove('active');
+                }
+            });
+
+            // Notification Storage
+            function getNotifications() {
+                const notifications = localStorage.getItem('orderNotifications');
+                return notifications ? JSON.parse(notifications) : [];
+            }
+
+            function saveNotifications(notifications) {
+                localStorage.setItem('orderNotifications', JSON.stringify(notifications));
+            }
+
+            // Add notification function (to be called when order is placed)
+            window.addOrderNotification = function(orderData) {
+                const notifications = getNotifications();
+                const notification = {
+                    id: Date.now(),
+                    title: orderData.title || 'Order Placed',
+                    message: orderData.message || 'Your order has been received and is being processed.',
+                    orderId: orderData.orderId || 'N/A',
+                    network: orderData.network || '',
+                    amount: orderData.amount || '',
+                    timestamp: new Date().toISOString(),
+                    read: false
+                };
+                notifications.unshift(notification);
+                saveNotifications(notifications);
+                renderNotifications();
+                updateBadge();
+            };
+
+            // Render notifications
+            function renderNotifications() {
+                const notifications = getNotifications();
+                
+                if (notifications.length === 0) {
+                    notificationList.innerHTML = `
+                        <div class="no-notifications">
+                            <i class="fas fa-inbox"></i>
+                            <p>No notifications yet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                notificationList.innerHTML = notifications.map(notif => `
+                    <div class="notification-item ${!notif.read ? 'unread' : ''}" data-id="${notif.id}">
+                        <div class="notification-item-header">
+                            <h4 class="notification-title">${notif.title}</h4>
+                            <span class="notification-time">${formatTime(notif.timestamp)}</span>
+                        </div>
+                        <p class="notification-message">${notif.message}</p>
+                        ${notif.orderId ? `<p class="notification-order-id">Order ID: ${notif.orderId}</p>` : ''}
+                    </div>
+                `).join('');
+
+                // Mark as read when clicked
+                document.querySelectorAll('.notification-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const id = parseInt(this.dataset.id);
+                        markAsRead(id);
+                    });
+                });
+            }
+
+            // Mark notification as read
+            function markAsRead(id) {
+                const notifications = getNotifications();
+                const notif = notifications.find(n => n.id === id);
+                if (notif && !notif.read) {
+                    notif.read = true;
+                    saveNotifications(notifications);
+                    renderNotifications();
+                    updateBadge();
+                }
+            }
+
+            // Update badge count
+            function updateBadge() {
+                const notifications = getNotifications();
+                const unreadCount = notifications.filter(n => !n.read).length;
+                
+                if (unreadCount > 0) {
+                    notificationBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    notificationBadge.style.display = 'flex';
+                } else {
+                    notificationBadge.style.display = 'none';
+                }
+            }
+
+            // Format timestamp
+            function formatTime(timestamp) {
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diff = Math.floor((now - date) / 1000); // seconds
+
+                if (diff < 60) return 'Just now';
+                if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+                if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+                if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+                
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            }
+
+            // Clear all notifications
+            clearAllBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear all notifications?')) {
+                    localStorage.removeItem('orderNotifications');
+                    renderNotifications();
+                    updateBadge();
+                }
+            });
+
+            // Initialize notifications on page load
+            renderNotifications();
+            updateBadge();
         </script>
 </body>
 </html>
