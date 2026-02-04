@@ -17,9 +17,37 @@
                     <img src="Logo Template - Made with PosterMyWall.jpg" alt="Motion Data Solutions" class="logo-img">
                 </a>
             </div>
-            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false">
-                <i class="fas fa-bars"></i>
-            </button>
+            
+            <!-- Navigation (shows in header on desktop, sidebar on mobile) -->
+            <aside class="site-sidebar" id="mainNav" aria-label="Primary navigation">
+                <div class="sidebar-header-inline">
+                    <button class="mobile-menu-toggle sidebar-hamburger" id="sidebarMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false" style="display: none;">
+                        <div class="hamburger-box">
+                            <div class="hamburger-bar"></div>
+                            <div class="hamburger-bar"></div>
+                            <div class="hamburger-bar"></div>
+                        </div>
+                    </button>
+                </div>
+                <nav class="sidebar-links">
+                    <a href="index.html" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a>
+                    <a href="services.html" class="nav-link"><i class="fas fa-shopping-cart"></i><span>Services</span></a>
+                    <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i><span>About</span></a>
+                    <a href="faq.html" class="nav-link"><i class="fas fa-question-circle"></i><span>FAQ</span></a>
+                    <a href="contact.html" class="nav-link active" aria-current="page"><i class="fas fa-envelope"></i><span>Contact</span></a>
+                    <a href="https://wa.me/233256342577" class="nav-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
+                </nav>
+            </aside>
+            
+            <div class="header-actions">
+                <button class="mobile-menu-toggle header-hamburger" id="headerMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false">
+                    <div class="hamburger-box">
+                        <div class="hamburger-bar"></div>
+                        <div class="hamburger-bar"></div>
+                        <div class="hamburger-bar"></div>
+                    </div>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -31,23 +59,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Sidebar Navigation -->
-    <aside class="site-sidebar" id="mainNav" aria-label="Primary navigation">
-        <div class="sidebar-header-inline">
-            <button class="sidebar-close" aria-label="Close navigation" type="button">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <nav class="sidebar-links">
-            <a href="index.html" class="nav-link"><i class="fas fa-home"></i><span>Home</span></a>
-            <a href="services.html" class="nav-link"><i class="fas fa-shopping-cart"></i><span>Services</span></a>
-            <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i><span>About</span></a>
-            <a href="faq.html" class="nav-link"><i class="fas fa-question-circle"></i><span>FAQ</span></a>
-            <a href="contact.html" class="nav-link active" aria-current="page"><i class="fas fa-envelope"></i><span>Contact</span></a>
-            <a href="https://wa.me/233256342577" class="nav-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
-        </nav>
-    </aside>
 
     <main>
         <section class="contact" id="contact">
