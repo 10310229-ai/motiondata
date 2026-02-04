@@ -538,6 +538,7 @@ body::after {
 	border-radius: 0 0 0 12px;
 	overflow-y: auto;
 	overflow-x: hidden;
+	pointer-events: auto;
 }
 
 /* Desktop/iPad: Navigation in header */
@@ -626,8 +627,17 @@ body::after {
 }
 
 @media(max-width:767px){
-	.site-sidebar{width:90vw;max-width:340px;padding:1.25rem}
-	.sidebar-links .nav-link{padding:.85rem 1rem;font-size:1rem}
+	.site-sidebar{
+		width:90vw;
+		max-width:340px;
+		padding:1.25rem;
+		pointer-events: auto !important;
+	}
+	.sidebar-links .nav-link{
+		padding:.85rem 1rem;
+		font-size:1rem;
+		pointer-events: auto !important;
+	}
 	
 	.mobile-menu-toggle{
 		display: inline-flex !important;

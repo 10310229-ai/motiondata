@@ -58,7 +58,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Close sidebar when clicking overlay
-    overlay.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', function(e) {
+        if (sidebar.classList.contains('active')) {
+            toggleSidebar();
+        }
+    });
 
     // Close sidebar on window resize if screen becomes desktop/iPad size
     window.addEventListener('resize', function() {
@@ -76,10 +80,16 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.add('active');
         }
         
-        // Close sidebar when clicking a link on mobile
-        link.addEventListener('click', function() {
-            if (window.innerWidth < 768) {
-                setTimeout(toggleSidebar, 200);
+        // Close sidebar when clicking a link on mobile (but don't prevent default)
+        link.addEventListener('click', function(e) {
+            // Only auto-close on mobile, and only for internal links
+            if (window.innerWidth < 768 && !link.hasAttribute('target')) {
+                // Let the link navigation happen naturally, then close sidebar
+                setTimeout(function() {
+                    if (sidebar.classList.contains('active')) {
+                        toggleSidebar();
+                    }
+                }, 100);
             }
         });
     });
