@@ -18,6 +18,11 @@
         const overlay = document.getElementById('mobileNavOverlay');
         const closeBtn = document.getElementById('closeNavBtn');
         const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+        const mobileSignupBtn = document.getElementById('mobileSignupBtn');
+        const showAuthBtn = document.getElementById('showAuthBtn');
+        const authModal = document.getElementById('authModal');
+        const authTabs = document.querySelectorAll('.auth-tab');
         
         if (!hamburger || !sidebar || !overlay) {
             console.warn('Navigation elements not found');
@@ -61,13 +66,57 @@
         
         // Close sidebar when clicking a link
         mobileLinks.forEach(link => {
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function(e) {
                 // Don't close for external links with target="_blank"
                 if (!this.hasAttribute('target')) {
+                    // Check if it's a login/signup button
+                    if (this.id === 'mobileLoginBtn' || this.id === 'mobileSignupBtn') {
+                        e.preventDefault();
+                        closeNav();
+                        return;
+                    }
                     setTimeout(closeNav, 200);
                 }
             });
         });
+        
+        // Handle login button click
+        if (mobileLoginBtn) {
+            mobileLoginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeNav();
+                setTimeout(function() {
+                    if (authModal) {
+                        authModal.classList.add('active');
+                        // Switch to login tab
+                        authTabs.forEach(tab => {
+                            if (tab.dataset.tab === 'login') {
+                                tab.click();
+                            }
+                        });
+                    }
+                }, 300);
+            });
+        }
+        
+        // Handle signup button click
+        if (mobileSignupBtn) {
+            mobileSignupBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeNav();
+                setTimeout(function() {
+                    if (authModal) {
+                        authModal.classList.add('active');
+                        // Switch to signup tab
+                        authTabs.forEach(tab => {
+                            if (tab.dataset.tab === 'signup') {
+                                tab.click();
+                            }
+                        });
+                    }
+                }, 300);
+            });
+        }
         
         // Close on window resize if screen becomes desktop size
         let resizeTimer;
