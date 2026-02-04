@@ -424,10 +424,65 @@ document.addEventListener('DOMContentLoaded', () => {
                 userProfile.style.display = 'block';
                 if (document.getElementById('userName')) document.getElementById('userName').textContent = user.name;
                 if (document.getElementById('userEmail')) document.getElementById('userEmail').textContent = user.email;
+                
+                // Update mobile navigation to show user info
+                updateMobileNavForLoggedInUser(user);
             } else {
                 authPrompt.style.display = 'block';
                 userProfile.style.display = 'none';
+                
+                // Update mobile navigation to show login/signup
+                updateMobileNavForLoggedOutUser();
             }
+        }
+        
+        return user;
+    }
+    
+    // Update mobile navigation for logged-in users
+    function updateMobileNavForLoggedInUser(user) {
+        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+        const mobileSignupBtn = document.getElementById('mobileSignupBtn');
+        
+        if (mobileLoginBtn && mobileSignupBtn) {
+            // Replace login/signup with user profile and logout
+            mobileLoginBtn.innerHTML = `<i class="fas fa-user-circle"></i><span>${user.name}</span>`;
+            mobileLoginBtn.style.pointerEvents = 'none';
+            mobileLoginBtn.style.opacity = '0.7';
+            
+            mobileSignupBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i><span>Logout</span>';
+            mobileSignupBtn.id = 'mobileLogoutBtn';
+            mobileSignupBtn.onclick = function(e) {
+                e.preventDefault();
+                localStorage.removeItem('currentUser');
+                checkAuth();
+                const sidebar = document.getElementById('mobileNavSidebar');
+                const overlay = document.getElementById('mobileNavOverlay');
+                if (sidebar) sidebar.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                showToast('Logged out successfully');
+            };
+        }
+    }
+    
+    // Update mobile navigation for logged-out users
+    function updateMobileNavForLoggedOutUser() {
+        const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+        
+        if (mobileLogoutBtn) {
+            // Restore login button
+            if (mobileLoginBtn) {
+                mobileLoginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>Login</span>';
+                mobileLoginBtn.style.pointerEvents = 'auto';
+                mobileLoginBtn.style.opacity = '1';
+            }
+            
+            // Restore signup button
+            mobileLogoutBtn.innerHTML = '<i class="fas fa-user-plus"></i><span>Sign Up</span>';
+            mobileLogoutBtn.id = 'mobileSignupBtn';
+            mobileLogoutBtn.onclick = null;
         }
     }
 
@@ -607,15 +662,36 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
 
             try {
-                // Check if email already exists in localStorage
+                // Check if email or phone already exists in localStorage
                 const users = JSON.parse(localStorage.getItem('users') || '[]');
                 if (users.find(u => u.email === email)) {
-                    throw new Error('Email already registered');
+                    throw new Error('Email already registered. Please login instead.');
                 }
-
-                // Save to Supabase
+                if (users.find(u => u.phone === phone)) {
+                    throw new Error('Phone number already registered. Please login instead.');
+                }
+                
+                // Check if email or phone exists in Supabase
                 const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
                 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
+                
+                try {
+                    const checkEmail = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    });
+                    
+                    if (checkEmail.ok) {
+                        const existingUsers = await checkEmail.json();
+                        if (existingUsers.length > 0) {
+                            throw new Error('Email already registered. Please login instead.');
+                        }
+                    }
+                } catch (checkError) {
+                    console.warn('Could not check existing users in Supabase:', checkError);
+                }
 
                 const newUser = {
                     name,
