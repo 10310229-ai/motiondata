@@ -77,18 +77,30 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Header hamburger clicked!');
             e.preventDefault();
             e.stopPropagation();
-            toggleSidebar();
+            e.stopImmediatePropagation();
+            setTimeout(function() {
+                toggleSidebar();
+            }, 10);
         });
     }
 
     // Sidebar hamburger toggle button
     if (sidebarMenuToggle) {
-        sidebarMenuToggle.addEventListener('click', toggleSidebar);
+        sidebarMenuToggle.addEventListener('click', function(e) {
+            console.log('Sidebar hamburger clicked!');
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            setTimeout(function() {
+                toggleSidebar();
+            }, 10);
+        });
     }
 
     // Close sidebar when clicking overlay
     overlay.addEventListener('click', function(e) {
-        if (sidebar.classList.contains('active')) {
+        console.log('Overlay clicked');
+        if (e.target === overlay && sidebar.classList.contains('active')) {
             toggleSidebar();
         }
     });
