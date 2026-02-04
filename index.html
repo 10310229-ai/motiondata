@@ -38,48 +38,14 @@
             </div>
             
             <!-- Navigation (shows in header on desktop, sidebar on mobile) -->
-            <aside class="site-sidebar" id="mainNav" aria-label="Primary navigation">
-                <div class="sidebar-header-inline">
-                    <button class="mobile-menu-toggle sidebar-hamburger" id="sidebarMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false" style="display: none;">
-                        <div class="hamburger-box">
-                            <div class="hamburger-bar"></div>
-                            <div class="hamburger-bar"></div>
-                            <div class="hamburger-bar"></div>
-                        </div>
-                    </button>
-                </div>
-
-                <!-- User Account Section -->
-                <div class="sidebar-user-section" id="userSection">
-                    <!-- Logged Out State -->
-                    <div class="auth-prompt" id="authPrompt">
-                        <i class="fas fa-user-circle" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 0.5rem;"></i>
-                        <p style="font-size: 0.9rem; margin: 0.5rem 0; opacity: 0.8;">Sign in to place orders</p>
-                        <button class="btn btn-auth" id="showAuthBtn"><i class="fas fa-sign-in-alt"></i> Login / Sign Up</button>
-                    </div>
-
-                    <!-- Logged In State -->
-                    <div class="user-profile" id="userProfile" style="display: none;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                            <i class="fas fa-user-circle" style="font-size: 2rem; color: var(--accent);"></i>
-                            <div>
-                                <p style="font-weight: 600; margin: 0; font-size: 0.95rem;" id="userName"></p>
-                                <p style="font-size: 0.8rem; margin: 0; opacity: 0.7;" id="userEmail"></p>
-                            </div>
-                        </div>
-                        <button class="btn btn-auth btn-logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                    </div>
-                </div>
-
-                <nav class="sidebar-links">
-                    <a href="index.html" class="nav-link active" aria-current="page"><i class="fas fa-home"></i><span>Home</span></a>
-                    <a href="services.html" class="nav-link"><i class="fas fa-shopping-cart"></i><span>Services</span></a>
-                    <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i><span>About</span></a>
-                    <a href="faq.html" class="nav-link"><i class="fas fa-question-circle"></i><span>FAQ</span></a>
-                    <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i><span>Contact</span></a>
-                    <a href="https://wa.me/233256342577" class="nav-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
-                </nav>
-            </aside>
+            <nav class="main-navigation">
+                <a href="index.html" class="nav-link active"><i class="fas fa-home"></i><span>Home</span></a>
+                <a href="services.html" class="nav-link"><i class="fas fa-shopping-cart"></i><span>Services</span></a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i><span>About</span></a>
+                <a href="faq.html" class="nav-link"><i class="fas fa-question-circle"></i><span>FAQ</span></a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i><span>Contact</span></a>
+                <a href="https://wa.me/233256342577" class="nav-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
+            </nav>
             
             <div class="header-actions">
                 <div class="notification-wrapper">
@@ -99,16 +65,35 @@
                         </div>
                     </div>
                 </div>
-                <button class="mobile-menu-toggle header-hamburger" id="headerMenuToggle" aria-label="Toggle navigation" aria-controls="mainNav" aria-expanded="false">
-                    <div class="hamburger-box">
-                        <div class="hamburger-bar"></div>
-                        <div class="hamburger-bar"></div>
-                        <div class="hamburger-bar"></div>
-                    </div>
+                <button class="hamburger-menu" id="hamburgerBtn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Navigation Overlay -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    
+    <!-- Mobile Navigation Sidebar -->
+    <aside class="mobile-nav-sidebar" id="mobileNavSidebar">
+        <div class="mobile-nav-header">
+            <h3>Menu</h3>
+            <button class="close-nav" id="closeNavBtn" aria-label="Close menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="mobile-nav-links">
+            <a href="index.html" class="mobile-nav-link active"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="services.html" class="mobile-nav-link"><i class="fas fa-shopping-cart"></i><span>Services</span></a>
+            <a href="about.html" class="mobile-nav-link"><i class="fas fa-info-circle"></i><span>About</span></a>
+            <a href="faq.html" class="mobile-nav-link"><i class="fas fa-question-circle"></i><span>FAQ</span></a>
+            <a href="contact.html" class="mobile-nav-link"><i class="fas fa-envelope"></i><span>Contact</span></a>
+            <a href="https://wa.me/233256342577" class="mobile-nav-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
+        </nav>
+    </aside>
 
     <!-- Auth Modal -->
     <div class="auth-modal" id="authModal">
@@ -422,7 +407,7 @@
         </a>
 
         <script src="assets/js/script.js?v=2.2" defer></script>
-        <script src="assets/js/sidebar.js" defer></script>
+        <script src="assets/js/sidebar-new.js" defer></script>
         <script src="assets/js/toast.js" defer></script>
         <script>
             // small runtime niceties
