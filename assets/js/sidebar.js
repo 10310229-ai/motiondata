@@ -8,14 +8,35 @@ document.addEventListener('DOMContentLoaded', function() {
     const headerMenuToggle = document.getElementById('headerMenuToggle');
     const sidebarMenuToggle = document.getElementById('sidebarMenuToggle');
     const sidebarLinks = document.querySelectorAll('.sidebar-links a');
+    
+    // Debug logging
+    console.log('Sidebar elements found:', {
+        sidebar: !!sidebar,
+        headerMenuToggle: !!headerMenuToggle,
+        sidebarMenuToggle: !!sidebarMenuToggle,
+        linksCount: sidebarLinks.length
+    });
+    
+    if (!sidebar) {
+        console.error('Sidebar element not found!');
+        return;
+    }
+    
+    if (!headerMenuToggle) {
+        console.error('Header menu toggle not found!');
+        return;
+    }
+    
     const overlay = document.createElement('div');
     
     // Create overlay for mobile
     overlay.className = 'sidebar-overlay';
     document.body.appendChild(overlay);
+    console.log('Overlay created and appended');
 
     // Toggle sidebar visibility
     function toggleSidebar() {
+        console.log('Toggle sidebar called');
         const isActive = sidebar.classList.contains('active');
         
         if (isActive) {
@@ -33,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.style.overflow = '';
         } else {
             // Open sidebar
+            console.log('Opening sidebar');
             sidebar.classList.add('active');
             overlay.classList.add('active');
             if (headerMenuToggle) {
@@ -44,12 +66,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 sidebarMenuToggle.style.display = '';
             }
             document.body.style.overflow = 'hidden';
+            console.log('Sidebar opened, classes:', sidebar.className);
         }
     }
 
     // Header hamburger toggle button
     if (headerMenuToggle) {
-        headerMenuToggle.addEventListener('click', toggleSidebar);
+        console.log('Adding click listener to header hamburger');
+        headerMenuToggle.addEventListener('click', function(e) {
+            console.log('Header hamburger clicked!');
+            e.preventDefault();
+            e.stopPropagation();
+            toggleSidebar();
+        });
     }
 
     // Sidebar hamburger toggle button
