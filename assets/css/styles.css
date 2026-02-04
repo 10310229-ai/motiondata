@@ -543,9 +543,9 @@ body::after {
 	.site-sidebar{
 		position: static;
 		transform: translateX(0);
-		flex-direction: column;
+		flex-direction: row;
 		width: auto;
-		max-width: 200px;
+		max-width: none;
 		max-height: none;
 		height: auto;
 		background: transparent;
@@ -554,7 +554,9 @@ body::after {
 		box-shadow: none;
 		padding: 0;
 		order: 2;
-		gap: 0.35rem;
+		flex: 1;
+		justify-content: center;
+		gap: 0.5rem;
 		overflow: visible;
 		border-radius: 0;
 	}
@@ -568,14 +570,16 @@ body::after {
 	}
 	
 	.sidebar-links{
-		flex-direction: column;
-		gap: 0.35rem;
-		align-items: stretch;
+		flex-direction: row;
+		gap: 0.5rem;
+		align-items: center;
+		flex-wrap: wrap;
+		justify-content: center;
 	}
 	
 	.sidebar-links .nav-link{
-		padding: 0.5rem 0.85rem;
-		font-size: 0.85rem;
+		padding: 0.5rem 1rem;
+		font-size: 0.9rem;
 		white-space: nowrap;
 	}
 	
