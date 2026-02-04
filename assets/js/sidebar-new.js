@@ -16,7 +16,6 @@
         const hamburger = document.getElementById('hamburgerBtn');
         const sidebar = document.getElementById('mobileNavSidebar');
         const overlay = document.getElementById('mobileNavOverlay');
-        const closeBtn = document.getElementById('closeNavBtn');
         const mobileLinks = document.querySelectorAll('.mobile-nav-link');
         const mobileLoginBtn = document.getElementById('mobileLoginBtn');
         const mobileSignupBtn = document.getElementById('mobileSignupBtn');
@@ -60,9 +59,6 @@
         // Event listeners
         hamburger.addEventListener('click', toggleNav);
         overlay.addEventListener('click', closeNav);
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeNav);
-        }
         
         // Close sidebar when clicking a link
         mobileLinks.forEach(link => {
