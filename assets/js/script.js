@@ -791,6 +791,191 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Forgot password link handler
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const verifyResetCodeForm = document.getElementById('verifyResetCodeForm');
+    const backToLoginLink = document.getElementById('backToLoginLink');
+    const backToLoginFromVerify = document.getElementById('backToLoginFromVerify');
+
+    if (forgotPasswordLink && forgotPasswordForm) {
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.classList.remove('active');
+            forgotPasswordForm.classList.add('active');
+        });
+    }
+
+    if (backToLoginLink && loginForm) {
+        backToLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            forgotPasswordForm.classList.remove('active');
+            loginForm.classList.add('active');
+        });
+    }
+
+    if (backToLoginFromVerify && loginForm) {
+        backToLoginFromVerify.addEventListener('click', (e) => {
+            e.preventDefault();
+            verifyResetCodeForm.classList.remove('active');
+            loginForm.classList.add('active');
+        });
+    }
+
+    // Forgot password form handler
+    if (forgotPasswordForm) {
+        forgotPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('resetEmail').value.trim();
+            
+            const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
+                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
+
+                // Check if email exists
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                if (response.ok) {
+                    const users = await response.json();
+                    if (users.length === 0) {
+                        throw new Error('No account found with this email');
+                    }
+                }
+
+                // Generate 6-digit reset code
+                const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                // Store reset code in sessionStorage (expires when browser closes)
+                sessionStorage.setItem('resetCode', resetCode);
+                sessionStorage.setItem('resetEmail', email);
+                sessionStorage.setItem('resetCodeTime', Date.now().toString());
+
+                showAuthMessage(`Reset code: ${resetCode} (Note: Email sending not configured. Use this code.)`, 'success');
+                
+                // Switch to verification form
+                setTimeout(() => {
+                    forgotPasswordForm.classList.remove('active');
+                    verifyResetCodeForm.classList.add('active');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                }, 2000);
+
+            } catch (error) {
+                console.error('Password reset error:', error);
+                showAuthMessage(error.message || 'Failed to send reset code', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+    }
+
+    // Verify reset code and change password handler
+    if (verifyResetCodeForm) {
+        verifyResetCodeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const code = document.getElementById('resetCode').value.trim();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            if (newPassword !== confirmNewPassword) {
+                showAuthMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showAuthMessage('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            const storedCode = sessionStorage.getItem('resetCode');
+            const storedEmail = sessionStorage.getItem('resetEmail');
+            const codeTime = parseInt(sessionStorage.getItem('resetCodeTime'));
+
+            // Check if code is expired (15 minutes)
+            if (Date.now() - codeTime > 15 * 60 * 1000) {
+                showAuthMessage('Reset code has expired. Please request a new one.', 'error');
+                verifyResetCodeForm.classList.remove('active');
+                forgotPasswordForm.classList.add('active');
+                return;
+            }
+
+            if (code !== storedCode) {
+                showAuthMessage('Invalid reset code', 'error');
+                return;
+            }
+
+            const submitBtn = verifyResetCodeForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resetting...';
+
+            try {
+                const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
+                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
+
+                // Update password in Supabase
+                const hashedPassword = btoa(newPassword);
+                const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(storedEmail)}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ password_hash: hashedPassword })
+                });
+
+                if (!updateResponse.ok) {
+                    throw new Error('Failed to update password');
+                }
+
+                // Update localStorage if exists
+                const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
+                const userIndex = localUsers.findIndex(u => u.email === storedEmail);
+                if (userIndex !== -1) {
+                    localUsers[userIndex].password = hashedPassword;
+                    localStorage.setItem('users', JSON.stringify(localUsers));
+                }
+
+                // Clear reset data
+                sessionStorage.removeItem('resetCode');
+                sessionStorage.removeItem('resetEmail');
+                sessionStorage.removeItem('resetCodeTime');
+
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+                
+                showAuthMessage('Password reset successful! You can now login.', 'success');
+                
+                setTimeout(() => {
+                    verifyResetCodeForm.classList.remove('active');
+                    loginForm.classList.add('active');
+                    verifyResetCodeForm.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.style.background = '';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Password reset error:', error);
+                showAuthMessage(error.message || 'Failed to reset password', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+    }
+
     // Initialize auth state
     checkAuth();
 
