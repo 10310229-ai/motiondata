@@ -630,16 +630,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
                 
-                showAuthMessage('Login successful! Redirecting...', 'success');
+                showAuthMessage('Login successful!', 'success');
                 setTimeout(() => {
-                    authModal.classList.remove('active');
-                    loginForm.reset();
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.style.background = '';
-                    checkAuth();
                     window.location.reload();
-                }, 1500);
+                }, 1000);
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -765,16 +759,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
                 
-                showAuthMessage('Account created successfully! Redirecting...', 'success');
+                showAuthMessage('Account created successfully!', 'success');
                 setTimeout(() => {
-                    authModal.classList.remove('active');
-                    signupForm.reset();
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.style.background = '';
-                    checkAuth();
                     window.location.reload();
-                }, 1500);
+                }, 1000);
 
             } catch (error) {
                 console.error('Signup error:', error);
