@@ -626,6 +626,10 @@ body::after {
 @media(max-width:767px){
 	.site-sidebar{width:90vw;max-width:340px;padding:1.25rem}
 	.sidebar-links .nav-link{padding:.85rem 1rem;font-size:1rem}
+	
+	.mobile-menu-toggle{
+		display: inline-flex !important;
+	}
 }
 
 .site-sidebar.open, .site-sidebar.active{transform: translateX(0);}
