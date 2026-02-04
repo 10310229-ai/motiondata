@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('a[href^="#"]').forEach(a => {
         a.addEventListener('click', (e) => {
             const href = a.getAttribute('href');
-            if (href && href.startsWith('#')) {
+            if (href && href.startsWith('#') && href.length > 1) {
                 e.preventDefault();
                 const el = document.querySelector(href);
                 if (el) el.scrollIntoView({behavior:'smooth',block:'start'});
@@ -611,14 +611,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
                 
-                showAuthMessage('Login successful!', 'success');
+                showAuthMessage('Login successful! Redirecting...', 'success');
                 setTimeout(() => {
-                    authModal.classList.remove('active');
-                    loginForm.reset();
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.style.background = '';
-                    checkAuth();
+                    window.location.href = 'profile.html';
                 }, 1500);
 
             } catch (error) {
@@ -739,14 +734,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
                 
-                showAuthMessage('Account created successfully!', 'success');
+                showAuthMessage('Account created successfully! Redirecting...', 'success');
                 setTimeout(() => {
-                    authModal.classList.remove('active');
-                    signupForm.reset();
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.style.background = '';
-                    checkAuth();
+                    window.location.href = 'profile.html';
                 }, 1500);
 
             } catch (error) {
@@ -831,25 +821,44 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
             const originalBtnText = submitBtn.innerHTML;
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
 
             try {
                 const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
                 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
 
-                // Check if email exists
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
+                let userExists = false;
+                let supabaseAvailable = true;
 
-                if (response.ok) {
-                    const users = await response.json();
-                    if (users.length === 0) {
-                        throw new Error('No account found with this email');
+                // Check Supabase first
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(email)}`, {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        },
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+
+                    if (response.ok) {
+                        const users = await response.json();
+                        userExists = users.length > 0;
                     }
+                } catch (fetchError) {
+                    supabaseAvailable = false;
+                    console.warn('Supabase unavailable:', fetchError.message);
+                    
+                    // If Supabase is down, inform user that password reset requires the main database
+                    throw new Error('Password reset service is temporarily unavailable. Please try again later or contact support.');
+                }
+
+                if (!userExists) {
+                    throw new Error('No account found with this email address');
                 }
 
                 // Generate 6-digit reset code
@@ -923,26 +932,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
                 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
 
-                // Update password in Supabase
                 const hashedPassword = btoa(newPassword);
-                const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(storedEmail)}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json',
-                        'Prefer': 'return=minimal'
-                    },
-                    body: JSON.stringify({ password_hash: hashedPassword })
-                });
 
-                if (!updateResponse.ok) {
-                    throw new Error('Failed to update password');
+                // Update password in Supabase first
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                    const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/users?email=eq.${encodeURIComponent(storedEmail)}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({ password_hash: hashedPassword }),
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+
+                    if (!updateResponse.ok) {
+                        throw new Error('Failed to update password in Supabase');
+                    }
+                } catch (fetchError) {
+                    console.warn('Supabase update failed, updating localStorage as fallback:', fetchError.message);
                 }
 
-                // Update localStorage if exists
+                // Also update localStorage (as backup/sync)
                 const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
                 const userIndex = localUsers.findIndex(u => u.email === storedEmail);
+                
                 if (userIndex !== -1) {
                     localUsers[userIndex].password = hashedPassword;
                     localStorage.setItem('users', JSON.stringify(localUsers));

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - Motion Data Solutions</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>Motion<span>Data</span></h1>
+            </div>
+            <button class="hamburger-menu" id="hamburgerBtn" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="main-navigation">
+                <a href="index.html">Home</a>
+                <a href="services.html">Services</a>
+                <a href="about.html">About</a>
+                <a href="faq.html">FAQ</a>
+                <a href="contact.html">Contact</a>
+                <a href="profile.html" class="active">My Account</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Mobile Sidebar Navigation -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    <div class="mobile-nav-sidebar" id="mobileNavSidebar">
+        <div class="mobile-nav-header">
+            <h2>Motion<span>Data</span></h2>
+        </div>
+        <nav class="mobile-nav-links">
+            <a href="index.html" class="mobile-nav-link">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="services.html" class="mobile-nav-link">
+                <i class="fas fa-globe"></i>
+                <span>Services</span>
+            </a>
+            <a href="about.html" class="mobile-nav-link">
+                <i class="fas fa-info-circle"></i>
+                <span>About</span>
+            </a>
+            <a href="faq.html" class="mobile-nav-link">
+                <i class="fas fa-question-circle"></i>
+                <span>FAQ</span>
+            </a>
+            <a href="contact.html" class="mobile-nav-link">
+                <i class="fas fa-envelope"></i>
+                <span>Contact</span>
+            </a>
+            <a href="profile.html" class="mobile-nav-link active">
+                <i class="fas fa-user"></i>
+                <span>My Account</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+        <div class="profile-sidebar">
+            <div class="profile-avatar">
+                <div class="avatar-circle" id="avatarCircle">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 id="profileUserName">Loading...</h3>
+                <p id="profileUserEmail">Loading...</p>
+            </div>
+            <nav class="profile-nav">
+                <a href="#" class="profile-nav-link active" data-section="profile">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="#" class="profile-nav-link" data-section="security">
+                    <i class="fas fa-lock"></i>
+                    <span>Security</span>
+                </a>
+                <a href="#" class="profile-nav-link" data-section="orders">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>My Orders</span>
+                </a>
+                <a href="#" class="profile-nav-link logout-link" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="profile-content">
+            <!-- Profile Section -->
+            <section class="profile-section active" id="profileSection">
+                <h2>My Profile</h2>
+                <form id="editProfileForm" class="profile-form">
+                    <div class="form-group">
+                        <label for="editName">
+                            <i class="fas fa-user"></i>
+                            Full Name
+                        </label>
+                        <input type="text" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">
+                            <i class="fas fa-envelope"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="editEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPhone">
+                            <i class="fas fa-phone"></i>
+                            Phone Number
+                        </label>
+                        <input type="tel" id="editPhone" required>
+                    </div>
+                    <div class="profile-message" id="profileMessage"></div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
+                </form>
+            </section>
+
+            <!-- Security Section -->
+            <section class="profile-section" id="securitySection">
+                <h2>Change Password</h2>
+                <form id="changePasswordForm" class="profile-form">
+                    <div class="form-group">
+                        <label for="currentPassword">
+                            <i class="fas fa-lock"></i>
+                            Current Password
+                        </label>
+                        <input type="password" id="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">
+                            <i class="fas fa-key"></i>
+                            New Password
+                        </label>
+                        <input type="password" id="newPassword" minlength="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmNewPassword">
+                            <i class="fas fa-key"></i>
+                            Confirm New Password
+                        </label>
+                        <input type="password" id="confirmNewPassword" minlength="6" required>
+                    </div>
+                    <div class="profile-message" id="securityMessage"></div>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Update Password
+                    </button>
+                </form>
+            </section>
+
+            <!-- Orders Section -->
+            <section class="profile-section" id="ordersSection">
+                <h2>My Orders</h2>
+                <div id="ordersContainer">
+                    <div class="orders-empty">
+                        <i class="fas fa-shopping-bag"></i>
+                        <p>No orders yet</p>
+                        <a href="services.html" class="btn-primary">Browse Services</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Motion<span>Data</span></h3>
+                    <p>Your trusted partner for affordable mobile data solutions across all networks in Ghana.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="services.html">Services</a>
+                    <a href="about.html">About Us</a>
+                    <a href="faq.html">FAQ</a>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-phone"></i> +233 123 456 789</p>
+                    <p><i class="fas fa-envelope"></i> info@motiondatasolutions.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Motion Data Solutions. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="assets/js/sidebar-new.js"></script>
+    <script src="assets/js/toast.js"></script>
+    <script src="assets/js/profile.js"></script>
+</body>
+</html>
