@@ -558,7 +558,6 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
             try {
-                // Check Supabase first
                 const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
                 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
 
@@ -566,27 +565,40 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isEmail = emailOrPhone.includes('@');
                 const searchParam = isEmail ? `email=eq.${encodeURIComponent(emailOrPhone)}` : `phone=eq.${encodeURIComponent(emailOrPhone)}`;
 
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?${searchParam}`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
-
                 let user = null;
-                if (response.ok) {
-                    const users = await response.json();
-                    if (users.length > 0) {
-                        const dbUser = users[0];
-                        if (atob(dbUser.password_hash) === password) {
-                            user = {
-                                id: dbUser.id,
-                                name: dbUser.name,
-                                email: dbUser.email,
-                                phone: dbUser.phone
-                            };
+
+                // Try Supabase first (with timeout and error handling)
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/users?${searchParam}`, {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        },
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+
+                    if (response.ok) {
+                        const users = await response.json();
+                        if (users.length > 0) {
+                            const dbUser = users[0];
+                            if (atob(dbUser.password_hash) === password) {
+                                user = {
+                                    id: dbUser.id,
+                                    name: dbUser.name,
+                                    email: dbUser.email,
+                                    phone: dbUser.phone,
+                                    password: dbUser.password_hash
+                                };
+                            }
                         }
                     }
+                } catch (fetchError) {
+                    console.warn('Supabase unavailable, checking localStorage:', fetchError.message);
                 }
 
                 // Fallback to localStorage
