@@ -610,7 +610,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     );
                     
                     if (localUser && atob(localUser.password) === password) {
-                        user = localUser;
+                        user = {
+                            id: localUser.id,
+                            name: localUser.name,
+                            email: localUser.email,
+                            phone: localUser.phone,
+                            password: localUser.password
+                        };
                     }
                 }
 
@@ -618,6 +624,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     throw new Error('Invalid email/phone or password');
                 }
 
+                // Save user with password to localStorage for persistence
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
@@ -747,7 +754,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Always save to localStorage as primary/backup
                 users.push({ ...newUser, password: newUser.password_hash, id: savedUserId });
                 localStorage.setItem('users', JSON.stringify(users));
-                localStorage.setItem('currentUser', JSON.stringify({ id: savedUserId, name, email, phone }));
+                localStorage.setItem('currentUser', JSON.stringify({ 
+                    id: savedUserId, 
+                    name, 
+                    email, 
+                    phone, 
+                    password: newUser.password_hash 
+                }));
 
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
