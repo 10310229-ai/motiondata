@@ -60,13 +60,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Close sidebar when clicking overlay
     overlay.addEventListener('click', toggleSidebar);
 
-    // Close sidebar when clicking overlay
-    overlay.addEventListener('click', closeSidebar);
-
-    // Close sidebar on window resize if screen becomes large
+    // Close sidebar on window resize if screen becomes desktop/iPad size
     window.addEventListener('resize', function() {
-        if (window.innerWidth > 768 && sidebar.classList.contains('active')) {
-            closeSidebar();
+        if (window.innerWidth >= 768 && sidebar.classList.contains('active')) {
+            toggleSidebar();
         }
     });
 
@@ -81,8 +78,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Close sidebar when clicking a link on mobile
         link.addEventListener('click', function() {
-            if (window.innerWidth <= 768) {
-                setTimeout(closeSidebar, 200);
+            if (window.innerWidth < 768) {
+                setTimeout(toggleSidebar, 200);
             }
         });
     });
@@ -90,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Close sidebar on Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && sidebar.classList.contains('active')) {
-            closeSidebar();
+            toggleSidebar();
         }
     });
 });
