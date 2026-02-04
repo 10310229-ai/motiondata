@@ -116,6 +116,13 @@ body::after {
 	}
 }
 
+/* Header Actions (Notification + Hamburger) */
+.header-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
 /* Notification System */
 .notification-wrapper {
 	position: relative;
