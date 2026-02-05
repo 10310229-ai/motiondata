@@ -432,8 +432,24 @@
             <a href="contact.html" class="mobile-nav-link"><i class="fas fa-envelope"></i><span>Contact</span></a>
             <a href="https://wa.me/233256342577" class="mobile-nav-link" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></a>
             <hr style="border: none; border-top: 1px solid rgba(34, 197, 94, 0.2); margin: 1rem 0;">
-            <a href="#" class="mobile-nav-link" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i><span>Login</span></a>
-            <a href="#" class="mobile-nav-link" id="mobileSignupBtn"><i class="fas fa-user-plus"></i><span>Sign Up</span></a>
+            
+            <!-- User Profile Section (shown when logged in) -->
+            <div id="mobileUserSection" style="display: none;">
+                <a href="profile.html" class="mobile-nav-link">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="mobileUserName">Profile</span>
+                </a>
+                <a href="#" class="mobile-nav-link" id="mobileLogoutLink">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+            
+            <!-- Auth Buttons (shown when logged out) -->
+            <div id="mobileAuthSection">
+                <a href="#" class="mobile-nav-link" id="mobileLoginBtn"><i class="fas fa-sign-in-alt"></i><span>Login</span></a>
+                <a href="#" class="mobile-nav-link" id="mobileSignupBtn"><i class="fas fa-user-plus"></i><span>Sign Up</span></a>
+            </div>
         </nav>
     </aside>
 
