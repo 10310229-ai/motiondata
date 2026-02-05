@@ -93,19 +93,21 @@
             if (userOrders.length === 0) {
                 const localOrders = JSON.parse(localStorage.getItem('md_orders') || '[]');
                 userOrders = localOrders.filter(order => order.email === currentUser.email);
+                console.log('📦 Orders from localStorage:', userOrders.length);
+            } else {
+                console.log('📦 Orders from Supabase:', userOrders.length);
             }
             
             const totalOrders = userOrders.length;
             const completedOrders = userOrders.filter(order => order.status === 'completed').length;
-            const pendingOrders = userOrders.filter(order => order.status === 'pending' || order.status === 'processing').length;
             
             const totalOrdersEl = document.getElementById('totalOrders');
             const completedOrdersEl = document.getElementById('completedOrders');
-            const pendingOrdersEl = document.getElementById('pendingOrders');
             
             if (totalOrdersEl) totalOrdersEl.textContent = totalOrders;
             if (completedOrdersEl) completedOrdersEl.textContent = completedOrders;
-            if (pendingOrdersEl) pendingOrdersEl.textContent = pendingOrders;
+            
+            console.log('✅ Order stats updated - Total:', totalOrders, 'Completed:', completedOrders);
         } catch (error) {
             console.error('Error updating order statistics:', error);
         }
@@ -471,8 +473,12 @@
 
     // Load user orders
     async function loadUserOrders() {
+        console.log('📋 Loading user orders for:', currentUser.email);
         const ordersContainer = document.getElementById('ordersContainer');
-        if (!ordersContainer) return;
+        if (!ordersContainer) {
+            console.error('❌ ordersContainer element not found!');
+            return;
+        }
 
         try {
             // Try to load from Supabase
@@ -492,30 +498,39 @@
 
                 if (response.ok) {
                     const orders = await response.json();
+                    console.log('✅ Supabase orders loaded:', orders.length);
                     if (orders.length > 0) {
                         displayOrders(orders);
                         return;
                     }
                 }
             } catch (fetchError) {
-                console.warn('Supabase unavailable:', fetchError.message);
+                console.warn('⚠️ Supabase unavailable:', fetchError.message);
             }
 
             // Fallback to localStorage
             const localOrders = JSON.parse(localStorage.getItem('md_orders') || '[]');
+            console.log('📦 Total orders in localStorage:', localOrders.length);
             const userOrders = localOrders.filter(order => order.email === currentUser.email);
+            console.log('✅ User orders found:', userOrders.length);
             
             if (userOrders.length > 0) {
                 displayOrders(userOrders);
+            } else {
+                displayOrders([]);
             }
         } catch (error) {
-            console.error('Error loading orders:', error);
+            console.error('❌ Error loading orders:', error);
         }
     }
 
     function displayOrders(orders) {
+        console.log('🎨 Displaying', orders.length, 'orders');
         const ordersContainer = document.getElementById('ordersContainer');
-        if (!ordersContainer) return;
+        if (!ordersContainer) {
+            console.error('❌ ordersContainer not found in displayOrders');
+            return;
+        }
 
         if (orders.length === 0) {
             ordersContainer.innerHTML = `
