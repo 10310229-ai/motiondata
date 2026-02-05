@@ -469,9 +469,11 @@
                     console.log('Payment cancelled by user');
                 },
                 onSuccess: function(response) {
-                    console.log('Payment successful:', response);
+                    console.log('🎉 ===== PAYMENT SUCCESSFUL =====');
+                    console.log('Payment response:', response);
                     
                     const orderReference = response.reference;
+                    console.log('Order reference:', orderReference);
                     
                     // Save to localStorage
                     const order = {
@@ -492,14 +494,17 @@
                     const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
                     orders.push(order);
                     localStorage.setItem('md_orders', JSON.stringify(orders));
+                    console.log('✅ Order saved to localStorage');
 
                     // Save to Supabase
                     (async function() {
                         try {
+                            console.log('💾 Saving to Supabase...');
                             const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
                             
                             let user = await getUserByEmail(orderData.email);
                             if (!user) {
+                                console.log('Creating new user...');
                                 user = await saveUser({
                                     name: currentUser.name || 'Guest Customer',
                                     email: orderData.email,
@@ -528,30 +533,38 @@
                                 payment_method: 'paystack',
                                 metadata: {response: response}
                             });
-                            console.log('Data saved to Supabase successfully!');
+                            console.log('✅ Data saved to Supabase successfully!');
                         } catch(e) {
-                            console.error('Supabase save error:', e);
+                            console.error('❌ Supabase save error:', e);
                         }
                     })();
 
                     // Add notification automatically
+                    console.log('📬 Adding notification...');
+                    console.log('window.addOrderNotification exists?', typeof window.addOrderNotification);
                     if (window.addOrderNotification) {
-                        window.addOrderNotification({
+                        const notifResult = window.addOrderNotification({
                             title: `${orderData.network} Order Placed Successfully`,
                             message: `Your ${orderData.package} order has been placed successfully. Delivery in progress.`,
                             orderId: orderReference,
                             network: orderData.network,
                             amount: `GH₵ ${orderData.amount.toFixed(2)}`
                         });
+                        console.log('✅ Notification created:', notifResult);
+                    } else {
+                        console.error('❌ addOrderNotification function not found!');
                     }
 
                     // Show success popup
+                    console.log('🎨 Showing success popup...');
+                    console.log('showCheckoutSuccessPopup exists?', typeof showCheckoutSuccessPopup);
                     showCheckoutSuccessPopup({
                         network: orderData.network,
                         package: orderData.package,
                         orderId: orderReference,
                         amount: `GH₵ ${orderData.amount.toFixed(2)}`
                     });
+                    console.log('✅ Success popup should be visible now');
                 }
             });
 
