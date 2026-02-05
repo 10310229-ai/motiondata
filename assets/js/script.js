@@ -566,12 +566,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const searchParam = isEmail ? `email=eq.${encodeURIComponent(emailOrPhone)}` : `phone=eq.${encodeURIComponent(emailOrPhone)}`;
 
                 let user = null;
+                console.log('🔍 Attempting login for:', emailOrPhone);
 
                 // Try Supabase first (with timeout and error handling)
                 try {
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 5000);
 
+                    console.log('📡 Checking Supabase database...');
                     const response = await fetch(`${SUPABASE_URL}/rest/v1/users?${searchParam}`, {
                         headers: {
                             'apikey': SUPABASE_ANON_KEY,
@@ -584,49 +586,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (response.ok) {
                         const users = await response.json();
+                        console.log('✅ Supabase response:', users.length, 'user(s) found');
+                        
                         if (users.length > 0) {
                             const dbUser = users[0];
-                            if (atob(dbUser.password_hash) === password) {
-                                user = {
-                                    id: dbUser.id,
-                                    name: dbUser.name,
-                                    email: dbUser.email,
-                                    phone: dbUser.phone,
-                                    password: dbUser.password_hash
-                                };
+                            console.log('🔐 Checking password for user:', dbUser.email);
+                            
+                            // Try to decode password_hash - it's base64 encoded
+                            try {
+                                const storedPassword = atob(dbUser.password_hash);
+                                if (storedPassword === password) {
+                                    console.log('✅ Password matches! Login successful');
+                                    user = {
+                                        id: dbUser.id,
+                                        name: dbUser.name,
+                                        email: dbUser.email,
+                                        phone: dbUser.phone,
+                                        password: dbUser.password_hash
+                                    };
+                                } else {
+                                    console.log('❌ Password does not match');
+                                }
+                            } catch (decodeError) {
+                                console.error('❌ Error decoding password:', decodeError);
                             }
                         }
+                    } else {
+                        console.warn('⚠️ Supabase response not OK:', response.status);
                     }
                 } catch (fetchError) {
-                    console.warn('Supabase unavailable, checking localStorage:', fetchError.message);
+                    console.warn('⚠️ Supabase unavailable, checking localStorage:', fetchError.message);
                 }
 
                 // Fallback to localStorage
                 if (!user) {
+                    console.log('🔍 Checking localStorage as fallback...');
                     const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
+                    console.log('📦 Found', localUsers.length, 'users in localStorage');
+                    
                     const localUser = localUsers.find(u => 
                         (isEmail && u.email === emailOrPhone) || 
                         (!isEmail && u.phone === emailOrPhone)
                     );
                     
-                    if (localUser && atob(localUser.password) === password) {
-                        user = {
-                            id: localUser.id,
-                            name: localUser.name,
-                            email: localUser.email,
-                            phone: localUser.phone,
-                            password: localUser.password
-                        };
+                    if (localUser) {
+                        console.log('👤 Found user in localStorage:', localUser.email);
+                        try {
+                            const storedPassword = atob(localUser.password);
+                            if (storedPassword === password) {
+                                console.log('✅ localStorage password matches!');
+                                user = {
+                                    id: localUser.id,
+                                    name: localUser.name,
+                                    email: localUser.email,
+                                    phone: localUser.phone,
+                                    password: localUser.password
+                                };
+                            } else {
+                                console.log('❌ localStorage password does not match');
+                            }
+                        } catch (decodeError) {
+                            console.error('❌ Error decoding localStorage password:', decodeError);
+                        }
+                    } else {
+                        console.log('❌ No user found in localStorage');
                     }
                 }
 
                 if (!user) {
+                    console.log('❌ Login failed: Invalid credentials');
                     throw new Error('Invalid email/phone or password');
                 }
 
                 // Save user with password to localStorage for persistence
                 localStorage.setItem('currentUser', JSON.stringify(user));
-                console.log('User saved to localStorage:', user);
+                console.log('✅ Login successful! User saved to localStorage:', {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone
+                });
                 
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
@@ -684,6 +723,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
 
             try {
+                console.log('📝 Starting signup process for:', { name, email, phone });
                 // Check if email or phone already exists in localStorage
                 const users = JSON.parse(localStorage.getItem('users') || '[]');
                 if (users.find(u => u.email === email)) {
@@ -726,6 +766,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let savedUserId = Date.now().toString();
                 
                 // Save to Supabase first
+                console.log('📡 Attempting to save user to Supabase database...');
                 try {
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
@@ -747,23 +788,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (response.ok) {
                         const savedUser = await response.json();
                         savedUserId = savedUser[0]?.id || savedUserId;
-                        console.log('✓ User saved to Supabase successfully with ID:', savedUserId);
+                        console.log('✅ SUCCESS! User saved to Supabase database with ID:', savedUserId);
+                        console.log('📊 Supabase user data:', savedUser[0]);
                     } else {
                         const errorText = await response.text();
-                        console.error('Supabase save failed:', errorText);
+                        console.error('❌ Supabase save failed with status:', response.status);
+                        console.error('❌ Error details:', errorText);
                         if (errorText.includes('duplicate') || errorText.includes('unique')) {
-                            throw new Error('Email already registered');
+                            throw new Error('Email already registered in database');
                         }
                         throw new Error('Failed to create account in database');
                     }
                 } catch (supabaseError) {
-                    console.error('Supabase error:', supabaseError);
+                    console.error('❌ Supabase error:', supabaseError.message);
                     if (supabaseError.message.includes('Email already registered') || 
                         supabaseError.message.includes('Failed to create account')) {
                         throw supabaseError;
                     }
                     // Only continue with localStorage if Supabase is unreachable
-                    console.warn('Supabase unavailable, saving to localStorage only');
+                    console.warn('⚠️ Supabase unavailable, saving to localStorage only');
                 }
 
                 // Always save to localStorage as primary/backup
@@ -776,7 +819,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     phone, 
                     password: newUser.password_hash 
                 }));
-                console.log('New user saved to localStorage:', { id: savedUserId, name, email, phone });
+                console.log('💾 User saved to localStorage:', { id: savedUserId, name, email, phone });
+                console.log('✅ SIGNUP COMPLETE! User is now logged in');
 
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
