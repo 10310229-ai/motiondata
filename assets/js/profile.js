@@ -66,21 +66,49 @@
     }
 
     // Update order statistics
-    function updateOrderStatistics() {
-        const userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
-        const currentUserOrders = userOrders.filter(order => order.userId === currentUser.id);
-        
-        const totalOrders = currentUserOrders.length;
-        const completedOrders = currentUserOrders.filter(order => order.status === 'completed').length;
-        const pendingOrders = currentUserOrders.filter(order => order.status === 'pending' || order.status === 'processing').length;
-        
-        const totalOrdersEl = document.getElementById('totalOrders');
-        const completedOrdersEl = document.getElementById('completedOrders');
-        const pendingOrdersEl = document.getElementById('pendingOrders');
-        
-        if (totalOrdersEl) totalOrdersEl.textContent = totalOrders;
-        if (completedOrdersEl) completedOrdersEl.textContent = completedOrders;
-        if (pendingOrdersEl) pendingOrdersEl.textContent = pendingOrders;
+    async function updateOrderStatistics() {
+        try {
+            let userOrders = [];
+            
+            // Try to load from Supabase first
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?email=eq.${encodeURIComponent(currentUser.email)}`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+
+                if (response.ok) {
+                    const supabaseOrders = await response.json();
+                    if (supabaseOrders.length > 0) {
+                        userOrders = supabaseOrders;
+                    }
+                }
+            } catch (fetchError) {
+                console.warn('Supabase unavailable:', fetchError.message);
+            }
+
+            // Fallback to localStorage
+            if (userOrders.length === 0) {
+                const localOrders = JSON.parse(localStorage.getItem('md_orders') || '[]');
+                userOrders = localOrders.filter(order => order.email === currentUser.email);
+            }
+            
+            const totalOrders = userOrders.length;
+            const completedOrders = userOrders.filter(order => order.status === 'completed').length;
+            const pendingOrders = userOrders.filter(order => order.status === 'pending' || order.status === 'processing').length;
+            
+            const totalOrdersEl = document.getElementById('totalOrders');
+            const completedOrdersEl = document.getElementById('completedOrders');
+            const pendingOrdersEl = document.getElementById('pendingOrders');
+            
+            if (totalOrdersEl) totalOrdersEl.textContent = totalOrders;
+            if (completedOrdersEl) completedOrdersEl.textContent = completedOrders;
+            if (pendingOrdersEl) pendingOrdersEl.textContent = pendingOrders;
+        } catch (error) {
+            console.error('Error updating order statistics:', error);
+        }
     }
 
     // Update activity timeline
@@ -474,7 +502,7 @@
             }
 
             // Fallback to localStorage
-            const localOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const localOrders = JSON.parse(localStorage.getItem('md_orders') || '[]');
             const userOrders = localOrders.filter(order => order.email === currentUser.email);
             
             if (userOrders.length > 0) {
@@ -489,19 +517,45 @@
         const ordersContainer = document.getElementById('ordersContainer');
         if (!ordersContainer) return;
 
-        ordersContainer.innerHTML = orders.map(order => `
+        if (orders.length === 0) {
+            ordersContainer.innerHTML = `
+                <div class="orders-empty">
+                    <i class="fas fa-inbox" style="font-size: 3rem; color: #22c55e; margin-bottom: 1rem;"></i>
+                    <p>No orders yet</p>
+                    <a href="services.html" class="btn btn-primary">Browse Data Bundles</a>
+                </div>
+            `;
+            return;
+        }
+
+        ordersContainer.innerHTML = orders.map(order => {
+            const orderDate = new Date(order.created_at || order.date || Date.now());
+            const statusClass = order.status === 'completed' ? 'success' : order.status === 'pending' ? 'warning' : 'info';
+            
+            return `
             <div class="order-card">
                 <div class="order-header">
-                    <h4>${order.network} - ${order.package_name || order.packageName}</h4>
-                    <span class="order-status ${order.status}">${order.status || 'completed'}</span>
+                    <div>
+                        <h4>${order.network || 'N/A'} - ${order.package_name || order.package || 'Data Bundle'}</h4>
+                        <small style="color: #666;">Order #${order.reference || order.id || 'N/A'}</small>
+                    </div>
+                    <span class="order-status ${statusClass}">${(order.status || 'completed').toUpperCase()}</span>
                 </div>
                 <div class="order-details">
-                    <p><strong>Phone:</strong> ${order.phone_number || order.phoneNumber}</p>
-                    <p><strong>Amount:</strong> GHS ${order.amount}</p>
-                    <p><strong>Date:</strong> ${new Date(order.created_at || order.createdAt || Date.now()).toLocaleDateString()}</p>
+                    <p><strong>Phone:</strong> ${order.phone_number || order.phone || order.mobile || 'N/A'}</p>
+                    <p><strong>Amount:</strong> GH₵ ${parseFloat(order.amount || 0).toFixed(2)}</p>
+                    <p><strong>Date:</strong> ${orderDate.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}</p>
+                    ${order.reference ? `<p><strong>Reference:</strong> ${order.reference}</p>` : ''}
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
 
     // Initialize
