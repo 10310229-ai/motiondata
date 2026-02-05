@@ -227,21 +227,38 @@ document.addEventListener('DOMContentLoaded', function(){
       return;
     }
 
-    console.log('Redirecting to checkout page...');
+    console.log('Initiating Paystack payment...');
     
-    // Create order data for checkout page
-    const orderData = {
-      network: 'MTN',
-      package: pkg,
-      phone: msisdn,
+    // Initialize Paystack payment
+    const handler = window.PaystackPop.setup({
+      key: publicKey,
       email: email,
-      amount: price
-    };
+      amount: amountInPesewas,
+      currency: 'GHS',
+      ref: 'MTN_' + Math.floor(Math.random() * 1000000000 + 1),
+      metadata: {
+        custom_fields: [
+          {
+            display_name: "Mobile Number",
+            variable_name: "mobile_number",
+            value: msisdn
+          },
+          {
+            display_name: "Package",
+            variable_name: "package",
+            value: pkg
+          }
+        ]
+      },
+      callback: function(response){
+        console.log('Payment successful!', response);
+        handlePaymentSuccess(response, email, msisdn, pkg, price);
+      },
+      onClose: function(){
+        console.log('Payment window closed');
+      }
+    });
     
-    // Encode order data as URL parameters
-    const params = new URLSearchParams(orderData);
-    
-    // Redirect to checkout page
-    window.location.href = `checkout.html?${params.toString()}`;
+    handler.openIframe();
   });
 });
