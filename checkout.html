@@ -361,6 +361,45 @@
     <script src="assets/js/notifications.js"></script>
     <script src="assets/js/script.js"></script>
     <script>
+        // Success popup function for checkout
+        function showCheckoutSuccessPopup(orderData = {}) {
+            console.log('showCheckoutSuccessPopup called:', orderData);
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'popup-overlay';
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9998;';
+            
+            const popup = document.createElement('div');
+            popup.className = 'success-popup';
+            popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:linear-gradient(135deg,rgba(34,197,94,0.95),rgba(16,185,129,0.85));backdrop-filter:blur(20px);padding:3rem;border-radius:16px;border:2px solid rgba(132,204,22,0.4);width:90%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,0.5);text-align:center;';
+            popup.innerHTML = `
+                <span class="popup-icon" style="font-size:4rem;margin-bottom:1rem;display:block;">✓</span>
+                <h2 style="margin:0 0 1rem 0;color:#fff;font-size:1.8rem;font-weight:800;">Payment Successful!</h2>
+                <p style="margin:0 0 0.5rem 0;color:#e0f2e0;font-size:1.1rem;">Your ${orderData.network || ''} data bundle order has been placed successfully.</p>
+                <p style="margin:0 0 1.5rem 0;color:#e0f2e0;font-size:0.95rem;">Your bundle will be delivered to the recipient shortly.</p>
+                <p style="margin:0 0 1.5rem 0;color:#fff;font-size:0.9rem;">Redirecting to homepage in <span id="countdown">5</span> seconds...</p>
+                <button class="btn-popup" onclick="window.location.href='index.html'" style="background:#22c55e;color:#04261a;border:none;padding:0.8rem 2rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem;">Back to Home Now</button>
+            `;
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(popup);
+            console.log('Success popup displayed');
+            
+            // Auto-redirect countdown
+            let secondsLeft = 5;
+            const countdownElement = document.getElementById('countdown');
+            const countdownInterval = setInterval(() => {
+                secondsLeft--;
+                if (countdownElement) {
+                    countdownElement.textContent = secondsLeft;
+                }
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = 'index.html';
+                }
+            }, 1000);
+        }
+
         // Get order data from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const orderData = {
@@ -506,14 +545,13 @@
                         });
                     }
 
-                    // Show success message with countdown
-                    const successMsg = `✅ Payment Successful!\n\nYour ${orderData.network} data bundle will be delivered within 5 minutes.\n\nOrder Reference: ${orderReference}\n\nRedirecting to homepage in 5 seconds...`;
-                    alert(successMsg);
-                    
-                    // Auto-redirect after 5 seconds
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 5000);
+                    // Show success popup
+                    showCheckoutSuccessPopup({
+                        network: orderData.network,
+                        package: orderData.package,
+                        orderId: orderReference,
+                        amount: `GH₵ ${orderData.amount.toFixed(2)}`
+                    });
                 }
             });
 
