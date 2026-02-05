@@ -192,8 +192,13 @@
         (function() {
             const currentUser = localStorage.getItem('currentUser');
             if (!currentUser) {
-                alert('Please login or create an account to access our services.');
-                window.location.href = 'index.html';
+                // Show toast notification instead of alert
+                if (typeof showToast === 'function') {
+                    showToast('Please login or create an account to access our services.', 'warning');
+                }
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
             }
         })();
     </script>
