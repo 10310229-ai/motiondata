@@ -58,59 +58,8 @@
         // Load preferences
         loadPreferences();
         
-        // Update statistics
-        updateOrderStatistics();
-        
         // Update activity timeline
         updateActivityTimeline();
-    }
-
-    // Update order statistics
-    async function updateOrderStatistics() {
-        try {
-            let userOrders = [];
-            
-            // Try to load from Supabase first
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?email=eq.${encodeURIComponent(currentUser.email)}`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
-
-                if (response.ok) {
-                    const supabaseOrders = await response.json();
-                    if (supabaseOrders.length > 0) {
-                        userOrders = supabaseOrders;
-                    }
-                }
-            } catch (fetchError) {
-                console.warn('Supabase unavailable:', fetchError.message);
-            }
-
-            // Fallback to localStorage
-            if (userOrders.length === 0) {
-                const localOrders = JSON.parse(localStorage.getItem('md_orders') || '[]');
-                userOrders = localOrders.filter(order => order.email === currentUser.email);
-                console.log('📦 Orders from localStorage:', userOrders.length);
-            } else {
-                console.log('📦 Orders from Supabase:', userOrders.length);
-            }
-            
-            const totalOrders = userOrders.length;
-            const completedOrders = userOrders.filter(order => order.status === 'completed').length;
-            
-            const totalOrdersEl = document.getElementById('totalOrders');
-            const completedOrdersEl = document.getElementById('completedOrders');
-            
-            if (totalOrdersEl) totalOrdersEl.textContent = totalOrders;
-            if (completedOrdersEl) completedOrdersEl.textContent = completedOrders;
-            
-            console.log('✅ Order stats updated - Total:', totalOrders, 'Completed:', completedOrders);
-        } catch (error) {
-            console.error('Error updating order statistics:', error);
-        }
     }
 
     // Update activity timeline
@@ -576,7 +525,6 @@
     // Initialize
     if (checkAuth()) {
         loadUserProfile();
-        loadUserOrders();
         
         // Update last login time
         localStorage.setItem('lastLoginTime', new Date().toISOString());
