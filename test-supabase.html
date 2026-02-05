@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .test-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status.pending {
+            background: #ffc107;
+            color: #000;
+        }
+        
+        .status.success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status.error {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .instructions h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔌 Supabase Connection Test</h1>
+        <p class="subtitle">Test your Supabase database connection and verify tables are set up correctly</p>
+        
+        <div class="instructions">
+            <h3>📋 Before Running Tests:</h3>
+            <ol>
+                <li>Open <strong>SETUP_SUPABASE_TABLES.md</strong> and follow all steps</li>
+                <li>Make sure you've run the SQL schema in Supabase SQL Editor</li>
+                <li>Verify tables exist in Supabase Table Editor</li>
+                <li>Then click "Run All Tests" below</li>
+            </ol>
+        </div>
+        
+        <button id="runAllBtn" onclick="runAllTests()">🚀 Run All Tests</button>
+        <button onclick="location.reload()">🔄 Reset</button>
+        
+        <div id="test1" class="test-section">
+            <div class="test-title">
+                <span>1. Connection Test</span>
+                <span class="status pending" id="status1">Pending</span>
+            </div>
+            <div class="result" id="result1">Click "Run All Tests" to start...</div>
+        </div>
+        
+        <div id="test2" class="test-section">
+            <div class="test-title">
+                <span>2. Users Table Test</span>
+                <span class="status pending" id="status2">Pending</span>
+            </div>
+            <div class="result" id="result2">Waiting...</div>
+        </div>
+        
+        <div id="test3" class="test-section">
+            <div class="test-title">
+                <span>3. User Profiles Table Test</span>
+                <span class="status pending" id="status3">Pending</span>
+            </div>
+            <div class="result" id="result3">Waiting...</div>
+        </div>
+        
+        <div id="test4" class="test-section">
+            <div class="test-title">
+                <span>4. Orders Table Test</span>
+                <span class="status pending" id="status4">Pending</span>
+            </div>
+            <div class="result" id="result4">Waiting...</div>
+        </div>
+        
+        <div id="test5" class="test-section">
+            <div class="test-title">
+                <span>5. Authentication Flow Test</span>
+                <span class="status pending" id="status5">Pending</span>
+            </div>
+            <div class="result" id="result5">Waiting...</div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://njsjihfpggbpfdpdgzzx.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qc2ppaGZwZ2dicGZkcGRnenp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxMjI3NzYsImV4cCI6MjA4MDY5ODc3Nn0.JZ5vEAnxPiWjwb0aGnxEbM0pI-FQ6hvuH2iKHHFZR2k';
+
+        async function runAllTests() {
+            document.getElementById('runAllBtn').disabled = true;
+            
+            await test1_Connection();
+            await test2_UsersTable();
+            await test3_UserProfilesTable();
+            await test4_OrdersTable();
+            await test5_AuthFlow();
+            
+            document.getElementById('runAllBtn').disabled = false;
+        }
+
+        async function test1_Connection() {
+            const statusEl = document.getElementById('status1');
+            const resultEl = document.getElementById('result1');
+            
+            statusEl.textContent = 'Testing...';
+            resultEl.textContent = 'Connecting to Supabase...';
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.ok || response.status === 404) {
+                    statusEl.textContent = 'Success';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = '✅ Connected to Supabase successfully!\n\nURL: ' + SUPABASE_URL;
+                } else {
+                    throw new Error('Connection failed with status: ' + response.status);
+                }
+            } catch (error) {
+                statusEl.textContent = 'Error';
+                statusEl.className = 'status error';
+                resultEl.textContent = '❌ Connection failed!\n\n' + error.message + '\n\nPlease check your internet connection.';
+            }
+        }
+
+        async function test2_UsersTable() {
+            const statusEl = document.getElementById('status2');
+            const resultEl = document.getElementById('result2');
+            
+            statusEl.textContent = 'Testing...';
+            resultEl.textContent = 'Checking users table...';
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&limit=5`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    statusEl.textContent = 'Success';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = `✅ Users table exists!\n\nTotal users found: ${data.length}\n\n` + 
+                        (data.length > 0 ? 'Sample user:\n' + JSON.stringify(data[0], null, 2) : 'No users yet (table is empty)');
+                } else {
+                    const errorText = await response.text();
+                    throw new Error('Status ' + response.status + ': ' + errorText);
+                }
+            } catch (error) {
+                statusEl.textContent = 'Error';
+                statusEl.className = 'status error';
+                resultEl.textContent = '❌ Users table not found or inaccessible!\n\n' + error.message + 
+                    '\n\n⚠️ Action needed: Run the SQL schema in Supabase SQL Editor\nSee SETUP_SUPABASE_TABLES.md for instructions';
+            }
+        }
+
+        async function test3_UserProfilesTable() {
+            const statusEl = document.getElementById('status3');
+            const resultEl = document.getElementById('result3');
+            
+            statusEl.textContent = 'Testing...';
+            resultEl.textContent = 'Checking user_profiles table...';
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?select=*&limit=5`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    statusEl.textContent = 'Success';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = `✅ User profiles table exists!\n\nTotal profiles found: ${data.length}`;
+                } else {
+                    throw new Error('Status ' + response.status);
+                }
+            } catch (error) {
+                statusEl.textContent = 'Error';
+                statusEl.className = 'status error';
+                resultEl.textContent = '❌ User profiles table not found!\n\n' + error.message;
+            }
+        }
+
+        async function test4_OrdersTable() {
+            const statusEl = document.getElementById('status4');
+            const resultEl = document.getElementById('result4');
+            
+            statusEl.textContent = 'Testing...';
+            resultEl.textContent = 'Checking orders table...';
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=*&limit=5`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    statusEl.textContent = 'Success';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = `✅ Orders table exists!\n\nTotal orders found: ${data.length}`;
+                } else {
+                    throw new Error('Status ' + response.status);
+                }
+            } catch (error) {
+                statusEl.textContent = 'Error';
+                statusEl.className = 'status error';
+                resultEl.textContent = '❌ Orders table not found!\n\n' + error.message;
+            }
+        }
+
+        async function test5_AuthFlow() {
+            const statusEl = document.getElementById('status5');
+            const resultEl = document.getElementById('result5');
+            
+            statusEl.textContent = 'Testing...';
+            resultEl.textContent = 'Testing authentication flow...';
+            
+            try {
+                // Test localStorage
+                localStorage.setItem('test_key', 'test_value');
+                const testValue = localStorage.getItem('test_key');
+                localStorage.removeItem('test_key');
+                
+                if (testValue !== 'test_value') {
+                    throw new Error('localStorage not working');
+                }
+                
+                // Check if currentUser exists
+                const currentUser = localStorage.getItem('currentUser');
+                
+                statusEl.textContent = 'Success';
+                statusEl.className = 'status success';
+                resultEl.textContent = '✅ localStorage working!\n\n' +
+                    (currentUser ? 
+                        'Current user logged in:\n' + JSON.stringify(JSON.parse(currentUser), null, 2) :
+                        'No user currently logged in\n\nTry creating an account on the main page!');
+            } catch (error) {
+                statusEl.textContent = 'Error';
+                statusEl.className = 'status error';
+                resultEl.textContent = '❌ Authentication flow test failed!\n\n' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
