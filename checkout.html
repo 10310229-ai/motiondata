@@ -475,36 +475,72 @@
                     const orderReference = response.reference;
                     console.log('Order reference:', orderReference);
                     
-                    // Save to localStorage
-                    const order = {
-                        id: response.reference,
-                        reference: response.reference,
-                        date: new Date().toISOString(),
-                        timestamp: Date.now(),
-                        email: orderData.email,
-                        phone: phone,
-                        mobile: phone,
-                        operator: orderData.network,
-                        network: orderData.network,
-                        package: orderData.package,
-                        amount: orderData.amount,
-                        status: 'completed'
-                    };
-                    
-                    const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
-                    orders.push(order);
-                    localStorage.setItem('md_orders', JSON.stringify(orders));
-                    console.log('✅ Order saved to localStorage');
+                    // Save to localStorage FIRST
+                    try {
+                        const order = {
+                            id: response.reference,
+                            reference: response.reference,
+                            date: new Date().toISOString(),
+                            timestamp: Date.now(),
+                            email: orderData.email,
+                            phone: phone,
+                            mobile: phone,
+                            operator: orderData.network,
+                            network: orderData.network,
+                            package: orderData.package,
+                            amount: orderData.amount,
+                            status: 'completed'
+                        };
+                        
+                        const orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
+                        orders.push(order);
+                        localStorage.setItem('md_orders', JSON.stringify(orders));
+                        console.log('✅ Order saved to localStorage');
+                    } catch(e) {
+                        console.error('❌ LocalStorage save error:', e);
+                    }
 
-                    // Save to Supabase
+                    // Add notification IMMEDIATELY
+                    try {
+                        console.log('📬 Adding notification...');
+                        if (typeof window.addOrderNotification === 'function') {
+                            const notifResult = window.addOrderNotification({
+                                title: `${orderData.network} Order Placed Successfully`,
+                                message: `Your ${orderData.package} order has been placed successfully. Delivery in progress.`,
+                                orderId: orderReference,
+                                network: orderData.network,
+                                amount: `GH₵ ${orderData.amount.toFixed(2)}`
+                            });
+                            console.log('✅ Notification created:', notifResult);
+                        } else {
+                            console.error('❌ addOrderNotification function not found!');
+                        }
+                    } catch(e) {
+                        console.error('❌ Notification error:', e);
+                    }
+
+                    // Show success popup IMMEDIATELY
+                    try {
+                        console.log('🎨 Showing success popup...');
+                        showCheckoutSuccessPopup({
+                            network: orderData.network,
+                            package: orderData.package,
+                            orderId: orderReference,
+                            amount: `GH₵ ${orderData.amount.toFixed(2)}`
+                        });
+                        console.log('✅ Success popup displayed');
+                    } catch(e) {
+                        console.error('❌ Popup error:', e);
+                    }
+
+                    // Save to Supabase in background (don't wait)
                     (async function() {
                         try {
-                            console.log('💾 Saving to Supabase...');
+                            console.log('💾 Saving to Supabase in background...');
                             const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
                             
                             let user = await getUserByEmail(orderData.email);
                             if (!user) {
-                                console.log('Creating new user...');
                                 user = await saveUser({
                                     name: currentUser.name || 'Guest Customer',
                                     email: orderData.email,
@@ -538,33 +574,6 @@
                             console.error('❌ Supabase save error:', e);
                         }
                     })();
-
-                    // Add notification automatically
-                    console.log('📬 Adding notification...');
-                    console.log('window.addOrderNotification exists?', typeof window.addOrderNotification);
-                    if (window.addOrderNotification) {
-                        const notifResult = window.addOrderNotification({
-                            title: `${orderData.network} Order Placed Successfully`,
-                            message: `Your ${orderData.package} order has been placed successfully. Delivery in progress.`,
-                            orderId: orderReference,
-                            network: orderData.network,
-                            amount: `GH₵ ${orderData.amount.toFixed(2)}`
-                        });
-                        console.log('✅ Notification created:', notifResult);
-                    } else {
-                        console.error('❌ addOrderNotification function not found!');
-                    }
-
-                    // Show success popup
-                    console.log('🎨 Showing success popup...');
-                    console.log('showCheckoutSuccessPopup exists?', typeof showCheckoutSuccessPopup);
-                    showCheckoutSuccessPopup({
-                        network: orderData.network,
-                        package: orderData.package,
-                        orderId: orderReference,
-                        amount: `GH₵ ${orderData.amount.toFixed(2)}`
-                    });
-                    console.log('✅ Success popup should be visible now');
                 }
             });
 
