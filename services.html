@@ -187,5 +187,15 @@
     <script src="assets/js/toast.js"></script>
     <script src="assets/js/script.js"></script>
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+    <script>
+        // Check if user is logged in before accessing services
+        (function() {
+            const currentUser = localStorage.getItem('currentUser');
+            if (!currentUser) {
+                alert('Please login or create an account to access our services.');
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
 </body>
 </html>

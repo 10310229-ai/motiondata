@@ -74,6 +74,16 @@
   <script src="assets/js/toast.js"></script>
   <script src="assets/js/supabase.js"></script>
   <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script>
+    // Check if user is logged in before placing order
+    (function() {
+      const currentUser = localStorage.getItem('currentUser');
+      if (!currentUser) {
+        alert('Please login or create an account to place an order.');
+        window.location.href = 'index.html';
+      }
+    })();
+  </script>
   <script src="js/order-telecel.js"></script>
 </body>
 </html>
