@@ -417,22 +417,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkAuth() {
         const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
         
-        // Only update UI if elements exist on the page
+        // Update mobile navigation regardless of other elements
+        if (user) {
+            updateMobileNavForLoggedInUser(user);
+        } else {
+            updateMobileNavForLoggedOutUser();
+        }
+        
+        // Only update desktop UI if elements exist on the page
         if (authPrompt && userProfile) {
             if (user) {
                 authPrompt.style.display = 'none';
                 userProfile.style.display = 'block';
                 if (document.getElementById('userName')) document.getElementById('userName').textContent = user.name;
                 if (document.getElementById('userEmail')) document.getElementById('userEmail').textContent = user.email;
-                
-                // Update mobile navigation to show user info
-                updateMobileNavForLoggedInUser(user);
             } else {
                 authPrompt.style.display = 'block';
                 userProfile.style.display = 'none';
-                
-                // Update mobile navigation to show login/signup
-                updateMobileNavForLoggedOutUser();
             }
         }
         
@@ -441,20 +442,29 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update mobile navigation for logged-in users
     function updateMobileNavForLoggedInUser(user) {
+        console.log('📱 Updating mobile nav for logged-in user:', user.name);
         const mobileUserSection = document.getElementById('mobileUserSection');
         const mobileAuthSection = document.getElementById('mobileAuthSection');
         const mobileUserName = document.getElementById('mobileUserName');
         const mobileProfileLink = document.getElementById('mobileProfileLink');
         const mobileLogoutLink = document.getElementById('mobileLogoutLink');
         
+        console.log('🔍 Elements found:', {
+            mobileUserSection: !!mobileUserSection,
+            mobileAuthSection: !!mobileAuthSection,
+            mobileUserName: !!mobileUserName
+        });
+        
         if (mobileUserSection && mobileAuthSection) {
             // Show user section, hide auth buttons
             mobileUserSection.style.display = 'block';
             mobileAuthSection.style.display = 'none';
+            console.log('✅ Mobile nav updated - showing user section');
             
             // Update user name in profile link
             if (mobileUserName) {
                 mobileUserName.textContent = user.name;
+                console.log('✅ User name updated to:', user.name);
             }
             
             // Setup profile link click handler
@@ -488,11 +498,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     showToast('Logged out successfully');
                 };
             }
+        } else {
+            console.warn('⚠️ Mobile nav elements not found on this page');
         }
     }
     
     // Update mobile navigation for logged-out users
     function updateMobileNavForLoggedOutUser() {
+        console.log('📱 Updating mobile nav for logged-out user');
         const mobileUserSection = document.getElementById('mobileUserSection');
         const mobileAuthSection = document.getElementById('mobileAuthSection');
         
@@ -500,6 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Hide user section, show auth buttons
             mobileUserSection.style.display = 'none';
             mobileAuthSection.style.display = 'block';
+            console.log('✅ Mobile nav updated - showing login/signup buttons');
         }
     }
 
