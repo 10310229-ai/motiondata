@@ -441,48 +441,65 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update mobile navigation for logged-in users
     function updateMobileNavForLoggedInUser(user) {
-        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
-        const mobileSignupBtn = document.getElementById('mobileSignupBtn');
+        const mobileUserSection = document.getElementById('mobileUserSection');
+        const mobileAuthSection = document.getElementById('mobileAuthSection');
+        const mobileUserName = document.getElementById('mobileUserName');
+        const mobileProfileLink = document.getElementById('mobileProfileLink');
+        const mobileLogoutLink = document.getElementById('mobileLogoutLink');
         
-        if (mobileLoginBtn && mobileSignupBtn) {
-            // Replace login/signup with user profile and logout
-            mobileLoginBtn.innerHTML = `<i class="fas fa-user-circle"></i><span>${user.name}</span>`;
-            mobileLoginBtn.style.pointerEvents = 'none';
-            mobileLoginBtn.style.opacity = '0.7';
+        if (mobileUserSection && mobileAuthSection) {
+            // Show user section, hide auth buttons
+            mobileUserSection.style.display = 'block';
+            mobileAuthSection.style.display = 'none';
             
-            mobileSignupBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i><span>Logout</span>';
-            mobileSignupBtn.id = 'mobileLogoutBtn';
-            mobileSignupBtn.onclick = function(e) {
-                e.preventDefault();
-                localStorage.removeItem('currentUser');
-                checkAuth();
-                const sidebar = document.getElementById('mobileNavSidebar');
-                const overlay = document.getElementById('mobileNavOverlay');
-                if (sidebar) sidebar.classList.remove('active');
-                if (overlay) overlay.classList.remove('active');
-                document.body.style.overflow = '';
-                showToast('Logged out successfully');
-            };
+            // Update user name in profile link
+            if (mobileUserName) {
+                mobileUserName.textContent = user.name;
+            }
+            
+            // Setup profile link click handler
+            if (mobileProfileLink) {
+                mobileProfileLink.onclick = function(e) {
+                    e.preventDefault();
+                    // Close sidebar
+                    const sidebar = document.getElementById('mobileNavSidebar');
+                    const overlay = document.getElementById('mobileNavOverlay');
+                    if (sidebar) sidebar.classList.remove('active');
+                    if (overlay) overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    
+                    // Open user profile modal or navigate to profile page
+                    // For now, show user info in the existing auth prompt area
+                    window.location.href = 'profile.html';
+                };
+            }
+            
+            // Setup logout link click handler
+            if (mobileLogoutLink) {
+                mobileLogoutLink.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('currentUser');
+                    checkAuth();
+                    const sidebar = document.getElementById('mobileNavSidebar');
+                    const overlay = document.getElementById('mobileNavOverlay');
+                    if (sidebar) sidebar.classList.remove('active');
+                    if (overlay) overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    showToast('Logged out successfully');
+                };
+            }
         }
     }
     
     // Update mobile navigation for logged-out users
     function updateMobileNavForLoggedOutUser() {
-        const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
-        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+        const mobileUserSection = document.getElementById('mobileUserSection');
+        const mobileAuthSection = document.getElementById('mobileAuthSection');
         
-        if (mobileLogoutBtn) {
-            // Restore login button
-            if (mobileLoginBtn) {
-                mobileLoginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i><span>Login</span>';
-                mobileLoginBtn.style.pointerEvents = 'auto';
-                mobileLoginBtn.style.opacity = '1';
-            }
-            
-            // Restore signup button
-            mobileLogoutBtn.innerHTML = '<i class="fas fa-user-plus"></i><span>Sign Up</span>';
-            mobileLogoutBtn.id = 'mobileSignupBtn';
-            mobileLogoutBtn.onclick = null;
+        if (mobileUserSection && mobileAuthSection) {
+            // Hide user section, show auth buttons
+            mobileUserSection.style.display = 'none';
+            mobileAuthSection.style.display = 'block';
         }
     }
 
