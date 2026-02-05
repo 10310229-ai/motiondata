@@ -51,8 +51,16 @@ document.addEventListener('DOMContentLoaded', function(){
 
   function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
-  document.getElementById('telecelForm').addEventListener('submit', function(evt){
+  const telecelForm = document.getElementById('telecelForm');
+  if (!telecelForm) {
+    console.error('ERROR: telecelForm element not found!');
+    return;
+  }
+
+  telecelForm.addEventListener('submit', function(evt){
+    // CRITICAL: Prevent form submission FIRST
     evt.preventDefault();
+    evt.stopPropagation();
     let msisdn = document.getElementById('msisdn').value.trim();
     const email = document.getElementById('email').value.trim();
     const pkg = document.getElementById('packageSelectTelecel').value;

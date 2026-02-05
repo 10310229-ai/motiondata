@@ -39,20 +39,7 @@ window.testPopup = showSuccessPopup;
 console.log('MTN order script loaded successfully!');
 console.log('Paystack library available:', typeof window.PaystackPop);
 
-// Verify Paystack is loaded correctly
-window.addEventListener('load', function() {
-  console.log('Window fully loaded');
-  console.log('PaystackPop available:', typeof window.PaystackPop);
-  console.log('PaystackPop.setup:', typeof window.PaystackPop?.setup);
-  
-  if (!window.PaystackPop) {
-    console.error('❌ CRITICAL: Paystack library failed to load!');
-    console.error('Check if https://js.paystack.co/v1/inline.js is blocked');
-  } else {
-    console.log('✅ Paystack library loaded successfully');
-  }
-});
-
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function(){
   console.log('DOM loaded - initializing MTN order form');
   console.log('Paystack after DOM load:', typeof window.PaystackPop);
@@ -162,9 +149,19 @@ document.addEventListener('DOMContentLoaded', function(){
     return;
   }
 
+  // Verify Paystack is available
+  if (!window.PaystackPop) {
+    console.error('❌ CRITICAL: Paystack library failed to load!');
+    console.error('Check if https://js.paystack.co/v1/inline.js is blocked');
+  } else {
+    console.log('✅ Paystack library loaded successfully');
+  }
+
   mtnForm.addEventListener('submit', function(evt){
-    console.log('Form submitted!');
+    // CRITICAL: Prevent form submission FIRST
     evt.preventDefault();
+    evt.stopPropagation();
+    console.log('Form submitted!');
     let msisdn = document.getElementById('msisdn').value.trim();
     const email = document.getElementById('email').value.trim();
     const pkg = document.getElementById('packageSelectMTN').value;

@@ -104,13 +104,12 @@
     </div>
   </div>
 
-  <script src="assets/js/script.js"></script>
   <script src="assets/js/toast.js"></script>
   <script src="assets/js/supabase.js"></script>
   <script src="https://js.paystack.co/v1/inline.js"></script>
   <script src="js/order-mtn.js"></script>
   <script>
-    // Form validation enhancements
+    // Form validation enhancements - merged into single DOMContentLoaded
     document.addEventListener('DOMContentLoaded', function() {
       const msisdnInput = document.getElementById('msisdn');
       const emailInput = document.getElementById('email');
@@ -158,19 +157,42 @@
     });
   </script>
   <script>
-    // Check if user is logged in before placing order
-    (function() {
+    // Check if user is logged in - disable form if not
+    document.addEventListener('DOMContentLoaded', function() {
       const currentUser = localStorage.getItem('currentUser');
       if (!currentUser) {
-        // Show toast notification instead of alert
-        if (typeof showToast === 'function') {
-          showToast('Please login or create an account to place an order.', 'warning');
+        const form = document.getElementById('mtnForm');
+        const submitBtn = form?.querySelector('button[type="submit"]');
+        
+        if (form) {
+          // Disable all form inputs
+          const inputs = form.querySelectorAll('input, select, button');
+          inputs.forEach(input => input.disabled = true);
+          
+          // Show login prompt
+          if (submitBtn) {
+            submitBtn.innerHTML = '<i class="fas fa-lock"></i> Login Required';
+            submitBtn.style.opacity = '0.6';
+            submitBtn.style.cursor = 'not-allowed';
+          }
+          
+          // Add click handler to show login message
+          form.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof showToast === 'function') {
+              showToast('Please login or create an account to place an order.', 'warning');
+            } else {
+              alert('Please login or create an account to place an order.');
+            }
+            // Redirect to home page after showing message
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 2000);
+          }, true);
         }
-        setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 1500);
       }
-    })();
+    });
   </script>
 </body>
 </html>

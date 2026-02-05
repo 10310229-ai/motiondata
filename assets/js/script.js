@@ -417,11 +417,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkAuth() {
         const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
         
-        // Update mobile navigation regardless of other elements
+        // Update mobile navigation
         if (user) {
             updateMobileNavForLoggedInUser(user);
+            updateDesktopNavForLoggedInUser(user);
+            // User is logged in - remove auth wall
+            removeAuthWall();
         } else {
             updateMobileNavForLoggedOutUser();
+            updateDesktopNavForLoggedOutUser();
+            // User not logged in - show auth wall (only if not already shown)
+            if (!authModal.classList.contains('auth-wall')) {
+                showAuthWall();
+            }
         }
         
         // Only update desktop UI if elements exist on the page
@@ -438,6 +446,89 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         return user;
+    }
+
+    // Show authentication wall for non-logged-in users
+    function showAuthWall() {
+        if (!authModal) return;
+        
+        // Prevent multiple calls
+        if (authModal.classList.contains('auth-wall')) return;
+        
+        // Show the auth modal
+        authModal.classList.add('active', 'auth-wall');
+        
+        // Show welcome message
+        const authWallMessage = document.getElementById('authWallMessage');
+        if (authWallMessage) {
+            authWallMessage.style.display = 'block';
+        }
+        
+        // Blur and lock the main content
+        document.body.classList.add('auth-required');
+        
+        // Prevent modal from being closed
+        const closeBtn = document.getElementById('closeAuthModal');
+        if (closeBtn) {
+            closeBtn.style.display = 'none';
+        }
+        
+        // Show login tab by default
+        authTabs.forEach(tab => {
+            if (tab.dataset.tab === 'login') {
+                tab.click();
+            }
+        });
+    }
+
+    // Remove authentication wall for logged-in users
+    function removeAuthWall() {
+        if (!authModal) return;
+        
+        // Remove auth wall class and hide modal
+        authModal.classList.remove('auth-wall', 'active');
+        
+        // Hide welcome message
+        const authWallMessage = document.getElementById('authWallMessage');
+        if (authWallMessage) {
+            authWallMessage.style.display = 'none';
+        }
+        
+        // Unlock the main content
+        document.body.classList.remove('auth-required');
+        
+        // Allow modal to be closed
+        const closeBtn = document.getElementById('closeAuthModal');
+        if (closeBtn) {
+            closeBtn.style.display = 'block';
+        }
+    }
+    
+    // Update desktop navigation for logged-in users
+    function updateDesktopNavForLoggedInUser(user) {
+        const desktopAuthSection = document.getElementById('desktopAuthSection');
+        const desktopUserSection = document.getElementById('desktopUserSection');
+        const desktopUserName = document.getElementById('desktopUserName');
+        
+        if (desktopAuthSection && desktopUserSection) {
+            desktopAuthSection.style.display = 'none';
+            desktopUserSection.style.display = 'flex';
+            
+            if (desktopUserName) {
+                desktopUserName.textContent = user.name;
+            }
+        }
+    }
+    
+    // Update desktop navigation for logged-out users
+    function updateDesktopNavForLoggedOutUser() {
+        const desktopAuthSection = document.getElementById('desktopAuthSection');
+        const desktopUserSection = document.getElementById('desktopUserSection');
+        
+        if (desktopAuthSection && desktopUserSection) {
+            desktopAuthSection.style.display = 'flex';
+            desktopUserSection.style.display = 'none';
+        }
     }
     
     // Update mobile navigation for logged-in users
@@ -525,17 +616,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Desktop auth buttons
+    const desktopLoginBtn = document.getElementById('desktopLoginBtn');
+    const desktopSignupBtn = document.getElementById('desktopSignupBtn');
+    const desktopProfileBtn = document.getElementById('desktopProfileBtn');
+    const desktopLogoutBtn = document.getElementById('desktopLogoutBtn');
+
+    if (desktopLoginBtn) {
+        desktopLoginBtn.addEventListener('click', () => {
+            authModal.classList.add('active');
+            // Switch to login tab
+            authTabs.forEach(tab => {
+                if (tab.dataset.tab === 'login') {
+                    tab.click();
+                }
+            });
+        });
+    }
+
+    if (desktopSignupBtn) {
+        desktopSignupBtn.addEventListener('click', () => {
+            authModal.classList.add('active');
+            // Switch to signup tab
+            authTabs.forEach(tab => {
+                if (tab.dataset.tab === 'signup') {
+                    tab.click();
+                }
+            });
+        });
+    }
+
+    if (desktopProfileBtn) {
+        desktopProfileBtn.addEventListener('click', () => {
+            window.location.href = 'profile.html';
+        });
+    }
+
+    if (desktopLogoutBtn) {
+        desktopLogoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            checkAuth();
+            showToast('Logged out successfully');
+        });
+    }
+
     // Close auth modal
     if (closeAuthModal) {
         closeAuthModal.addEventListener('click', () => {
-            authModal.classList.remove('active');
+            // Don't allow closing if it's an auth wall
+            if (!authModal.classList.contains('auth-wall')) {
+                authModal.classList.remove('active');
+            }
         });
     }
 
     // Close modal on backdrop click
     if (authModal) {
         authModal.addEventListener('click', (e) => {
-            if (e.target === authModal) {
+            // Only close if clicking backdrop and not in auth wall mode
+            if (e.target === authModal && !authModal.classList.contains('auth-wall')) {
                 authModal.classList.remove('active');
             }
         });

@@ -29,6 +29,27 @@
             </nav>
             
             <div class="header-actions">
+                <!-- Desktop Auth Section (shown when logged out) -->
+                <div class="desktop-auth-section" id="desktopAuthSection">
+                    <button class="desktop-auth-btn login-btn" id="desktopLoginBtn">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button class="desktop-auth-btn signup-btn" id="desktopSignupBtn">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </button>
+                </div>
+                
+                <!-- Desktop User Section (shown when logged in) -->
+                <div class="desktop-user-section" id="desktopUserSection" style="display: none;">
+                    <button class="desktop-user-profile" id="desktopProfileBtn">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="desktopUserName">Profile</span>
+                    </button>
+                    <button class="desktop-auth-btn logout-btn" id="desktopLogoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+                
                 <button class="hamburger-menu" id="hamburgerBtn" aria-label="Toggle menu">
                     <span></span>
                     <span></span>

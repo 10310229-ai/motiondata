@@ -149,7 +149,102 @@ body::after {
 .header-actions {
 	display: flex;
 	align-items: center;
+	gap: 1rem;
+}
+
+/* Desktop Auth Buttons */
+.desktop-auth-section,
+.desktop-user-section {
+	display: none;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+	.desktop-auth-section,
+	.desktop-user-section {
+		display: flex;
+	}
+}
+
+.desktop-auth-btn {
+	padding: 0.6rem 1.25rem;
+	border: none;
+	border-radius: 10px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
 	gap: 0.5rem;
+	white-space: nowrap;
+}
+
+.desktop-auth-btn i {
+	font-size: 1rem;
+}
+
+.login-btn {
+	background: transparent;
+	border: 2px solid var(--primary);
+	color: var(--primary);
+}
+
+.login-btn:hover {
+	background: rgba(34, 197, 94, 0.1);
+	border-color: var(--accent);
+	color: var(--accent);
+	transform: translateY(-2px);
+}
+
+.signup-btn {
+	background: linear-gradient(135deg, var(--primary), var(--secondary));
+	color: #0a1810;
+	box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+.signup-btn:hover {
+	background: linear-gradient(135deg, var(--accent), var(--primary));
+	box-shadow: 0 6px 20px rgba(132, 204, 22, 0.4);
+	transform: translateY(-2px);
+}
+
+.logout-btn {
+	background: rgba(239, 68, 68, 0.1);
+	border: 2px solid rgba(239, 68, 68, 0.5);
+	color: #ef4444;
+}
+
+.logout-btn:hover {
+	background: rgba(239, 68, 68, 0.2);
+	border-color: #ef4444;
+	transform: translateY(-2px);
+}
+
+.desktop-user-profile {
+	padding: 0.6rem 1rem;
+	background: rgba(34, 197, 94, 0.1);
+	border: 2px solid rgba(34, 197, 94, 0.3);
+	border-radius: 10px;
+	color: var(--primary);
+	font-size: 0.95rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.desktop-user-profile:hover {
+	background: rgba(34, 197, 94, 0.15);
+	border-color: var(--primary);
+	transform: translateY(-2px);
+}
+
+.desktop-user-profile i {
+	font-size: 1.2rem;
 }
 
 /* Hide hamburger on desktop/iPad when nav is in header */
@@ -1571,6 +1666,83 @@ img{max-width:100%;height:auto;display:block}
 
 .auth-modal.active{display: flex; align-items: center; justify-content: center;}
 
+/* Auth Wall - prevents closing and ensures login */
+.auth-modal.auth-wall {
+	background: rgba(0, 0, 0, 0.95);
+	backdrop-filter: blur(20px);
+	cursor: default;
+}
+
+.auth-modal.auth-wall .auth-modal-content {
+	animation: slideInUp 0.5s ease-out;
+}
+
+.auth-wall-message {
+	text-align: center;
+	margin-bottom: 2rem;
+	padding: 1.5rem;
+	background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.05));
+	border: 1px solid rgba(34, 197, 94, 0.3);
+	border-radius: 12px;
+}
+
+.auth-wall-icon {
+	font-size: 3rem;
+	color: var(--primary);
+	margin-bottom: 1rem;
+	animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+	0%, 100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.8;
+		transform: scale(1.02);
+	}
+}
+
+.auth-wall-message h2 {
+	color: var(--primary);
+	margin: 0.5rem 0;
+	font-size: 1.5rem;
+}
+
+.auth-wall-message p {
+	color: var(--muted);
+	margin: 0.5rem 0 0;
+	font-size: 1rem;
+	line-height: 1.6;
+}
+
+@keyframes slideInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Blur and lock body when auth is required */
+body.auth-required {
+	overflow: hidden;
+}
+
+body.auth-required .header,
+body.auth-required .hero,
+body.auth-required .container:not(.auth-modal-content),
+body.auth-required main,
+body.auth-required footer {
+	filter: blur(10px);
+	pointer-events: none;
+	user-select: none;
+}
+
 .auth-modal-content{
 	background: linear-gradient(135deg, rgba(11,18,32,0.98), rgba(7,16,24,0.98));
 	border: 1px solid rgba(255,255,255,0.12);
@@ -2233,6 +2405,77 @@ img{max-width:100%;height:auto;display:block}
 
 .profile-form .btn-primary {
     margin-top: 1rem;
+}
+
+/* Enhanced Save Buttons */
+.btn-save-enhanced {
+    position: relative;
+    background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+    color: #0a1810 !important;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.btn-save-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-save-enhanced:hover::before {
+    left: 100%;
+}
+
+.btn-save-enhanced:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(34, 197, 94, 0.5);
+    background: linear-gradient(135deg, var(--accent), var(--primary)) !important;
+}
+
+.btn-save-enhanced:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3);
+}
+
+.btn-save-enhanced i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-save-enhanced:hover i {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.btn-save-enhanced span {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.btn-save-enhanced:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-save-enhanced:disabled:hover {
+    transform: none;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
 }
 
 .orders-empty {
