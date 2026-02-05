@@ -626,20 +626,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Save user with password to localStorage for persistence
                 localStorage.setItem('currentUser', JSON.stringify(user));
-                
-                // Close modal and reset form before reload
-                authModal.classList.remove('active');
-                loginForm.reset();
+                console.log('User saved to localStorage:', user);
                 
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
                 
                 showAuthMessage('Login successful!', 'success');
                 
-                // Reload after a short delay to ensure localStorage is saved
+                // Close modal and update UI
                 setTimeout(() => {
-                    location.reload();
-                }, 500);
+                    authModal.classList.remove('active');
+                    loginForm.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.style.background = '';
+                    checkAuth();
+                }, 800);
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -774,20 +776,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     phone, 
                     password: newUser.password_hash 
                 }));
-
-                // Close modal and reset form before reload
-                authModal.classList.remove('active');
-                signupForm.reset();
+                console.log('New user saved to localStorage:', { id: savedUserId, name, email, phone });
 
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
                 
                 showAuthMessage('Account created successfully!', 'success');
                 
-                // Reload after a short delay to ensure localStorage is saved
+                // Close modal and update UI
                 setTimeout(() => {
-                    location.reload();
-                }, 500);
+                    authModal.classList.remove('active');
+                    signupForm.reset();
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.style.background = '';
+                    checkAuth();
+                }, 800);
 
             } catch (error) {
                 console.error('Signup error:', error);
