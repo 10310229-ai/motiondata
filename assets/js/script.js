@@ -627,13 +627,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Save user with password to localStorage for persistence
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 
+                // Close modal and reset form before reload
+                authModal.classList.remove('active');
+                loginForm.reset();
+                
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
                 
                 showAuthMessage('Login successful!', 'success');
+                
+                // Reload after a short delay to ensure localStorage is saved
                 setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                    location.reload();
+                }, 500);
 
             } catch (error) {
                 console.error('Login error:', error);
@@ -769,13 +775,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     password: newUser.password_hash 
                 }));
 
+                // Close modal and reset form before reload
+                authModal.classList.remove('active');
+                signupForm.reset();
+
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 submitBtn.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
                 
                 showAuthMessage('Account created successfully!', 'success');
+                
+                // Reload after a short delay to ensure localStorage is saved
                 setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                    location.reload();
+                }, 500);
 
             } catch (error) {
                 console.error('Signup error:', error);
