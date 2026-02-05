@@ -1,0 +1,350 @@
+/* Profile Page Enhancements */
+
+/* Profile Hero Banner */
+.profile-hero {
+    position: relative;
+    padding: 4rem 0 2rem;
+    min-height: 300px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.profile-hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../../stock-photo-african-woman-using-glasses-friend-using-nose-mask-happily-look.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 0;
+}
+
+.profile-hero-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(7,16,41,0.85), rgba(11,18,32,0.9));
+}
+
+.profile-hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.profile-hero-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-hero-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    border: 4px solid rgba(255,255,255,0.2);
+}
+
+.profile-hero-details h1 {
+    color: white;
+    font-size: 2rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.profile-hero-details p {
+    color: rgba(255,255,255,0.8);
+    margin: 0 0 0.5rem 0;
+}
+
+.profile-member-since {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(34,197,94,0.2);
+    color: var(--primary);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.profile-hero-stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.profile-stat-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 140px;
+    transition: all 0.3s ease;
+}
+
+.profile-stat-card:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.profile-stat-card i {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.profile-stat-card .stat-info h3 {
+    color: white;
+    font-size: 1.75rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.profile-stat-card .stat-info p {
+    color: rgba(255,255,255,0.7);
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+/* Profile Section Headers */
+.profile-section-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(34,197,94,0.2);
+}
+
+.profile-section-header h2 {
+    color: var(--text);
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-section-header h2 i {
+    color: var(--primary);
+}
+
+.profile-section-header p {
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Form Enhancements */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.checkbox-label:hover {
+    background: rgba(34,197,94,0.05);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
+.checkbox-label span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text);
+}
+
+.checkbox-label span i {
+    color: var(--primary);
+}
+
+/* Password Strength Meter */
+.password-strength-meter {
+    margin: 1rem 0;
+}
+
+.strength-bar {
+    height: 6px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0%;
+    transition: all 0.3s ease;
+    border-radius: 3px;
+}
+
+.strength-fill.weak {
+    width: 33%;
+    background: #ef4444;
+}
+
+.strength-fill.medium {
+    width: 66%;
+    background: #f59e0b;
+}
+
+.strength-fill.strong {
+    width: 100%;
+    background: #22c55e;
+}
+
+.strength-text {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.strength-text strong {
+    color: var(--text);
+}
+
+/* Activity Timeline */
+.activity-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.activity-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: rgba(34,197,94,0.05);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary);
+    transition: all 0.3s ease;
+}
+
+.activity-item:hover {
+    background: rgba(34,197,94,0.1);
+    transform: translateX(4px);
+}
+
+.activity-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activity-icon i {
+    color: white;
+    font-size: 1.25rem;
+}
+
+.activity-content h4 {
+    color: var(--text);
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+}
+
+.activity-content p {
+    color: var(--muted);
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+}
+
+.activity-time {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Enhanced Profile Container */
+.profile-container {
+    padding: 2rem 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .profile-hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .profile-hero-stats {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+    
+    .profile-stat-card {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-hero {
+        padding: 3rem 0 1.5rem;
+    }
+    
+    .profile-hero-info {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    .profile-hero-avatar {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+    
+    .profile-hero-details h1 {
+        font-size: 1.5rem;
+    }
+    
+    .profile-hero-stats {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .profile-stat-card {
+        width: 100%;
+    }
+}

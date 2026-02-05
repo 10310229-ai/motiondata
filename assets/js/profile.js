@@ -42,11 +42,187 @@
             .substring(0, 2);
         avatarCircle.innerHTML = initials;
 
+        // Update hero section
+        const heroUserName = document.getElementById('heroProfileUserName');
+        const heroUserEmail = document.getElementById('heroProfileUserEmail');
+        const heroAvatar = document.getElementById('heroProfileAvatar');
+        const memberSince = document.getElementById('memberSince');
+        
+        if (heroUserName) heroUserName.textContent = currentUser.name || currentUser.email;
+        if (heroUserEmail) heroUserEmail.textContent = currentUser.email;
+        if (heroAvatar) heroAvatar.innerHTML = initials;
+        if (memberSince) {
+            const joinDate = currentUser.created_at ? new Date(currentUser.created_at) : new Date();
+            memberSince.textContent = `Member since ${joinDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+        }
+
         // Load profile form
         document.getElementById('editName').value = currentUser.name || '';
         document.getElementById('editEmail').value = currentUser.email || '';
         document.getElementById('editPhone').value = currentUser.phone || '';
+
+        // Load preferences
+        loadPreferences();
+        
+        // Update statistics
+        updateOrderStatistics();
+        
+        // Update activity timeline
+        updateActivityTimeline();
     }
+
+    // Update order statistics
+    function updateOrderStatistics() {
+        const userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+        const currentUserOrders = userOrders.filter(order => order.userId === currentUser.id);
+        
+        const totalOrders = currentUserOrders.length;
+        const completedOrders = currentUserOrders.filter(order => order.status === 'completed').length;
+        const pendingOrders = currentUserOrders.filter(order => order.status === 'pending' || order.status === 'processing').length;
+        
+        const totalOrdersEl = document.getElementById('totalOrders');
+        const completedOrdersEl = document.getElementById('completedOrders');
+        const pendingOrdersEl = document.getElementById('pendingOrders');
+        
+        if (totalOrdersEl) totalOrdersEl.textContent = totalOrders;
+        if (completedOrdersEl) completedOrdersEl.textContent = completedOrders;
+        if (pendingOrdersEl) pendingOrdersEl.textContent = pendingOrders;
+    }
+
+    // Update activity timeline
+    function updateActivityTimeline() {
+        const timeline = document.querySelector('.activity-timeline');
+        if (!timeline) return;
+
+        const activities = [];
+        
+        // Add last login
+        const lastLogin = localStorage.getItem('lastLoginTime');
+        if (lastLogin) {
+            activities.push({
+                icon: 'fa-sign-in-alt',
+                title: 'Logged In',
+                description: 'You logged into your account',
+                time: new Date(lastLogin)
+            });
+        }
+        
+        // Add account creation
+        if (currentUser.created_at) {
+            activities.push({
+                icon: 'fa-user-plus',
+                title: 'Account Created',
+                description: 'Welcome to Motion Data Solutions',
+                time: new Date(currentUser.created_at)
+            });
+        }
+        
+        // Add recent orders
+        const userOrders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+        const recentOrders = userOrders
+            .filter(order => order.userId === currentUser.id)
+            .sort((a, b) => new Date(b.created_at || b.createdAt) - new Date(a.created_at || a.createdAt))
+            .slice(0, 2);
+        
+        recentOrders.forEach(order => {
+            activities.push({
+                icon: 'fa-shopping-cart',
+                title: `${order.network} Data Bundle`,
+                description: `Ordered ${order.dataAmount || 'data bundle'} for ${order.phoneNumber}`,
+                time: new Date(order.created_at || order.createdAt || Date.now())
+            });
+        });
+        
+        // Sort by time (newest first)
+        activities.sort((a, b) => b.time - a.time);
+        
+        // Render activities (keep only top 4)
+        timeline.innerHTML = activities.slice(0, 4).map(activity => {
+            const timeAgo = getTimeAgo(activity.time);
+            return `
+                <div class="activity-item">
+                    <div class="activity-icon">
+                        <i class="fas ${activity.icon}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h4>${activity.title}</h4>
+                        <p>${activity.description}</p>
+                        <span class="activity-time">${timeAgo}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Get time ago string
+    function getTimeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        
+        const intervals = {
+            year: 31536000,
+            month: 2592000,
+            week: 604800,
+            day: 86400,
+            hour: 3600,
+            minute: 60
+        };
+        
+        for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+            const interval = Math.floor(seconds / secondsInUnit);
+            if (interval >= 1) {
+                return `${interval} ${unit}${interval > 1 ? 's' : ''} ago`;
+            }
+        }
+        
+        return 'Just now';
+    }
+
+    // Load preferences
+    function loadPreferences() {
+        const preferences = JSON.parse(localStorage.getItem('userPreferences_' + currentUser.id) || '{}');
+        
+        // Load preferred network
+        const preferredNetwork = document.getElementById('preferredNetwork');
+        if (preferredNetwork && preferences.preferredNetwork) {
+            preferredNetwork.value = preferences.preferredNetwork;
+        }
+        
+        // Load notification settings
+        const emailNotifications = document.getElementById('emailNotifications');
+        const smsNotifications = document.getElementById('smsNotifications');
+        const orderUpdates = document.getElementById('orderUpdates');
+        const promotions = document.getElementById('promotions');
+        
+        if (emailNotifications) emailNotifications.checked = preferences.emailNotifications !== false;
+        if (smsNotifications) smsNotifications.checked = preferences.smsNotifications !== false;
+        if (orderUpdates) orderUpdates.checked = preferences.orderUpdates !== false;
+        if (promotions) promotions.checked = preferences.promotions !== false;
+    }
+
+    // Save preferences
+    function savePreferences() {
+        const preferences = {
+            preferredNetwork: document.getElementById('preferredNetwork').value,
+            emailNotifications: document.getElementById('emailNotifications').checked,
+            smsNotifications: document.getElementById('smsNotifications').checked,
+            orderUpdates: document.getElementById('orderUpdates').checked,
+            promotions: document.getElementById('promotions').checked
+        };
+        
+        localStorage.setItem('userPreferences_' + currentUser.id, JSON.stringify(preferences));
+        showToast('Preferences saved successfully!', 'success');
+    }
+
+    // Add save preferences button handler
+    window.addEventListener('DOMContentLoaded', function() {
+        const savePrefsBtn = document.getElementById('savePreferencesBtn');
+        if (savePrefsBtn) {
+            savePrefsBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                savePreferences();
+            });
+        }
+    });
 
     // Show message
     function showMessage(elementId, message, type = 'success') {
@@ -338,6 +514,49 @@
     if (checkAuth()) {
         loadUserProfile();
         loadUserOrders();
+        
+        // Update last login time
+        localStorage.setItem('lastLoginTime', new Date().toISOString());
+    }
+
+    // Password strength meter
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        const meter = document.getElementById('passwordStrength');
+        const fill = meter ? meter.querySelector('.strength-fill') : null;
+        const text = meter ? meter.querySelector('.strength-text strong') : null;
+        
+        if (!password || !meter) return;
+        
+        // Show meter
+        meter.style.display = 'block';
+        
+        // Length check
+        if (password.length >= 8) strength += 1;
+        if (password.length >= 12) strength += 1;
+        
+        // Character variety checks
+        if (/[a-z]/.test(password)) strength += 1;
+        if (/[A-Z]/.test(password)) strength += 1;
+        if (/[0-9]/.test(password)) strength += 1;
+        if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+        
+        // Update UI
+        fill.classList.remove('weak', 'medium', 'strong');
+        
+        if (strength <= 2) {
+            fill.classList.add('weak');
+            text.textContent = 'Weak';
+            text.style.color = '#ef4444';
+        } else if (strength <= 4) {
+            fill.classList.add('medium');
+            text.textContent = 'Medium';
+            text.style.color = '#f59e0b';
+        } else {
+            fill.classList.add('strong');
+            text.textContent = 'Strong';
+            text.style.color = '#22c55e';
+        }
     }
 
     // Password visibility toggle functionality
@@ -363,6 +582,14 @@
                 }
             });
         });
+        
+        // Add password strength checker
+        const newPasswordInput = document.getElementById('newPassword');
+        if (newPasswordInput) {
+            newPasswordInput.addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+            });
+        }
     });
 
 })();
