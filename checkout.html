@@ -506,9 +506,14 @@
                         });
                     }
 
-                    // Show success message
-                    alert(`✅ Payment Successful!\n\nYour ${orderData.network} data bundle will be delivered within 5 minutes.\n\nOrder Reference: ${orderReference}`);
-                    window.location.href = 'index.html';
+                    // Show success message with countdown
+                    const successMsg = `✅ Payment Successful!\n\nYour ${orderData.network} data bundle will be delivered within 5 minutes.\n\nOrder Reference: ${orderReference}\n\nRedirecting to homepage in 5 seconds...`;
+                    alert(successMsg);
+                    
+                    // Auto-redirect after 5 seconds
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 5000);
                 }
             });
 
