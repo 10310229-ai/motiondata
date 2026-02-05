@@ -28,19 +28,13 @@
     function loadUserProfile() {
         if (!currentUser) return;
 
-        // Update sidebar info
-        document.getElementById('profileUserName').textContent = currentUser.name || currentUser.email;
-        document.getElementById('profileUserEmail').textContent = currentUser.email;
-
-        // Update avatar initials
-        const avatarCircle = document.getElementById('avatarCircle');
+        // Calculate initials for avatar
         const initials = (currentUser.name || currentUser.email)
             .split(' ')
             .map(word => word[0])
             .join('')
             .toUpperCase()
             .substring(0, 2);
-        avatarCircle.innerHTML = initials;
 
         // Update hero section
         const heroUserName = document.getElementById('heroProfileUserName');
