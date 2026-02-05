@@ -431,6 +431,8 @@
                 onSuccess: function(response) {
                     console.log('Payment successful:', response);
                     
+                    const orderReference = response.reference;
+                    
                     // Save to localStorage
                     const order = {
                         id: response.reference,
@@ -497,14 +499,14 @@
                         window.addOrderNotification({
                             title: `${orderData.network} Order Placed Successfully`,
                             message: `Your ${orderData.package} order has been placed successfully. Delivery in progress.`,
-                            orderId: savedOrder?.id || `${orderData.network}-${Date.now()}`,
+                            orderId: orderReference,
                             network: orderData.network,
                             amount: `GH₵ ${orderData.amount.toFixed(2)}`
                         });
                     }
 
-                    // Redirect to success page or show success message
-                    alert('Payment successful! Your data bundle will be delivered within 5 minutes.');
+                    // Show success message
+                    alert(`✅ Payment Successful!\n\nYour ${orderData.network} data bundle will be delivered within 5 minutes.\n\nOrder Reference: ${orderReference}`);
                     window.location.href = 'index.html';
                 }
             });

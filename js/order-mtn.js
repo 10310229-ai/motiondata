@@ -60,6 +60,8 @@ document.addEventListener('DOMContentLoaded', function(){
   function handlePaymentSuccess(response, email, msisdn, pkg, price) {
     console.log('handlePaymentSuccess called with:', {response, email, msisdn, pkg, price});
     
+    let savedOrderId = `MTN-${Date.now()}`;
+    
     // Save to localStorage
     try {
       const order = {
@@ -143,15 +145,13 @@ document.addEventListener('DOMContentLoaded', function(){
       console.log('Form fields cleared');
     } catch(e) { console.error('Form clear error:', e); }
     
-    // Show success popup with order data
-    setTimeout(function() {
-      console.log('Showing success popup...');
-      showSuccessPopup({
-        package: pkg,
-        orderId: savedOrder?.id || `MTN-${Date.now()}`,
-        amount: `GH₵ ${price.toFixed(2)}`
-      });
-    }, 500);
+    // Show success popup immediately with order data
+    console.log('Showing success popup...');
+    showSuccessPopup({
+      package: pkg,
+      orderId: savedOrderId,
+      amount: `GH₵ ${price.toFixed(2)}`
+    });
   }
 
   const mtnForm = document.getElementById('mtnForm');
