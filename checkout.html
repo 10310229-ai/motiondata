@@ -471,11 +471,12 @@
                             const savedOrder = await saveOrder({
                                 customer_id: customer.id,
                                 network: orderData.network,
-                                package: orderData.package,
-                                phone: phone,
+                                package_name: orderData.package,
+                                phone_number: phone,
                                 email: orderData.email,
                                 amount: orderData.amount,
-                                status: 'completed'
+                                status: 'completed',
+                                reference: response.reference
                             });
                             const transaction = await saveTransaction({
                                 order_id: savedOrder.id,

@@ -149,11 +149,12 @@ async function saveOrder(orderData) {
     const order = {
         customer_id: orderData.customer_id,
         network: orderData.network,
-        package_name: orderData.package,
-        phone_number: orderData.phone,
+        package_name: orderData.package_name || orderData.package,
+        phone_number: orderData.phone_number || orderData.phone,
         email: orderData.email,
         amount: orderData.amount,
         status: orderData.status || 'pending',
+        reference: orderData.reference || null,
         created_at: new Date().toISOString()
     };
 

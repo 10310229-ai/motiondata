@@ -108,8 +108,21 @@ document.addEventListener('DOMContentLoaded', function(){
           console.log('✅ Customer saved:', customer);
           
           console.log('Creating order...');
-          const savedOrder = await saveOrder({customer_id: customer.id, network: 'MTN', package: pkg, phone: msisdn, email: email, amount: price, status: 'completed'});
+          const savedOrder = await saveOrder({
+            customer_id: customer.id, 
+            network: 'MTN', 
+            package_name: pkg,
+            phone_number: msisdn, 
+            email: email, 
+            amount: price, 
+            status: 'completed',
+            reference: response.reference
+          });
           console.log('✅ Order saved:', savedOrder);
+          
+          if (!savedOrder || !savedOrder.id) {
+            throw new Error('Failed to save order - no order ID returned');
+          }
           
           console.log('Creating transaction...');
           const transaction = await saveTransaction({order_id: savedOrder.id, reference: response.reference, amount: price, status: 'success', payment_method: 'paystack', metadata: {response: response}});
