@@ -179,6 +179,7 @@ body::after {
 	align-items: center;
 	gap: 0.5rem;
 	white-space: nowrap;
+	text-decoration: none;
 }
 
 .desktop-auth-btn i {
@@ -221,6 +222,80 @@ body::after {
 	border-color: #ef4444;
 	transform: translateY(-2px);
 }
+
+.support-btn {
+	background: rgba(59, 130, 246, 0.12);
+	border: 2px solid rgba(59, 130, 246, 0.35);
+	color: #60a5fa;
+}
+
+.support-btn:hover {
+	background: rgba(59, 130, 246, 0.2);
+	border-color: #60a5fa;
+	color: #bfdbfe;
+	transform: translateY(-2px);
+}
+
+.support-menu {
+	position: fixed;
+	z-index: 9999;
+	min-width: 240px;
+	padding: 0.75rem;
+	background: rgba(10, 24, 16, 0.96);
+	border: 1px solid rgba(96, 165, 250, 0.35);
+	border-radius: 14px;
+	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+	backdrop-filter: blur(18px);
+	display: none;
+	transform-origin: top right;
+}
+
+.support-menu.active {
+	display: block;
+	animation: supportMenuIn 0.2s ease;
+}
+
+@keyframes supportMenuIn {
+	from { opacity: 0; transform: scale(0.96) translateY(-6px); }
+	to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.support-menu h4 {
+	margin: 0 0 0.5rem 0;
+	font-size: 0.95rem;
+	color: #fff;
+}
+
+.support-menu p {
+	margin: 0 0 0.75rem 0;
+	color: var(--muted);
+	font-size: 0.85rem;
+	line-height: 1.4;
+}
+
+.support-menu a {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.75rem 0.85rem;
+	border-radius: 10px;
+	text-decoration: none;
+	color: #e5f7ff;
+	font-weight: 600;
+	font-size: 0.92rem;
+	transition: background 0.2s ease, transform 0.2s ease;
+	margin-top: 0.45rem;
+
+}
+
+.support-menu a:hover {
+	background: rgba(96, 165, 250, 0.12);
+	transform: translateX(2px);
+}
+
+.support-menu .support-email { border: 1px solid rgba(96, 165, 250, 0.2); }
+.support-menu .support-call { border: 1px solid rgba(34, 197, 94, 0.2); }
+.support-menu .support-whatsapp { border: 1px solid rgba(37, 211, 102, 0.22); }
 
 .desktop-user-profile {
 	padding: 0.6rem 1rem;

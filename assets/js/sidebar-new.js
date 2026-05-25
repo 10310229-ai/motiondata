@@ -16,6 +16,7 @@
         const hamburger = document.getElementById('hamburgerBtn');
         const sidebar = document.getElementById('mobileNavSidebar');
         const overlay = document.getElementById('mobileNavOverlay');
+        const supportBtn = document.getElementById('customerSupportBtn');
         const mobileLinks = document.querySelectorAll('.mobile-nav-link');
         const mobileLoginBtn = document.getElementById('mobileLoginBtn');
         const mobileSignupBtn = document.getElementById('mobileSignupBtn');
@@ -27,6 +28,83 @@
             console.warn('Navigation elements not found');
             return;
         }
+
+        // Customer support quick menu (email / call / WhatsApp)
+        let supportMenu;
+        function ensureSupportMenu() {
+            if (supportMenu) return supportMenu;
+
+            supportMenu = document.createElement('div');
+            supportMenu.className = 'support-menu';
+            supportMenu.setAttribute('role', 'menu');
+            supportMenu.setAttribute('aria-label', 'Customer support menu');
+            supportMenu.innerHTML = `
+                <h4>Customer Support</h4>
+                <p>Choose how you want to reach us.</p>
+                <a class="support-email" href="mailto:kwakumotion55@gmail.com?subject=Motion%20Data%20Support" role="menuitem">
+                    <i class="fas fa-envelope"></i> Email Support
+                </a>
+                <a class="support-call" href="tel:0256342577" role="menuitem">
+                    <i class="fas fa-phone"></i> Call Support
+                </a>
+                <a class="support-whatsapp" href="https://whatsapp.com/dl/" target="_blank" rel="noopener" role="menuitem">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Chat
+                </a>
+            `;
+            document.body.appendChild(supportMenu);
+            return supportMenu;
+        }
+
+        function positionSupportMenu() {
+            if (!supportBtn || !supportMenu) return;
+            const rect = supportBtn.getBoundingClientRect();
+            const menu = supportMenu;
+            menu.style.top = `${rect.bottom + 10}px`;
+            const right = Math.max(12, window.innerWidth - rect.right);
+            menu.style.right = `${right}px`;
+            menu.style.left = 'auto';
+        }
+
+        function openSupportMenu() {
+            const menu = ensureSupportMenu();
+            positionSupportMenu();
+            menu.classList.add('active');
+            supportBtn?.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeSupportMenu() {
+            if (!supportMenu) return;
+            supportMenu.classList.remove('active');
+            supportBtn?.setAttribute('aria-expanded', 'false');
+        }
+
+        if (supportBtn) {
+            supportBtn.setAttribute('aria-haspopup', 'menu');
+            supportBtn.setAttribute('aria-expanded', 'false');
+            supportBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const menu = ensureSupportMenu();
+                const isActive = menu.classList.contains('active');
+                if (isActive) closeSupportMenu(); else openSupportMenu();
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (supportMenu && supportMenu.classList.contains('active')) {
+                const clickInsideMenu = supportMenu.contains(e.target);
+                const clickOnBtn = supportBtn && supportBtn.contains(e.target);
+                if (!clickInsideMenu && !clickOnBtn) closeSupportMenu();
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (supportMenu && supportMenu.classList.contains('active')) positionSupportMenu();
+        });
+
+        window.addEventListener('scroll', function() {
+            if (supportMenu && supportMenu.classList.contains('active')) positionSupportMenu();
+        }, true);
         
         // Open sidebar
         function openNav() {
@@ -127,6 +205,9 @@
         
         // Close on Escape key
         document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSupportMenu();
+            }
             if (e.key === 'Escape' && sidebar.classList.contains('active')) {
                 closeNav();
             }
