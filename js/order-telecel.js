@@ -1,6 +1,6 @@
 // Dedicated Telecel page logic — uses its own package list and Paystack handling
 
-function showSuccessPopup(orderData = {}) {
+function showSuccessPopup(orderData = {}, redirectUrl = 'index.html') {
   // Add notification automatically
   if (window.addOrderNotification) {
     window.addOrderNotification({
@@ -23,8 +23,8 @@ function showSuccessPopup(orderData = {}) {
     <span class="popup-icon" style="font-size:4rem;margin-bottom:1rem;display:block;">✓</span>
     <h2 style="margin:0 0 1rem 0;color:#fff;font-size:1.8rem;font-weight:800;">Payment Successful!</h2>
     <p style="margin:0 0 1.5rem 0;color:#e0f2e0;font-size:1.1rem;">Your data bundle order has been placed successfully. Your bundle will be delivered to the recipient shortly.</p>
-    <p style="margin:0 0 1.5rem 0;color:#fff;font-size:0.9rem;">Redirecting to homepage in <span id="countdown">8</span> seconds...</p>
-    <button class="btn-popup" onclick="window.location.href='index.html'" style="background:#22c55e;color:#04261a;border:none;padding:0.8rem 2rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem;">Back to Home</button>
+    <p style="margin:0 0 1.5rem 0;color:#fff;font-size:0.9rem;">Redirecting in <span id="countdown">8</span> seconds...</p>
+    <button class="btn-popup" onclick="window.location.href='" + redirectUrl + "'" style="background:#22c55e;color:#04261a;border:none;padding:0.8rem 2rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem;">Open Receipt Now</button>
   `;
   
   document.body.appendChild(overlay);
@@ -38,7 +38,7 @@ function showSuccessPopup(orderData = {}) {
     if (countdownElement) countdownElement.textContent = secondsLeft;
     if (secondsLeft <= 0) {
       clearInterval(countdownInterval);
-      window.location.href = 'index.html';
+      window.location.href = redirectUrl;
     }
   }, 1000);
 }

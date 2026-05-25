@@ -366,7 +366,7 @@
     <script src="assets/js/script.js"></script>
     <script>
         // Success popup function for checkout
-        function showCheckoutSuccessPopup(orderData = {}) {
+        function showCheckoutSuccessPopup(orderData = {}, redirectUrl = 'index.html') {
             console.log('showCheckoutSuccessPopup called:', orderData);
             
             const overlay = document.createElement('div');
@@ -381,8 +381,8 @@
                 <h2 style="margin:0 0 1rem 0;color:#fff;font-size:1.8rem;font-weight:800;">Payment Successful!</h2>
                 <p style="margin:0 0 0.5rem 0;color:#e0f2e0;font-size:1.1rem;">Your ${orderData.network || ''} data bundle order has been placed successfully.</p>
                 <p style="margin:0 0 1.5rem 0;color:#e0f2e0;font-size:0.95rem;">Your bundle will be delivered to the recipient shortly.</p>
-                <p style="margin:0 0 1.5rem 0;color:#fff;font-size:0.9rem;">Redirecting to homepage in <span id="countdown">8</span> seconds...</p>
-                <button class="btn-popup" onclick="window.location.href='index.html'" style="background:#22c55e;color:#04261a;border:none;padding:0.8rem 2rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem;">Back to Home Now</button>
+                <p style="margin:0 0 1.5rem 0;color:#fff;font-size:0.9rem;">Redirecting in <span id="countdown">8</span> seconds...</p>
+                <button class="btn-popup" onclick="window.location.href='" + redirectUrl + "'" style="background:#22c55e;color:#04261a;border:none;padding:0.8rem 2rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem;">Open Receipt Now</button>
             `;
             
             document.body.appendChild(overlay);
@@ -399,7 +399,7 @@
                 }
                 if (secondsLeft <= 0) {
                     clearInterval(countdownInterval);
-                    window.location.href = 'index.html';
+                    window.location.href = redirectUrl;
                 }
             }, 1000);
         }
