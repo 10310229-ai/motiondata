@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function(){
       ref: `ATG-` + Date.now(),
       metadata: { custom_fields: [ {display_name:'Mobile', variable_name:'mobile', value:phone}, {display_name:'Package', variable_name:'package', value:pkg} ] },
       onClose: function(){ console.log('Payment closed'); },
-      onSuccess: function(response){
+      callback: function(response){
         try {
           const order = { id: response.reference, reference: response.reference, date: new Date().toISOString(), timestamp: Date.now(), email: email, phone: msisdn, mobile: phone, operator: 'AirtelTigo', network: 'AirtelTigo', package: pkg, amount: price, status: 'completed' };
           const orders = JSON.parse(localStorage.getItem('md_orders') || '[]'); orders.push(order); localStorage.setItem('md_orders', JSON.stringify(orders));

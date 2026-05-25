@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', function(){
         ]
       },
       onClose: function(){ console.log('Payment closed'); },
-      onSuccess: function(response){
+      callback: function(response){
         handlePaymentSuccess(response, email, msisdn, pkg, price);
       }
     });
