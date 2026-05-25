@@ -159,11 +159,23 @@ function httpsFetch(urlString, options = {}) {
   });
 }
 
+// Check if maintenance mode is enabled
+function isMaintenanceMode() {
+  const maintenanceFlagPath = path.join(__dirname, '.maintenance');
+  return fs.existsSync(maintenanceFlagPath);
+}
+
 // Request handler
 async function handleRequest(req, res) {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
   const method = req.method;
+
+  // Check maintenance mode - allow API and admin access
+  if (isMaintenanceMode() && !pathname.startsWith('/api/') && !pathname.startsWith('/admin') && pathname !== '/maintenance.html') {
+    const maintenancePath = path.join(__dirname, '..', 'maintenance.html');
+    return serveStatic(req, res, maintenancePath);
+  }
 
   // CORS headers for all requests
   if (method === 'OPTIONS') {
