@@ -191,6 +191,11 @@ async function handleRequest(req, res) {
   // API Routes
   if (pathname.startsWith('/api/')) {
     try {
+      // GET /api/maintenance-status
+      if (pathname === '/api/maintenance-status' && method === 'GET') {
+        return sendJSON(res, { maintenance: isMaintenanceMode() });
+      }
+
       // GET /api/stats
       if (pathname === '/api/stats' && method === 'GET') {
         const stats = getStats();
