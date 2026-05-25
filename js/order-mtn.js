@@ -25,7 +25,7 @@ function showSuccessPopup(orderData = {}) {
     <span class="popup-icon" style="font-size:4rem;margin-bottom:1rem;display:block;">✓</span>
     <h2 style="margin:0 0 1rem 0;color:#fff;font-size:1.8rem;font-weight:800;">Payment Successful!</h2>
     <p style="margin:0 0 1.5rem 0;color:#e0f2e0;font-size:1.1rem;">Your data bundle order has been placed successfully. Your bundle will be delivered to the recipient shortly.</p>
-    <p style="margin:0 0 1.5rem 0;color:#fff;font-size:0.9rem;">Redirecting to homepage in <span id="countdown">5</span> seconds...</p>
+    <p style="margin:0 0 1.5rem 0;color:#fff;font-size:0.9rem;">Redirecting to homepage in <span id="countdown">8</span> seconds...</p>
     <button class="btn-popup" onclick="window.location.href='index.html'" style="background:#22c55e;color:#04261a;border:none;padding:0.8rem 2rem;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem;">Back to Home Now</button>
   `;
   
@@ -34,7 +34,7 @@ function showSuccessPopup(orderData = {}) {
   console.log('Popup and overlay added to page');
   
   // Auto-redirect countdown
-  let secondsLeft = 5;
+  let secondsLeft = 8;
   const countdownElement = document.getElementById('countdown');
   const countdownInterval = setInterval(() => {
     secondsLeft--;
