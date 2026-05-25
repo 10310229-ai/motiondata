@@ -47,7 +47,22 @@ document.addEventListener('DOMContentLoaded', function(){
   // No auth required - users can order directly
 
   const packages = {
-    '1GB': 6.00,'2GB': 11.00,'3GB': 15.00,'4GB': 20.00,'5GB': 25.00,'6GB': 30.00,'7GB': 35.00,'8GB': 40.00,'10GB': 50.00,'20GB': 75.00,'30GB': 85.00,'40GB': 120.00,'50GB': 130.00,'100GB':230.00
+    '1GB': 6.00,
+    '2GB': 11.00,
+    '3GB': 15.00,
+    '4GB': 20.00,
+    '5GB': 24.00,
+    '6GB': 30.00,
+    '7GB': 35.00,
+    '8GB': 40.00,
+    '10GB': 48.00,
+    '15GB': 55.00,
+    '20GB': 65.00,
+    '30GB': 76.00,
+    '40GB': 90.00,
+    '50GB': 100.00,
+    '100GB': 195.00,
+    '200GB': 360.00
   };
 
   const sel = document.getElementById('packageSelectAirtelTigo');

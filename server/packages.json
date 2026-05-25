@@ -91,25 +91,97 @@
         "name": "AirtelTigo 1GB Daily",
         "volume": "1GB",
         "validity": "24 Hours",
-        "price": 4.50
+        "price": 6.00
       },
       {
-        "name": "AirtelTigo 3GB Weekly",
+        "name": "AirtelTigo 2GB",
+        "volume": "2GB",
+        "validity": "30 Days",
+        "price": 11.00
+      },
+      {
+        "name": "AirtelTigo 3GB",
         "volume": "3GB",
-        "validity": "7 Days",
-        "price": 12.00
+        "validity": "30 Days",
+        "price": 15.00
       },
       {
-        "name": "AirtelTigo 6GB Monthly",
+        "name": "AirtelTigo 4GB",
+        "volume": "4GB",
+        "validity": "30 Days",
+        "price": 20.00
+      },
+      {
+        "name": "AirtelTigo 5GB",
+        "volume": "5GB",
+        "validity": "30 Days",
+        "price": 24.00
+      },
+      {
+        "name": "AirtelTigo 6GB",
         "volume": "6GB",
         "validity": "30 Days",
-        "price": 22.00
+        "price": 30.00
       },
       {
-        "name": "AirtelTigo 12GB Monthly",
-        "volume": "12GB",
+        "name": "AirtelTigo 7GB",
+        "volume": "7GB",
+        "validity": "30 Days",
+        "price": 35.00
+      },
+      {
+        "name": "AirtelTigo 8GB",
+        "volume": "8GB",
         "validity": "30 Days",
         "price": 40.00
+      },
+      {
+        "name": "AirtelTigo 10GB",
+        "volume": "10GB",
+        "validity": "30 Days",
+        "price": 48.00
+      },
+      {
+        "name": "AirtelTigo 15GB",
+        "volume": "15GB",
+        "validity": "30 Days",
+        "price": 55.00
+      },
+      {
+        "name": "AirtelTigo 20GB",
+        "volume": "20GB",
+        "validity": "30 Days",
+        "price": 65.00
+      },
+      {
+        "name": "AirtelTigo 30GB",
+        "volume": "30GB",
+        "validity": "30 Days",
+        "price": 76.00
+      },
+      {
+        "name": "AirtelTigo 40GB",
+        "volume": "40GB",
+        "validity": "30 Days",
+        "price": 90.00
+      },
+      {
+        "name": "AirtelTigo 50GB",
+        "volume": "50GB",
+        "validity": "30 Days",
+        "price": 100.00
+      },
+      {
+        "name": "AirtelTigo 100GB",
+        "volume": "100GB",
+        "validity": "30 Days",
+        "price": 195.00
+      },
+      {
+        "name": "AirtelTigo 200GB",
+        "volume": "200GB",
+        "validity": "30 Days",
+        "price": 360.00
       }
     ],
     "Telecel": [
