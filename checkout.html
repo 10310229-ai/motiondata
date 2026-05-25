@@ -525,19 +525,27 @@
                         console.error('❌ Notification error:', e);
                     }
 
-                    // Show success popup IMMEDIATELY
+                    // Redirect to receipt page with order data (and send beacon)
                     try {
-                        console.log('🎨 Showing success popup...');
-                        showCheckoutSuccessPopup({
-                            network: orderData.network,
+                        const orderPayload = {
+                            id: orderReference,
+                            reference: orderReference,
+                            date: new Date().toISOString(),
+                            email: orderData.email,
+                            phone: phone,
+                            operator: orderData.network,
                             package: orderData.package,
-                            orderId: orderReference,
-                            amount: `GH₵ ${orderData.amount.toFixed(2)}`
-                        });
-                        console.log('✅ Success popup displayed');
-                    } catch(e) {
-                        console.error('❌ Popup error:', e);
-                    }
+                            amount: orderData.amount,
+                            status: 'completed'
+                        };
+                        if (navigator && typeof navigator.sendBeacon === 'function') {
+                            const blob = new Blob([JSON.stringify(orderPayload)], { type: 'application/json' });
+                            navigator.sendBeacon('/api/orders', blob);
+                        }
+                    } catch (e) { console.warn('Beacon failed', e); }
+
+                    const params = new URLSearchParams({ network: orderData.network, package: orderData.package, phone: phone, email: orderData.email, amount: orderData.amount, reference: orderReference });
+                    window.location.href = 'receipt.html?' + params.toString();
 
                     // Save to Supabase in background (don't wait)
                     (async function() {

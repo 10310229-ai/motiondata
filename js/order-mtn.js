@@ -143,13 +143,32 @@ function handlePaymentSuccess(response, email, msisdn, pkg, price) {
       console.log('Form fields cleared');
     } catch(e) { console.error('Form clear error:', e); }
     
-    // Show success popup immediately with order data
-    console.log('Showing success popup...');
-    showSuccessPopup({
+    // Prepare order payload and persist (best-effort) then redirect to receipt page
+    console.log('Preparing receipt redirect...');
+    const orderPayload = {
+      id: response.reference,
+      reference: response.reference,
+      date: new Date().toISOString(),
+      email: email,
+      phone: msisdn,
+      operator: 'MTN',
       package: pkg,
-      orderId: savedOrderId,
-      amount: `GH₵ ${price.toFixed(2)}`
-    });
+      amount: price,
+      status: 'completed'
+    };
+
+    try {
+      // Best-effort send to server before navigation
+      if (navigator && typeof navigator.sendBeacon === 'function') {
+        const blob = new Blob([JSON.stringify(orderPayload)], { type: 'application/json' });
+        navigator.sendBeacon('/api/orders', blob);
+        console.log('Beacon sent to /api/orders');
+      }
+    } catch (e) { console.warn('Beacon failed', e); }
+
+    // Redirect to receipt page with query params
+    const params = new URLSearchParams({ network: 'MTN', package: pkg, phone: msisdn, email: email, amount: price, reference: response.reference });
+    window.location.href = 'receipt.html?' + params.toString();
 }
 
 // Initialize when DOM is ready

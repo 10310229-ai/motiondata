@@ -111,9 +111,14 @@ document.addEventListener('DOMContentLoaded', function(){
           window.addOrderNotification({ title: 'Telecel Order Placed Successfully', message: `Your ${pkg} order has been placed successfully.`, orderId: response.reference, network: 'Telecel', amount: `GH₵ ${price.toFixed(2)}` });
         }
 
-        try { showSuccessPopup({ package: pkg, orderId: response.reference, amount: `GH₵ ${price.toFixed(2)}` }); } catch(e){ console.error(e); }
+        // Persist order (best-effort) then redirect to receipt page
+        const orderPayload = { id: response.reference, reference: response.reference, date: new Date().toISOString(), email: email, phone: msisdn, operator: 'Telecel', package: pkg, amount: price, status: 'completed' };
+        try { if (navigator && typeof navigator.sendBeacon === 'function') { const blob = new Blob([JSON.stringify(orderPayload)], {type:'application/json'}); navigator.sendBeacon('/api/orders', blob); } } catch(e){ console.warn('Beacon failed', e); }
 
         try { document.getElementById('msisdn').value=''; document.getElementById('email').value=''; document.getElementById('packageSelectTelecel').value=''; } catch(e){}
+
+        const params = new URLSearchParams({ network: 'Telecel', package: pkg, phone: msisdn, email: email, amount: price, reference: response.reference });
+        window.location.href = 'receipt.html?' + params.toString();
       }
     });
 
