@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function(){
   // No auth required - users can order directly
 
   const packages = {
-    '1GB': 6.00,'2GB': 11.00,'3GB': 16.00,'4GB': 21.00,'5GB': 26.00,'6GB': 32.00,'8GB': 42.00,'10GB': 50.00,'15GB': 70.00,'20GB': 95.00,'25GB': 115.00,'30GB': 135.00,'40GB': 175.00,'50GB': 215.00
+    '': 6.00,'2GB': 11.00,'3GB': 16.00,'4GB': 21.00,'5GB': 26.00,'6GB': 32.00,'8GB': 42.00,'10GB': 50.00,'15GB': 70.00,'20GB': 95.00,'25GB': 115.00,'30GB': 135.00,'40GB': 175.00,'50GB': 215.00
   };
 
   const sel = document.getElementById('packageSelectMTN');
