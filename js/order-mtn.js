@@ -54,25 +54,8 @@ window.testPopup = showSuccessPopup;
 console.log('MTN order script loaded successfully!');
 console.log('Paystack library available:', typeof window.PaystackPop);
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', function(){
-  console.log('DOM loaded - initializing MTN order form');
-  console.log('Paystack after DOM load:', typeof window.PaystackPop);
-  // No auth required - users can order directly
-
-  const packages = {
-    '1GB': 5.50,'2GB': 10.50,'3GB': 15.00,'4GB': 20.00,'5GB': 25.00,'6GB': 30.00,'8GB': 40.00,'10GB': 48.00,'15GB': 70.00,'20GB': 90.00,'25GB': 113.00,'30GB': 132.00,'40GB': 173.00,'50GB': 211.00
-  };
-
-  const sel = document.getElementById('packageSelectMTN');
-  Object.keys(packages).forEach(k=>{
-    const opt = document.createElement('option'); opt.value = k; opt.textContent = `${k} ------- GHS${packages[k].toFixed(2)}`; sel.appendChild(opt);
-  });
-
-  function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
-
-  // Handle payment success - extracted to avoid duplication
-  function handlePaymentSuccess(response, email, msisdn, pkg, price) {
+// Handle payment success - at global scope so Paystack onSuccess callback can access it
+function handlePaymentSuccess(response, email, msisdn, pkg, price) {
     console.log('handlePaymentSuccess called with:', {response, email, msisdn, pkg, price});
     
     let savedOrderId = `MTN-${Date.now()}`;
@@ -167,7 +150,24 @@ document.addEventListener('DOMContentLoaded', function(){
       orderId: savedOrderId,
       amount: `GH₵ ${price.toFixed(2)}`
     });
-  }
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function(){
+  console.log('DOM loaded - initializing MTN order form');
+  console.log('Paystack after DOM load:', typeof window.PaystackPop);
+  // No auth required - users can order directly
+
+  const packages = {
+    '1GB': 5.50,'2GB': 10.50,'3GB': 15.00,'4GB': 20.00,'5GB': 25.00,'6GB': 30.00,'8GB': 40.00,'10GB': 48.00,'15GB': 70.00,'20GB': 90.00,'25GB': 113.00,'30GB': 132.00,'40GB': 173.00,'50GB': 211.00
+  };
+
+  const sel = document.getElementById('packageSelectMTN');
+  Object.keys(packages).forEach(k=>{
+    const opt = document.createElement('option'); opt.value = k; opt.textContent = `${k} ------- GHS${packages[k].toFixed(2)}`; sel.appendChild(opt);
+  });
+
+  function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
   const mtnForm = document.getElementById('mtnForm');
   console.log('MTN Form element found:', !!mtnForm);
