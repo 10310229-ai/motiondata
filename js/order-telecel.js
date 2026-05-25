@@ -47,14 +47,13 @@ document.addEventListener('DOMContentLoaded', function(){
   // No auth required - users can order directly
 
   const packages = {
-    '5GB': 24.00,
-    '10GB': 45.00,
-    '15GB': 63.00,
-    '20GB': 83.00,
-    '25GB': 100.00,
-    '30GB': 120.00,
-    '40GB': 160.00,
-    '50GB': 195.00
+    '5GB': 25.00,
+    '10GB': 48.00,
+    '15GB': 70.00,
+    '20GB': 85.00,
+    '30GB': 125.00,
+    '40GB': 165.00,
+    '50GB': 210.00
   };
 
   const sel = document.getElementById('packageSelectTelecel');
