@@ -186,94 +186,57 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   mtnForm.addEventListener('submit', function(evt){
-    // CRITICAL: Prevent form submission FIRST
+    // Prevent default submission - open Paystack inline (LIVE key)
     evt.preventDefault();
     evt.stopPropagation();
-    console.log('Form submitted!');
-    let msisdn = document.getElementById('msisdn').value.trim();
+
+    const msisdn = document.getElementById('msisdn').value.trim();
     const email = document.getElementById('email').value.trim();
     const pkg = document.getElementById('packageSelectMTN').value;
-    
-    console.log('=== MTN ORDER STARTED ===');
-    console.log('Phone (original):', msisdn, 'Email:', email, 'Package:', pkg);
-    
-    // Validate 10-digit format
-    if(!/^\d{10}$/.test(msisdn)){ 
-      alert('Please enter a valid 10 digit number (e.g., 0241234567)'); 
-      return; 
+
+    // Basic validations
+    if(!/^\d{10}$/.test(msisdn)){
+      alert('Please enter a valid 10 digit number (e.g., 0241234567)');
+      return;
     }
-    
-    // Convert to international format for Paystack (remove leading 0, add 233)
-    if(msisdn.startsWith('0')) {
-      msisdn = '233' + msisdn.substring(1);
-    }
-    console.log('Phone (international format for Paystack):', msisdn);
-    
     if(!isValidEmail(email)){ alert('Please enter a valid email'); return; }
     if(!pkg){ alert('Please select an MTN package'); return; }
 
     const price = packages[pkg];
-    console.log('Price for package:', price);
     if(typeof price === 'undefined'){ alert('Price not available for selected package'); return; }
 
+    // Use live public key as requested
+    const LIVE_KEY = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
     const amountInPesewas = Math.round(price * 100);
-    const publicKey = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
-    
-    console.log('Using Paystack LIVE key');
-    console.log('Amount in pesewas:', amountInPesewas);
-    console.log('Amount in GHS:', price);
-    
-    // Validate Paystack library is loaded
-    console.log('Checking PaystackPop:', typeof window.PaystackPop);
-    if(!window.PaystackPop){ 
-      alert('Payment library failed to load. Please refresh the page and try again.'); 
-      return; 
-    }
-    
-    // Validate amount
-    if(amountInPesewas < 100 || isNaN(amountInPesewas)){
-      alert('Invalid amount. Please select a valid package.');
-      return;
-    }
-    
-    // Minimum amount check for Paystack (GHS 1.00 = 100 pesewas)
-    if(price < 1.0) {
-      alert('Minimum payment amount is GHS 1.00');
+
+    // Convert phone to international format if needed
+    let phone = msisdn;
+    if (phone.startsWith('0')) phone = '233' + phone.substring(1);
+
+    if (!window.PaystackPop) {
+      alert('Payment service not available. Please try again later.');
       return;
     }
 
-    console.log('Initiating Paystack payment...');
-    
-    // Initialize Paystack payment
-    const handler = window.PaystackPop.setup({
-      key: publicKey,
+    const handler = PaystackPop.setup({
+      key: LIVE_KEY,
       email: email,
       amount: amountInPesewas,
       currency: 'GHS',
-      ref: 'MTN_' + Math.floor(Math.random() * 1000000000 + 1),
+      ref: `MTN-` + Date.now(),
       metadata: {
         custom_fields: [
-          {
-            display_name: "Mobile Number",
-            variable_name: "mobile_number",
-            value: msisdn
-          },
-          {
-            display_name: "Package",
-            variable_name: "package",
-            value: pkg
-          }
+          {display_name: 'Mobile', variable_name: 'mobile', value: phone},
+          {display_name: 'Operator', variable_name: 'operator', value: 'MTN'},
+          {display_name: 'Package', variable_name: 'package', value: pkg}
         ]
       },
-      callback: function(response){
-        console.log('🎉 Payment successful!', response);
+      onClose: function(){ console.log('Payment closed'); },
+      onSuccess: function(response){
         handlePaymentSuccess(response, email, msisdn, pkg, price);
-      },
-      onClose: function(){
-        console.log('Payment window closed');
       }
     });
-    
+
     handler.openIframe();
   });
 });

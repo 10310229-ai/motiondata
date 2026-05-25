@@ -3,6 +3,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const zlib = require('zlib');
 const url = require('url');
 
 // Import database functions
@@ -119,11 +120,53 @@ function serveStatic(req, res, filePath) {
         res.end('Server error');
       }
     } else {
-      res.writeHead(200, { 
-        'Content-Type': contentType,
-        'Access-Control-Allow-Origin': '*'
-      });
-      res.end(content);
+      try {
+        // ETag
+        const etag = crypto.createHash('md5').update(content).digest('hex');
+        const ifNone = req.headers['if-none-match'];
+        if (ifNone && ifNone === etag) {
+          res.writeHead(304);
+          res.end();
+          return;
+        }
+
+        // Cache policy
+        let cacheControl = 'no-cache, must-revalidate';
+        const longCacheExts = ['.js', '.css', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp', '.ttf', '.woff', '.woff2'];
+        if (longCacheExts.includes(extname)) {
+          cacheControl = 'public, max-age=31536000, immutable';
+        } else if (extname === '.json') {
+          cacheControl = 'no-cache';
+        }
+
+        const headers = {
+          'Content-Type': contentType,
+          'Access-Control-Allow-Origin': '*',
+          'Cache-Control': cacheControl,
+          'ETag': etag
+        };
+
+        // Compression (gzip) if client supports it
+        const acceptEncoding = req.headers['accept-encoding'] || '';
+        if (acceptEncoding.includes('gzip')) {
+          zlib.gzip(content, (gzipErr, zipped) => {
+            if (!gzipErr && zipped) {
+              headers['Content-Encoding'] = 'gzip';
+              res.writeHead(200, headers);
+              res.end(zipped);
+            } else {
+              res.writeHead(200, headers);
+              res.end(content);
+            }
+          });
+        } else {
+          res.writeHead(200, headers);
+          res.end(content);
+        }
+      } catch (e) {
+        res.writeHead(200, { 'Content-Type': contentType, 'Access-Control-Allow-Origin': '*' });
+        res.end(content);
+      }
     }
   });
 }

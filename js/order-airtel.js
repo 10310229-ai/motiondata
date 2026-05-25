@@ -51,116 +51,52 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   airtelForm.addEventListener('submit', function(evt){
-    // CRITICAL: Prevent form submission FIRST
+    // Prevent form submission and open Paystack inline using LIVE key
     evt.preventDefault();
     evt.stopPropagation();
+
     let msisdn = document.getElementById('msisdn').value.trim();
     const email = document.getElementById('email').value.trim();
     const pkg = document.getElementById('packageSelectAirtelTigo').value;
-    
-    // Validate 10-digit format
-    if(!/^\d{10}$/.test(msisdn)){ 
-      alert('Please enter a valid 10 digit number (e.g., 0241234567)'); 
-      return; 
-    }
-    
-    // Convert to international format for Paystack (remove leading 0, add 233)
-    if(msisdn.startsWith('0')) {
-      msisdn = '233' + msisdn.substring(1);
-    }
-    console.log('Phone (international format):', msisdn);
-    
+
+    if(!/^\d{10}$/.test(msisdn)){ alert('Please enter a valid 10 digit number (e.g., 0241234567)'); return; }
     if(!isValidEmail(email)){ alert('Please enter a valid email'); return; }
     if(!pkg){ alert('Please select an AirtelTigo package'); return; }
 
     const price = packages[pkg];
     if(typeof price === 'undefined'){ alert('Price not available for selected package'); return; }
 
+    const LIVE_KEY = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
     const amountInPesewas = Math.round(price * 100);
-    const publicKey = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
-    
-    // Validate Paystack library is loaded
-    if(!window.PaystackPop){ 
-      alert('Payment library failed to load. Please refresh the page and try again.'); 
-      return; 
-    }
-    
-    // Validate amount
-    if(amountInPesewas < 100 || isNaN(amountInPesewas)){
-      alert('Invalid amount. Please select a valid package.');
-      return;
-    }
+    let phone = msisdn;
+    if (phone.startsWith('0')) phone = '233' + phone.substring(1);
 
-    console.log('Initiating payment with Paystack...');
-    
-    // Launch Paystack Payment directly
+    if (!window.PaystackPop) { alert('Payment service not available'); return; }
+
     const handler = PaystackPop.setup({
-      key: publicKey,
+      key: LIVE_KEY,
       email: email,
       amount: amountInPesewas,
       currency: 'GHS',
-      ref: 'AIRTEL-' + Math.floor((Math.random() * 1000000000) + 1),
-      metadata: {
-        network: 'AirtelTigo',
-        package: pkg,
-        phone_number: msisdn,
-        custom_fields: []
-      },
-      callback: function(response){
-        console.log('🎉 Payment successful!', response);
-        
-        // Save order to localStorage
+      ref: `ATG-` + Date.now(),
+      metadata: { custom_fields: [ {display_name:'Mobile', variable_name:'mobile', value:phone}, {display_name:'Package', variable_name:'package', value:pkg} ] },
+      onClose: function(){ console.log('Payment closed'); },
+      onSuccess: function(response){
         try {
-          const orderData = {
-            orderId: response.reference,
-            reference: response.reference,
-            network: 'AirtelTigo',
-            package: pkg,
-            phone: msisdn,
-            email: email,
-            amount: price,
-            status: 'completed',
-            timestamp: new Date().toISOString()
-          };
-          
-          let orders = JSON.parse(localStorage.getItem('md_orders') || '[]');
-          orders.push(orderData);
-          localStorage.setItem('md_orders', JSON.stringify(orders));
-          console.log('✅ Order saved to localStorage');
-          
-          // Save to Supabase
-          if(window.saveOrder){
-            window.saveOrder(orderData).then(()=>{
-              console.log('✅ Order saved to Supabase');
-            }).catch(err=>{
-              console.error('❌ Failed to save to Supabase:', err);
-            });
-          }
-          
-          // Add notification
-          if(window.addOrderNotification){
-            window.addOrderNotification({
-              title: 'AirtelTigo Order Placed Successfully',
-              message: `Your ${pkg} order has been placed successfully. Delivery in progress.`,
-              orderId: response.reference,
-              network: 'AirtelTigo',
-              amount: `GHS${price.toFixed(2)}`
-            });
-          }
-          
-          // Show success popup
-          showSuccessPopup(orderData);
-          
-        } catch(err) {
-          console.error('❌ Error processing order:', err);
-          alert('Order processed but there was an error saving it. Please contact support with reference: ' + response.reference);
+          const order = { id: response.reference, reference: response.reference, date: new Date().toISOString(), timestamp: Date.now(), email: email, phone: msisdn, mobile: phone, operator: 'AirtelTigo', network: 'AirtelTigo', package: pkg, amount: price, status: 'completed' };
+          const orders = JSON.parse(localStorage.getItem('md_orders') || '[]'); orders.push(order); localStorage.setItem('md_orders', JSON.stringify(orders));
+        } catch(e){ console.error('LocalStorage save error:', e); }
+
+        if (typeof window.addOrderNotification === 'function') {
+          window.addOrderNotification({ title: 'AirtelTigo Order Placed Successfully', message: `Your ${pkg} order has been placed successfully.`, orderId: response.reference, network: 'AirtelTigo', amount: `GH₵ ${price.toFixed(2)}` });
         }
-      },
-      onClose: function(){
-        console.log('⚠️ Payment popup closed');
+
+        try { showSuccessPopup({ package: pkg, orderId: response.reference, amount: `GH₵ ${price.toFixed(2)}` }); } catch(e){ console.error(e); }
+
+        try { document.getElementById('msisdn').value=''; document.getElementById('email').value=''; document.getElementById('packageSelectAirtelTigo').value=''; } catch(e){}
       }
     });
-    
+
     handler.openIframe();
   });
 });

@@ -354,6 +354,9 @@
             <button class="btn-proceed" id="proceedBtn">
                 <i class="fas fa-lock"></i> Proceed to Payment
             </button>
+            <button class="btn-proceed" id="testPaystackBtn" style="display:none; background: #f59e0b;">
+                <i class="fas fa-vial"></i> Test Paystack (Local)
+            </button>
         </div>
     </div>
 
@@ -444,7 +447,9 @@
 
         // Proceed to payment
         document.getElementById('proceedBtn').addEventListener('click', function() {
-            const publicKey = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
+            const LIVE_KEY = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
+            const publicKey = LIVE_KEY;
+            console.log('Using Paystack public key: LIVE');
             const amountInPesewas = Math.round(orderData.amount * 100);
             
             // Convert phone to international format if needed
@@ -580,6 +585,45 @@
 
             handler.openIframe();
         });
+
+        // Local diagnostic for Paystack - only show when running locally
+        function testPaystackConnection() {
+            const LIVE_KEY = 'pk_live_91cfdef8bb6ab204ba3ec685224bbe3ff7aa0720';
+            const keyToUse = LIVE_KEY;
+
+            if (!window.PaystackPop) {
+                alert('Paystack script not loaded. Check network or script include.');
+                return;
+            }
+
+            try {
+                const handler = PaystackPop.setup({
+                    key: keyToUse,
+                    email: 'test@example.com',
+                    amount: 100, // GHS 1.00
+                    currency: 'GHS',
+                    ref: 'TEST-' + Date.now(),
+                    metadata: { custom_fields: [] },
+                    onClose: function() { console.log('Paystack test dialog closed'); alert('Paystack dialog closed'); },
+                    callback: function(response) { console.log('Paystack test callback:', response); alert('Paystack test callback: ' + response.reference); }
+                });
+
+                handler.openIframe();
+            } catch (e) {
+                console.error('Error opening Paystack iframe:', e);
+                alert('Error opening Paystack iframe: ' + e.message);
+            }
+        }
+
+        // Show test button when local
+        (function() {
+            const testBtn = document.getElementById('testPaystackBtn');
+            const isLocalEnv = (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:');
+            if (testBtn && isLocalEnv) {
+                testBtn.style.display = 'inline-flex';
+                testBtn.addEventListener('click', testPaystackConnection);
+            }
+        })();
 
         // Display order summary on page load
         displayOrderSummary();
