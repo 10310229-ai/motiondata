@@ -202,10 +202,9 @@ function httpsFetch(urlString, options = {}) {
   });
 }
 
-// Check if maintenance mode is enabled
+// Maintenance mode removed — always return false
 function isMaintenanceMode() {
-  const maintenanceFlagPath = path.join(__dirname, '.maintenance');
-  return fs.existsSync(maintenanceFlagPath);
+  return false;
 }
 
 // Request handler
@@ -214,11 +213,7 @@ async function handleRequest(req, res) {
   const pathname = parsedUrl.pathname;
   const method = req.method;
 
-  // Check maintenance mode - allow API and admin access
-  if (isMaintenanceMode() && !pathname.startsWith('/api/') && !pathname.startsWith('/admin') && pathname !== '/maintenance.html') {
-    const maintenancePath = path.join(__dirname, '..', 'maintenance.html');
-    return serveStatic(req, res, maintenancePath);
-  }
+  // Maintenance mode removed; continue handling all requests normally
 
   // CORS headers for all requests
   if (method === 'OPTIONS') {
@@ -234,10 +229,7 @@ async function handleRequest(req, res) {
   // API Routes
   if (pathname.startsWith('/api/')) {
     try {
-      // GET /api/maintenance-status
-      if (pathname === '/api/maintenance-status' && method === 'GET') {
-        return sendJSON(res, { maintenance: isMaintenanceMode() });
-      }
+      // (removed) GET /api/maintenance-status
 
       // GET /api/stats
       if (pathname === '/api/stats' && method === 'GET') {
