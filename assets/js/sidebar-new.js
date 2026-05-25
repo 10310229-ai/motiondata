@@ -48,7 +48,7 @@
                     <i class="fas fa-phone"></i> Call Support
                 </a>
                 <a class="support-whatsapp" href="https://wa.me/233256342577" target="_blank" rel="noopener" role="menuitem">
-                    <i class="fab fa-whatsapp"></i> WhatsApp Chat (0256342577)
+                    <i class="fab fa-whatsapp"></i> WhatsApp Chat
                 </a>
             `;
             document.body.appendChild(supportMenu);
